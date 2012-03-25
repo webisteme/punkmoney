@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+    {% block javascript %}
+    
+    <script type="text/javascript" src="/static/d3/d3.v2.js"></script>
+    <link type="text/css" rel="stylesheet" href="/static/d3/examples/force/force.css"/>
+    
+    {% endblock %}
+    
+{% block main %}
+
+
+
+
+<!--
+	<h3 style='display:inline'>TrustList </h3> <hr class="space">
+	
+	<div class="span-7" id="left">
+	
+		<ul>
+		
+		{% for trusted_user in trustlist %}
+	
+			<li><a href="/user/{{ trusted_user.trusted }}">{{ trusted_user.trusted }}</a></li>
+	
+		{% endfor %}
+		
+		</ul>
+
+	</div>
+	
+	<div class="span-7 last" id="right">
+	
+		<p>This is a list of users who are trusted to receive #PunkMoney transfers.</p>
+		
+		<p>Existing members can add up to 20 new users by listing them in their own <b>punkmoney-trusted</b> Twitter list. </p> 
+		
+		<p>This list updates automatically every 30 minutes. For more information, go to <a href="/help"><b>help</b></a>.</p>
+		
+	
+	
+	</div>
+	
+-->
+
+{% endblock %}

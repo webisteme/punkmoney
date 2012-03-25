@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block javascript %}
+
+	<script type=text/javascript>	
+	
+	function print(){
+
+		promise = $('#promise').val()
+		recipient = $('#recipient').val()
+		exp_val = $('#expiry').val()
+		exp_unit = $('#exptype').val()
+		transferable = $('#transferable').val()
+		
+		if (exp_val > 0){
+			expiry = 'Expires in ' + exp_val + ' ' + exp_unit + '. ';
+		} else {
+			expiry = ''
+		}
+		
+		note = '@' + recipient + ' I promise ' + promise + '. ' + expiry + transferable + ' #punkmoney'
+		
+		note_formatted = '<h3 id=\"printed\">' + note + '</h3>'
+
+		$('div.output').html(note_formatted);
+		
+		note_encoded = escape(note);
+		
+		url = 'https://twitter.com/share?url=&text=' + note_encoded;
+		
+		$('a.tweet').attr('href',url);
+		
+		$('#tweetbutton').show();
+		
+	}
+	
+		
+	$(document).ready(function(){
+	
+		$('#promise').keyup(print);
+		$('#recipient').keyup(print);
+		$('#expiry').keyup(print);
+		$('#exptype').change(print);
+		$('#transferable').change(print);
+		
+		$('#tweetbutton').hide();
+	
+	})
+	
+	</script>
+
+
+
+{% endblock %}
+
+{% block main %}
+
+	<div id="left" class="span-15">
+	
+	<h3 style='display:inline'>Printer </h3> <hr class="space">
+	
+		<span id="promised">Your Promise:</span> <br>
+		
+		<hr class="space">
+		
+		<h3 style="display:inline"id="printer">@<input id="recipient" style='display:inline' type="text" maxlength="20" size="20" placeholder="recipient"></h3>
+	
+		<h3 id="printer" style="display:inline">I promise 
+	
+		<input id="promise" type="text" maxlength="55" size="50" placeholder="one party hat <;-)" id="promise">.</h3>
+		
+		<hr class="space">
+		
+		<p><i>Options</i></p>
+		
+		<h3 id="printer2" style="display:inline">Expires in 
+		
+		<input id="expiry" type="text" size=2 maxlength=3 placeholder="10">
+		
+		<select id="exptype">
+		
+			<option id="minutes">minutes</option>
+			<option id="hours">hours</option>
+			<option id="days" selected>days</option>
+			<option id="months">months</option>
+			<option id="years">years</option>
+		
+		</select>
+		
+		</h3>
+<!--
+		
+		<h3 id="printer">.</h3>
+-->
+	
+		<hr class="space">
+	
+		<h3 id="printer2" style="display:inline">Transferable:</h3>
+	
+		<select id="transferable">
+		
+			<option id="t" value="" selected>Yes</option>
+			<option id="nt" value ="NT">No</option>
+		
+		</select>
+	
+	</div>
+
+
+	
+	<div id="right" class="span-15">
+	
+	<hr class="space">
+	<hr class="space">
+	
+	<span id="promised">Your #PunkMoney:</span>
+	
+	<hr class="space">
+	
+		<div class="output">
+		
+		
+		
+		</div>
+		
+		<hr class="space">
+		
+		<div id="tweetbutton">
+		
+			<a class="tweet" href="https://twitter.com/share?url=''&amp;text=" target="_blank"><img src="/static/tweet.png" width=60></a>
+		
+		</div>
+		
+	
+	</div>
+
+
+
+
+{% endblock %}

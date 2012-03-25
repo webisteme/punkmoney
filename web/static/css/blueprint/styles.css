@@ -1,0 +1,169 @@
+div#header {
+
+}
+
+.container {
+
+	padding:0;
+	position:relative;
+	margin-left: 10%;
+	margin-right: 10%;
+	top:50px;
+
+}
+
+
+div#main {
+
+	min-height: 450px;
+
+}
+
+span#controls {
+
+	position:relative;
+	z-index:5;
+	top:-35px;
+	float:right;
+
+}
+
+
+
+div#search {
+	top:30px;
+	right:-300px;
+	position:relative;
+}
+
+
+img#search_icon{
+	top:3px;
+	position: relative;
+}
+
+
+
+
+h3#printer {
+
+	color:grey;
+	/* display:inline; */
+	line-height: 2em;
+
+}
+
+p#low {
+
+	position:relative;
+	top:30px;
+	font-style: italic;
+
+}
+
+img.occupy {
+	position:relative;
+	bottom:-5px;
+}
+
+h3#printer2 {
+
+	color:grey;
+	/* display:inline; */
+	font-size:1.2em;
+	line-height: 1em;
+
+}
+
+div#tweet{
+
+	background-color:#e1f5ff;
+	padding:10;
+	margin:10;
+
+}
+
+div#tweet2{
+
+	background-color:#ccf3ce;
+	padding:10;
+	margin:10;
+
+}
+
+.output{
+
+	min-height: 50px;
+
+}
+
+h3#printed {
+
+	color:black;
+	display:inline;
+	line-height: 2em;
+
+}
+
+
+
+
+
+
+li {
+
+	list-style-type: none;
+	font-size: 12px;
+	
+}
+
+a {
+	text-decoration:none;
+	color: black;
+}
+
+
+p.footer {
+	color:gray;
+	text-align:right;
+	font-size: 12px;
+}
+
+
+
+
+
+span#promise {
+	background-color: #f0f0f0;
+}
+
+span#promised {
+	background-color: #e1f5ff;
+}
+
+span#transfer {
+	background-color: #fbffdf;
+}
+
+span#redemption {
+	background-color: #ccf3ce;
+}
+
+span#expiration {
+	background-color: #fff3e3;
+}
+
+input {
+
+	font-size:14px;
+
+}
+
+p.search {
+
+	top:26px;
+	right:10px;
+	position:relative;
+
+}
+
