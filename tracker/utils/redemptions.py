@@ -53,7 +53,7 @@ class Redemptions(Parser):
                         issuer = f.author.screen_name
                         
                         self.updateNote(note_id, 'status', 1)
-                        self.createEvent(note_id, 0, 1, datetime.now(), bearer, issuer)
+                        self.createEvent(note_id, 0, 1, datetime.now(), issuer, bearer)
                         
                         # Add karma
                         self.addKarma(issuer)
