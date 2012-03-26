@@ -373,7 +373,7 @@ class Parser(Harvester):
     # Check user exists
     def saveUser(self, username):
         try:
-            query = "SELECT id FROM tracker_users WHERE username = '%s'" % username
+            query = "SELECT id FROM tracker_users WHERE username = '%s'" % username.lower()
             r = self.getSingleValue(query)
         except Exception, e:
             self.logError("Checking user exists failed: %s" % e)
@@ -384,7 +384,7 @@ class Parser(Harvester):
             else:
                 self.logInfo("Saving new user %s" % username.lower())
                 query = "INSERT INTO tracker_users (username) VALUES (%s)"
-                params = (username)
+                params = (username.lower())
                 self.queryDB(query, params)
                 # Follow user
                 try:
