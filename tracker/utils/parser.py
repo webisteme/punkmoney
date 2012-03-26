@@ -121,7 +121,7 @@ class Parser(Harvester):
                     self.createEvent(tweet['tweet_id'], tweet['tweet_id'], 0, tweet['created'], tweet['author'], tweet['recipient'])
                     
                     # Log and tweet promise
-                    self.sendTweet('[Promise] @%s promised @%s %s http://www.punkmoney.org/note/%s' % (tweet['author'], tweet['recipient'], promise, tweet['tweet_id']))
+                    self.sendTweet('[P] @%s promised @%s %s http://www.punkmoney.org/note/%s' % (tweet['author'], tweet['recipient'], promise, tweet['tweet_id']))
                     self.logInfo('[Promise] @%s promised @%s %s.' % (tweet['author'], tweet['recipient'], tweet['tweet_id']))
                     self.setParsed(tweet['tweet_id'])
                 except Exception, e:
@@ -331,7 +331,7 @@ class Parser(Harvester):
     # Creates an event
     def createEvent(self, note_id, tweet_id, typ, timestamp, from_user, to_user):
         try:
-            query = "SELECT id FROM tracker_events WHERE tweet_id = '%s'" % tweet_id
+            query = "SELECT id FROM tracker_events WHERE tweet_id = '%s' AND note_id = '%s'" % (tweet_id, note_id)
             if self.getSingleValue(query) is None:                
                 query = "INSERT INTO tracker_events(note_id, tweet_id, type, timestamp, from_user, to_user) VALUES (%s, %s, %s, %s, %s, %s)"
                 params = (note_id, tweet_id, typ, timestamp, from_user, to_user)
