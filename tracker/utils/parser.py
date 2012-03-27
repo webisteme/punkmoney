@@ -92,7 +92,6 @@ class Parser(Harvester):
                         tweet['transferable'] = True
                         
                     # Check not to self
-                    
                     if tweet['recipient'] == tweet['author']:
                         raise Exception("Issuer and recipient are the same")
      
@@ -246,7 +245,7 @@ class Parser(Harvester):
     Helper functions
     '''
     # getTweets
-    # Gets unparsed tweets from database
+    # Get unparsed tweets from database
     def getTweets(self):
         try:
             tweets = []
@@ -260,7 +259,7 @@ class Parser(Harvester):
             return tweets
     
     # setParsed
-    # Sets parsed flag to 1 if successful, or '-' if not
+    # Set parsed flag to 1 if successful, or '-' if not
     def setParsed(self, tweet_id, val=1):
         try:
             query = "UPDATE tracker_tweets SET parsed = %s WHERE tweet_id = %s"
@@ -311,7 +310,7 @@ class Parser(Harvester):
             return tweet[1]
     
     # createNote
-    # Creates a new note from a parsed tweet
+    # Create a new note from a parsed tweet
     def createNote(self, tweet):
         try:
             query = "SELECT id FROM tracker_notes WHERE id = '%s'" % tweet['tweet_id']        
@@ -328,7 +327,7 @@ class Parser(Harvester):
             return True
     
     # createEvent
-    # Creates an event
+    # Create an event
     def createEvent(self, note_id, tweet_id, typ, timestamp, from_user, to_user):
         try:
             query = "SELECT id FROM tracker_events WHERE tweet_id = '%s' AND note_id = '%s'" % (tweet_id, note_id)
@@ -345,7 +344,7 @@ class Parser(Harvester):
             return True
     
     # getNote
-    # Returns a note given its id    
+    # Return a note given its id    
     def getNote(self, note_id):
         try:
             query = "SELECT id, issuer, bearer, promise, created, expiry, status, transferable FROM tracker_notes WHERE id = %s" % note_id
@@ -388,7 +387,8 @@ class Parser(Harvester):
                 self.queryDB(query, params)
                 # Follow user
                 try:
-                    self.TW.create_friendship(username)
+                    if self.TW.exists_friendship('punk_money', username) is False:
+                        self.TW.create_friendship(username)
                 except:
                     pass
         except Exception, e:
@@ -397,7 +397,7 @@ class Parser(Harvester):
             return True
         
     # updateExpired
-    # Update status any expired notes
+    # Update status of any expired notes
     def updateExpired(self):
         try:
             self.logInfo("Checking for expirations")
@@ -410,7 +410,7 @@ class Parser(Harvester):
             raise Exception("Cleaning database failed: %s" % e)
             
     # sendTweet
-    # Tweets a message from the main account
+    # Tweet a message from the main account
     def sendTweet(self, message):
         if SETTINGS.get('tweet', False) is True:
             try:
@@ -420,7 +420,7 @@ class Parser(Harvester):
                 
                 
     # checkTrusted
-    # Checks if a user is in the TrustList
+    # Check if a user is in the TrustList
     def checkTrusted(self,username):
         try:
             query = "SELECT id FROM tracker_trust_list WHERE trusted = '%s'" % username
@@ -432,10 +432,9 @@ class Parser(Harvester):
         except Exception, e:
             raise Exception('Checking TrustList for user %s failed: %s' % (username,e))
             
-    ''' Karma '''
             
     # addKarma
-    # Adds karma to specified user
+    # Add karma to specified user
     def addKarma(self, user):
         self.logDebug("Adding karma for user %s" % user)
         try:
