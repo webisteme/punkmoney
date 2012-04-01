@@ -14,7 +14,7 @@ import os
 import sys
 import MySQLdb
 
-from config import MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_SOCKET
+from config import MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE
 from logger import Logging
 
 # Main connection class
@@ -35,7 +35,6 @@ class Connection(Logging):
                 MYSQL_USER, 
                 MYSQL_PASSWORD, 
                 MYSQL_DATABASE, 
-                unix_socket = MYSQL_SOCKET
             )
             self.cursor = self.db.cursor()
         except Exception, e:
