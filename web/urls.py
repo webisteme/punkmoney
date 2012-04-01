@@ -29,7 +29,7 @@ urlpatterns = patterns('',
     
     # other patterns
     
-    url(r'^trustlist/$', 'tracker.views.showlist', name='showlist'),
+    url(r'^trustnet/$', 'tracker.views.shownet', name='trustnet'),
     
     url(r'^print/$', 'tracker.views.printer', name='showlist'),
     

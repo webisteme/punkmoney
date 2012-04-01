@@ -1,0 +1,90 @@
+body, html {
+    margin:0;
+    padding:0;
+    color:#000;
+    background:white;
+}
+
+.container {
+    position:relative;
+    top:30px;
+}
+
+div#main {
+    min-height: 400px;
+}
+
+/* Home page */
+
+div#news {
+    position:relative;
+    top:30px;
+}
+
+div#footer {
+    position:relative;
+    top:40px;
+}
+
+/* CONTROLS */
+
+span#controls {
+	position:relative;
+	z-index:5;
+	right:24px;
+	float:right;
+}
+
+/* SPAN COLOURS */
+
+span#promise {
+	background-color: #f0f0f0;
+}
+
+span#promised {
+	background-color: #e1f5ff;
+}
+
+span#transfer {
+	background-color: #fbffdf;
+}
+
+span#redemption {
+	background-color: #ccf3ce;
+}
+
+span#expiration {
+	background-color: #fff3e3;
+}
+
+div#tweet{
+
+	background-color:#e1f5ff;
+	padding:10;
+	margin:10;
+
+}
+
+/* TEXT */
+
+a {
+	text-decoration:none;
+	color: black;
+}
+
+
+/* LISTS */
+
+li {
+
+	list-style-type: none;
+	font-size: 12px;
+}
+
+/* FOOTER */
+
+p.footer {
+	color:gray;
+	text-align:right;
+	font-size: 12px;
+}

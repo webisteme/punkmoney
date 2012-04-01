@@ -77,18 +77,16 @@ def ticker(request, max=50, type=None, username=None, noteid=None):
 
     return render_to_response('ticker.html', variables)    
     
-def showlist(request):
+def shownet(request):
 
     trust_list = trustlist.objects.all()
     
     variables = {
-    
         'trustlist':trust_list,
         'page':'trustlist',
-    
     }
     
-    return render_to_response('force.html', variables)    
+    return render_to_response('trustnet.html', variables)    
 
 
 def user(request, username):
@@ -124,6 +122,9 @@ def user(request, username):
     trusters = trustlist.objects.filter(trusted=username)    
     trust_num = len(trusters)
 
+    user = users.objects.get(username=username)
+    karma = user.karma
+
     # Add trusters to list
     trusters_list = []
     for truster in trusters:
@@ -143,7 +144,8 @@ def user(request, username):
         'events':final,
         'trust':trust_num,
         'trusters':trusters_list,
-        'top_trusters':top_trusters
+        'top_trusters':top_trusters,
+        'karma':karma,
     }
     
     # return all

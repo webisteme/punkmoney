@@ -35,30 +35,43 @@
 
 {% block main %}
 
-		<h3 id="title" style='display:inline'> Latest activity </h3>
+        <!-- TITLE -->
+        
+        <div class="span-10">
+
+    		<h3 id="title" style='display:inline'> Latest activity </h3>
+    		
+    		<i style='display:inline'>(Updates once per minute.)</i> <br />
+    		
+    		<div id="welcome">
+    			<span id="expiration">New to #PunkMoney? Find out more <b><a href="/help">here.</a></b></span>
+    		</div>
 		
-		<i style='display:inline'>(Updates once per minute.)</i> <br />
+		  <hr class="space">
 		
-		<div id="welcome">
-			<span id="expiration">New to #PunkMoney? Find out more <b><a href="/help">here.</a></b></span>
 		</div>
 		
-		<span id="controls" style:'display:inline'>
+		<!-- CONTROLS -->
 		
+		<span id="controls" class="span-4 prepend-3 last" style:'display:inline'>
+		
+		<p align="right">
 			<a href="javascript:changeTicker('/ticker/', 'activity')">[ All ]</a>
 			
 			<a href="javascript:changeTicker('/ticker/type/0', 'promises')"><span id="promised">[ P ]</span></a>
 			<a href="javascript:changeTicker('/ticker/type/3', 'transfers')"><span id="transfer">[ T ]</span></a>
 			<a href="javascript:changeTicker('/ticker/type/1', 'redemptions')"><span id="redemption">[ R ]</span></a>
 			<a href="javascript:changeTicker('/ticker/type/2', 'expirations')"><span id="expiration">[ X ]</span></a>
+        </p>
 
 		</span>
 		
 		
 		<br />
 		
-	
-		<div id="ticker">
+	    <!-- TICKER -->
+	    
+		<div id="ticker" class="span-17">
 		
 		
 		

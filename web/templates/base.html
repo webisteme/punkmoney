@@ -4,7 +4,7 @@
         <title>#PunkMoney</title>
         
         <link rel="stylesheet" href="/static/css/blueprint/screen.css" type="text/css">
-        <link rel="stylesheet" href="/static/css/blueprint/styles.css" type="text/css">
+        <link rel="stylesheet" href="/static/css/styles.css" type="text/css">
         
         <script src="/static/js/jquery.js" type="text/javascript"></script>
         
@@ -43,8 +43,6 @@
 		
 	    </script>
         
-        
-        
         {% block javascript %}
         
         {% endblock %}
@@ -55,7 +53,9 @@
 
 <div class="container">
 
-	<div id="header" class="span-22">
+    <!-- HEADER -->
+
+	<div id="header" class="span-22 prepend-1">
 	
 		<div id="left" class="span-10">
 	
@@ -63,9 +63,9 @@
 		
 		</div>
 
-		<div id="right" class="span-12 last">
-
+		<div id="right" class="span-5 prepend-7 last">
 			
+			<br><br>
 			
 			<div id="search">
 				<img src="/static/search.png" id="search_icon">
@@ -78,7 +78,9 @@
 	
 	</div>
 	
-	<div id="nav" class="span-5">
+	<!-- NAVIGATION -->
+	
+	<div id="nav" class="span-2 prepend-1">
 	
 		<ui>
 		
@@ -110,11 +112,11 @@
 
 		{% ifequal page 'trustlist' %}
 	
-		<li><b><a href="/trustlist">TrustNet</a></b></li>
+		<li><b><a href="/trustnet">TrustNet</a></b></li>
 		
 		{% else %}
 		
-		<li><a href="/trustlist">TrustNet</a></li>
+		<li><a href="/trustnet">TrustNet</a></li>
 		
 		{% endifequal %}
 		
@@ -133,19 +135,21 @@
 		</ui>
 	
 	</div>
-
-	<div id="main" class="span-17">
 	
-		<hr class="space">
+	<!-- MAIN -->
 
-	
+	<div id="main" class="span-18 prepend-2 last">
+	<hr class="space">
+        
 		{% block main %}
-		
+
 		{% endblock %}
 	
 	</div>
 
-	<div id="footer" class="span-22">
+    <!-- FOOTER -->
+    
+	<div id="footer" class="span-22 prepend-1">
 
 		<hr>
 

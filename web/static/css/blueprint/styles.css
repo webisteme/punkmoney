@@ -1,33 +1,29 @@
-div#header {
+body, html {
 
+    margin:0;
+    padding:0;
+    color:#000;
+    background:white;
 }
 
 .container {
-
-	padding:0;
-	position:relative;
-	margin-left: 10%;
-	margin-right: 10%;
+    position:relative;
+    background-color: red;
 	top:50px;
-
 }
 
 
 div#main {
-
 	min-height: 450px;
-
+	
 }
 
 span#controls {
-
 	position:relative;
 	z-index:5;
 	top:-35px;
 	float:right;
-
 }
-
 
 
 div#search {
@@ -114,7 +110,6 @@ li {
 
 	list-style-type: none;
 	font-size: 12px;
-	
 }
 
 a {

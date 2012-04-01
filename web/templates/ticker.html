@@ -19,9 +19,6 @@
 		<span id="promise"><a href="/note/{{ event.note_id }}">{{ event.promise }}</a></span>. 
 		{% endifequal %}
 		
-		
-		
-		
         {% ifequal event.type 3 %}
 		<span id="Transfer">[ T ]</span> {{ event.timestamp|date:"M d G:i" }}<span><b> <a href="/user/{{ event.from_user }}">{{ event.from_user }}</a></b> transferred <span id="promise"><a href="/note/{{ event.note_id }}">{{ event.promise }}</a></span> to <b><a href="/user/{{ event.to_user }}">{{ event.to_user }}</a></b>. 
 		{% endifequal %}
