@@ -27,6 +27,13 @@ TW_CONSUMER_SECRET = ''
 TW_ACCESS_KEY = ''
 TW_ACCESS_SECRET = ''
 
+# LOG PATH
+'''
+Absolute path to a log file in /tracker/logs
+'''
+
+LOG_PATH = ''
+
 
 # MYSQL DATABASE
 '''

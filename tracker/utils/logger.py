@@ -14,7 +14,7 @@ import os
 import re
 import sys
 import logging, logging.handlers
-from config import SETTINGS
+from config import SETTINGS, LOG_PATH
 
 # Logging class
 
@@ -32,15 +32,7 @@ class Logging():
         x.setLevel(logging.DEBUG)
         
         # Create handler
-        current_path = os.getcwd()
-        if current_path.split('/')[-1] == 'tracker':
-            log_path = current_path + '/logs/punkmoney.log'
-        elif current_path.split('/')[-1] == 'utils':
-            log_path = current_path.split('/utils')[0] + '/logs/punkmoney.log'
-        else:
-            raise Exception("Couldn't find a log path")
-        
-        h1 = logging.FileHandler(log_path)
+        h1 = logging.FileHandler(LOG_PATH)
         f = logging.Formatter("%(levelname)s %(asctime)s %(message)s")
         h1.setFormatter(f)
         h1.setLevel(logging.DEBUG)

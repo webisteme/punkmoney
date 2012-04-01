@@ -78,6 +78,6 @@ if __name__ == '__main__':
             
     else:
         T.run()
-
-T= Tracker()
-T.run()
+else:
+    T= Tracker()
+    T.run()
