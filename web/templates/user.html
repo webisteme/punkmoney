@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+
+{% block javascript %}
+
+	<script type="text/javascript">
+
+	$('document').ready( function(){
+
+		url = '/ticker/max/10/user/{{ username }}';
+		loadTicker(url);
+
+	})
+
+
+	</script>
+
+{% endblock %}
+
+
+{% block main %}
+
+<a target=blank href="http://www.twitter.com/{{ username }}">
+    <img style="padding:5px;" width="50" align="left" src="https://api.twitter.com/1/users/profile_image/{{ username }}">
+</a>
+<span id="expiration"><h3 style='display:inline'><a target="blank" href="http://www.twitter.com/{{ username }}">{{ username }}</a></h3></span><h4 style='display:inline'> ({{ trust }})</h3><br>
+
+{% ifequal trust 0 %}
+
+{% else %}
+
+Trusted by 
+
+{% for t in top_trusters %}
+<a href="/user/{{ t }}"><i>{{ t }}</i></a>
+{% endfor %}
+
+    {% ifnotequal trust|add:"-1" 0 %}
+
+        and {{ trust|add:"-1" }} others
+        
+    {% endifnotequal %}
+
+{% endifequal %}
+<!-- Trusted by <span id="promised"><a href="/trustlist">{{ trust }} user(s)</a></span> -->
+
+
+
+<hr class="Space">
+
+<span><h4>Recent activity</h4></span>
+
+<div id="ticker"></div>
+
+<hr class="Space">
+
+{% if notes_issued %}
+
+<span><h4>Notes issued</h4></span>
+
+    {% for note in notes_issued %}
+    
+    	<p>
+    
+    	<span id="promised">[P]</span> {{ note.created|date:"M d G:i" }} promised <b><a href="/user/{{ note.bearer }}">{{ note.bearer }}</a></b>  <a href="/note/{{ note.id }}"> <span id="promise">{{ note.promise }}</span> [&rarr;]</a>
+    	
+    	</p>
+    	
+    	
+    {% endfor %}
+
+{% endif %}
+
+<hr class="Space">
+
+{% if notes_held %}
+
+<span><h4>Notes held</h4></span>
+
+{% for note in notes_held %}
+
+	<p>
+
+	<span id="promised">[P]</span> {{ note.created|date:"M d G:i" }} <b> <a href="/user/{{ note.issuer }}">{{ note.issuer }}</a></b> promised <span id="promise">{{ note.promise }}</span><a href="/note/{{ note.id }}"> [&rarr;]</a>
+
+	</p>
+
+{% endfor %}
+
+{% endif %}
+
+
+
+
+{% endblock %}
