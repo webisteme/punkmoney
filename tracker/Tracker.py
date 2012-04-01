@@ -2,7 +2,7 @@
 
 """
 
-PunkMoney 1.0 :: Tracker.py 
+PunkMoney 0.2 :: Tracker.py 
 
 Main listener class for finding and parsing #PunkMoney statements.
 

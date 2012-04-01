@@ -21,7 +21,7 @@ DEPENDENCIES
 
 Python 2.6+
 Django 1.3
-MySQL Server 5.5.16
+MySQL Server 5.5+
 Unix environment (with cron)
 
 Web dependencies:
