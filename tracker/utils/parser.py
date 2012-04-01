@@ -39,10 +39,12 @@ class Parser(Harvester):
         for tweet in self.getTweets():
             try:
                 # If tweet doesn't start with '@', skip
+                '''
                 if tweet['content'][0] != '@':
                     self.setParsed(tweet['tweet_id'])
                     raise Exception("Tweet is not an @reply")
-                    
+                '''
+
                 # If tweet contains 'RT' (e.g. is a retweet), skip
                 retweet = False
                 for w in tweet['content'].split():
@@ -54,7 +56,7 @@ class Parser(Harvester):
                 self.saveUser(tweet['author'])
                 
                 # Determine tweet type
-                promise = re.match('@(\w+) I promise (.*) (%s)' % HASHTAG, tweet['content'], re.IGNORECASE)
+                promise = re.search('promise', tweet['content'], re.IGNORECASE)
                 transfer = re.match('@(\w+) transfer @(\w+)(.*)(%s)' % HASHTAG, tweet['content'], re.IGNORECASE)
                 redemption = re.match('@(\w+) redeemed(.*)(%s)' % HASHTAG, tweet['content'], re.IGNORECASE)
                 
@@ -74,47 +76,128 @@ class Parser(Harvester):
             
             if promise:
                 try:
-                    tweet['recipient'] = promise.group(1)
-                    statement = promise.group(2)
+                    # Set flag to parsed
+                    self.setParsed(tweet['tweet_id'])
                     
-                    self.saveUser(tweet['recipient'])
+                    # Strip out hashtag
+                    h = re.search('(.*)(%s)(.*)' % HASHTAG, tweet['content'], re.IGNORECASE)
+                    if h:
+                        statement = h.group(1) + h.group(3)
+                    else:
+                        raise Exception("Hashtag not found")
                     
-                    # Check Transferability
-                    t = re.match('(.*)(NT)(.*)', statement)
+            
+                    print '1' + statement
                     
-                    if t:
-                        tweet['transferable'] = False
+                    
+                    # Get recipient
+                    r = re.search('(.*)@(\w+)(.*)', statement)
+                    
+                    if r:
+                        tweet['recipient'] = r.group(2)
                         
-                        # Re-join rest of statement
-                        statement = t.group(1) + t.group(3)
+                        self.saveUser(tweet['recipient'])
+                        statement = r.group(1).strip() + r.group(3)
                         
                     else:
-                        tweet['transferable'] = True
+                        raise Exception("Recipient not found")
                         
+                        
+                        
+                    print '2' + statement
+                        
+                        
+                    
                     # Check not to self
                     if tweet['recipient'] == tweet['author']:
                         raise Exception("Issuer and recipient are the same")
-     
+                        
+                    # Check Transferability
+                    t = re.match('(.*)( NT )(.*)', statement, re.IGNORECASE)
+                    
+                    if t:
+                        tweet['transferable'] = False
+                        statement = t.group(1) + t.group(3)
+                    else:
+                        tweet['transferable'] = True
+                        
+
+
+                    print '3' + statement
+        
+
+
                     # Check expiry
-                    e = re.match('(.*) Expires in (\d+) (\w+)', statement)
+                    ''' 'Expires in' syntax '''
+                    
+                    e = re.match('(.*) Expires in (\d+) (\w+)(.*)', statement, re.IGNORECASE)
                     
                     if e:
                         num = e.group(2)
                         unit = e.group(3)
                         tweet['expiry'] = self.getExpiry(tweet['created'], num, unit)
-                        promise = e.group(1)
+                        statement = e.group(1) + e.group(4)
                     else:
                         tweet['expiry'] = None
-                        promise = statement
+
+                    ''' 'Exp in' syntax '''
                     
-                    # Remove trailing white space and/or full stop
+                    e = re.match('(.*) Exp in (\d+) (\w+)(.*)', statement, re.IGNORECASE)
+                    
+                    if e:
+                        num = e.group(2)
+                        unit = e.group(3)
+                        tweet['expiry'] = self.getExpiry(tweet['created'], num, unit)
+                        statement = e.group(1) + e.group(4)
+                    else:
+                        tweet['expiry'] = None
+
+
+
+                    # Get promise
+                    p = re.match('(.*)(promise)(.*)', statement)
+                    if p:
+                        if p.group(1).strip().lower() == 'i':
+                            promise = p.group(3)
+                        else:
+                            promise = p.group(1).strip() + p.group(3)
+                    else:
+                        raise Exception("Promise not found")
+                        
+                        
+                        
+                    print '4' + promise
+                        
+                    
+                    # Clean up promise 
+                    '''
+                    Remove trailing white space, full stop and word 'you' (if found)
+                    '''
+                    
                     promise = promise.strip()
                     
-                    if promise[-1] == '.':
+                    print '4.0' + promise
+                    
+                    print promise
+                    
+                    while promise[-1] == '.':
                         promise = promise[:-1]
+                        
+                    print '4.1' + promise
             
+                    if promise[0:4] == 'you ':
+                        promise = promise[4:]
+                        
+                    print '4.2' + promise
+                                
                     tweet['promise'] = promise
                     
+                    print '4.3' + promise
+                    
+                    
+                    print '5' + promise
+                    
+
                     # Processing promise
                     self.createNote(tweet)
                     self.createEvent(tweet['tweet_id'], tweet['tweet_id'], 0, tweet['created'], tweet['author'], tweet['recipient'])
@@ -122,7 +205,6 @@ class Parser(Harvester):
                     # Log and tweet promise
                     self.sendTweet('[P] @%s promised @%s %s http://www.punkmoney.org/note/%s' % (tweet['author'], tweet['recipient'], promise, tweet['tweet_id']))
                     self.logInfo('[Promise] @%s promised @%s %s.' % (tweet['author'], tweet['recipient'], tweet['tweet_id']))
-                    self.setParsed(tweet['tweet_id'])
                 except Exception, e:
                     self.logWarning("Processing promise %s failed: %s" % (tweet['tweet_id'], e))
                     self.sendTweet('@%s Sorry, your promise [%s] didn\'t work. Try again: http://www.punkmoney.org/print/' % (tweet['author'], tweet['tweet_id']))
