@@ -86,9 +86,6 @@ class Parser(Harvester):
                     else:
                         raise Exception("Hashtag not found")
                     
-            
-                    print '1' + statement
-                    
                     
                     # Get recipient
                     r = re.search('(.*)@(\w+)(.*)', statement)
@@ -101,11 +98,6 @@ class Parser(Harvester):
                         
                     else:
                         raise Exception("Recipient not found")
-                        
-                        
-                        
-                    print '2' + statement
-                        
                         
                     
                     # Check not to self
@@ -120,11 +112,6 @@ class Parser(Harvester):
                         statement = t.group(1) + t.group(3)
                     else:
                         tweet['transferable'] = True
-                        
-
-
-                    print '3' + statement
-        
 
 
                     # Check expiry
@@ -164,10 +151,6 @@ class Parser(Harvester):
                     else:
                         raise Exception("Promise not found")
                         
-                        
-                        
-                    print '4' + promise
-                        
                     
                     # Clean up promise 
                     '''
@@ -176,26 +159,13 @@ class Parser(Harvester):
                     
                     promise = promise.strip()
                     
-                    print '4.0' + promise
-                    
-                    print promise
-                    
                     while promise[-1] == '.':
                         promise = promise[:-1]
-                        
-                    print '4.1' + promise
             
                     if promise[0:4] == 'you ':
                         promise = promise[4:]
-                        
-                    print '4.2' + promise
                                 
                     tweet['promise'] = promise
-                    
-                    print '4.3' + promise
-                    
-                    
-                    print '5' + promise
                     
 
                     # Processing promise
