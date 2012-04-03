@@ -38,12 +38,6 @@ class Parser(Harvester):
         # Process new tweets
         for tweet in self.getTweets():
             try:
-                # If tweet doesn't start with '@', skip
-                '''
-                if tweet['content'][0] != '@':
-                    self.setParsed(tweet['tweet_id'])
-                    raise Exception("Tweet is not an @reply")
-                '''
 
                 # If tweet contains 'RT' (e.g. is a retweet), skip
                 retweet = False
@@ -76,6 +70,9 @@ class Parser(Harvester):
             
             if promise:
                 try:
+                    # Tweet flag default true
+                    tweet_errors = True
+                    
                     # Set flag to parsed
                     self.setParsed(tweet['tweet_id'])
                     
@@ -97,6 +94,8 @@ class Parser(Harvester):
                         statement = r.group(1).strip() + r.group(3)
                         
                     else:
+                        # (Don't tweet this as an error)
+                        tweet_errors = False;
                         raise Exception("Recipient not found")
                         
                     
@@ -177,7 +176,8 @@ class Parser(Harvester):
                     self.logInfo('[Promise] @%s promised @%s %s.' % (tweet['author'], tweet['recipient'], tweet['tweet_id']))
                 except Exception, e:
                     self.logWarning("Processing promise %s failed: %s" % (tweet['tweet_id'], e))
-                    self.sendTweet('@%s Sorry, your promise [%s] didn\'t work. Try again: http://www.punkmoney.org/print/' % (tweet['author'], tweet['tweet_id']))
+                    if tweet_errors is not False:
+                        self.sendTweet('@%s Sorry, your promise [%s] didn\'t parse. Try again: http://www.punkmoney.org/print/' % (tweet['author'], tweet['tweet_id']))
                     self.setParsed(tweet['tweet_id'], '-')
                     continue
 
@@ -369,7 +369,7 @@ class Parser(Harvester):
             query = "SELECT id FROM tracker_notes WHERE id = '%s'" % tweet['tweet_id']        
             if self.getSingleValue(query) is None:            
                 query = "INSERT INTO tracker_notes(id, issuer, bearer, promise, created, expiry, status, transferable) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-                params = (tweet['tweet_id'], tweet['author'], tweet['recipient'], tweet['promise'], tweet['created'], tweet['expiry'], 0, tweet['transferable'])
+                params = (tweet['tweet_id'], tweet['author'].lower(), tweet['recipient'].lower(), tweet['promise'], tweet['created'], tweet['expiry'], 0, tweet['transferable'])
                 self.queryDB(query, params)
             else:
                 self.logWarning('Note %s already exists' % tweet['tweet_id'])
@@ -382,6 +382,8 @@ class Parser(Harvester):
     # createEvent
     # Create an event
     def createEvent(self, note_id, tweet_id, typ, timestamp, from_user, to_user):
+        from_user = from_user.lower()
+        to_user = to_user.lower()
         try:
             query = "SELECT id FROM tracker_events WHERE tweet_id = '%s' AND note_id = '%s'" % (tweet_id, note_id)
             if self.getSingleValue(query) is None:                
@@ -424,8 +426,9 @@ class Parser(Harvester):
     # saveUser
     # Check user exists
     def saveUser(self, username):
+        username = username.lower()
         try:
-            query = "SELECT id FROM tracker_users WHERE username = '%s'" % username.lower()
+            query = "SELECT id FROM tracker_users WHERE username = '%s'" % username
             r = self.getSingleValue(query)
         except Exception, e:
             self.logError("Checking user exists failed: %s" % e)
@@ -434,9 +437,9 @@ class Parser(Harvester):
             if r:
                 return True
             else:
-                self.logInfo("Saving new user %s" % username.lower())
+                self.logInfo("Saving new user %s" % username)
                 query = "INSERT INTO tracker_users (username) VALUES (%s)"
-                params = (username.lower())
+                params = (username)
                 self.queryDB(query, params)
                 # Follow user
                 try:

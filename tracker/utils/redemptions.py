@@ -8,6 +8,9 @@ Class for checking redemptions made via favouriting original tweet.
 
 (This is a naive approach. More work is needed to scale.)
 
+    - This could be improved by checking each user once for all their open notes
+    - Parser tweet message needs to be added too
+
 """
 
 from parser import Parser

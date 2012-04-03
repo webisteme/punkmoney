@@ -72,6 +72,11 @@ a {
 	color: black;
 }
 
+h3#printer {
+	color:grey;
+	line-height: 2em;
+}
+
 
 /* LISTS */
 
