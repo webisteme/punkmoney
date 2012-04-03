@@ -71,8 +71,14 @@ def ticker(request, max=50, type=None, username=None, noteid=None):
     
     final = sorted(result_list, key=itemgetter('timestamp'), reverse=True)
     
+    if noteid is not None:
+        show_arrow = False
+    else:
+        show_arrow = True
+    
     variables = {
         'events':final,
+        'show_arrow':show_arrow,
     }
 
     return render_to_response('ticker.html', variables)    

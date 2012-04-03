@@ -30,8 +30,10 @@
 		{% ifequal event.type 2 %}
 		<span id="Expiration">[ X ]</span> {{ event.timestamp|date:"M d G:i" }} <span> <b><a href="/user/{{ event.from_user }}">{{ event.from_user }}</a>'s</b> promise of <span id="promise"><a href="/note/{{ event.note_id }}">{{ event.promise }}</a></span> to <b><a href="/user/{{ event.to_user }}">{{ event.to_user }}</a></b> expired.
 		{% endifequal %}
-		
-<!-- 		<a href="/note/{{ event.note_id }}">[&rarr;]</a> -->
+
+        {% ifequal show_arrow 1 %}
+        <a href="/note/{{ event.note_id }}">[&rarr;]</a>
+		{% endifequal %}
 		
 		</p>
 	
