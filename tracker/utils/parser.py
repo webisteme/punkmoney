@@ -287,6 +287,7 @@ class Parser(Harvester):
                     # Log redemption
                     message = '[Redemption] @%s redeemed %s from @%s' % (to_user, note['id'], from_user)
                     self.logInfo(message)
+                    self.sendTweet('[R] @%s redeemed %s from @%s http://www.punkmoney.org/note/%s' % (to_user, note['promise'], from_user, note['id']))
                     self.setParsed(tweet['tweet_id'])                    
                 except Exception, e:
                     self.logWarning("Processing redemption %s failed: %s" % (tweet['tweet_id'], e))
