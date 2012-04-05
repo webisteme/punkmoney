@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 """
 
 PunkMoney 0.2 :: parser.py 
@@ -38,7 +36,6 @@ class Parser(Harvester):
         # Process new tweets
         for tweet in self.getTweets():
             try:
-
                 # If tweet contains 'RT' (e.g. is a retweet), skip
                 retweet = False
                 for w in tweet['content'].split():

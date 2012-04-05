@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 """
 
 PunkMoney 0.2 :: mysql.py
