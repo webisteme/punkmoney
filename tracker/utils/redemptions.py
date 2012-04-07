@@ -37,6 +37,8 @@ class Redemptions(Parser):
                 
         for note in notes:
         
+            print note
+        
             # Exit if rate limit below 30
             if self.TW.rate_limit_status()['remaining_hits'] < 30:
                 self.logWarning("Rate limit too low (%s), exiting." % R.TW.rate_limit_status()['remaining_hits'])
@@ -47,12 +49,17 @@ class Redemptions(Parser):
                 bearer = note[1]
                 
                 # Get favourites for this user
-                favourites = self.TW.favorites(bearer)
+                favourites = self.TW.favorites(bearer, note_id)
                 
                 # Check if original tweet was favourited
                 for f in favourites:
+                
+                    print f.id
+                               
                     if f.id == note_id:
-                        
+                    
+                        print 'match'
+
                         issuer = f.author.screen_name
                         
                         self.updateNote(note_id, 'status', 1)

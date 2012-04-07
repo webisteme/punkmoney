@@ -31,9 +31,11 @@ d3 Javascript Library (already included)
 
 Python dependencies:
 
-Tweepy (https://github.com/tweepy/tweepy)
+Tweepy (https://github.com/tweepy/tweepy)*
 Dateutils (http://labix.org/python-dateutil)
 MySQL for Python (http://sourceforge.net/projects/mysql-python/)
+
+* For the alternate redemption syntax available in /tracker/redemptions.py, i.e., favouriting to redeem, you need to install this forked version of Tweepy – https://github.com/webisteme/tweepy. (As of 07/04/12 -- until they accept a patch.)
 
 
 INSTALLATION

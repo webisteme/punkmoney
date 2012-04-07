@@ -10,6 +10,7 @@ from mysql import Connection
 from config import TW_CONSUMER_KEY, TW_CONSUMER_SECRET, TW_ACCESS_KEY, TW_ACCESS_SECRET, HASHTAG
 
 import tweepy
+
 from datetime import datetime
 
 class Harvester(Connection):
