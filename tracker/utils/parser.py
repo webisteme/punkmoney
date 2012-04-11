@@ -9,7 +9,7 @@ Main class for interpreting #PunkMoney statements.
 
 from mysql import Connection
 from harvester import Harvester
-from config import HASHTAG, SETTINGS, UNITS
+from config import HASHTAG, SETTINGS
 
 import re
 from datetime import datetime
