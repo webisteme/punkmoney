@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 
 PunkMoney 0.2 :: parser.py 
@@ -8,7 +9,7 @@ Main class for interpreting #PunkMoney statements.
 
 from mysql import Connection
 from harvester import Harvester
-from config import HASHTAG, SETTINGS
+from config import HASHTAG, SETTINGS, UNITS
 
 import re
 from datetime import datetime
@@ -46,9 +47,11 @@ class Parser(Harvester):
                 # Save tweet author to user database
                 self.saveUser(tweet['author'])
                 
+                print tweet['content']
+                
                 # Determine tweet type
                 promise = re.search('promise', tweet['content'], re.IGNORECASE)
-                transfer = re.match('@(\w+) transfer @(\w+)(.*)(%s)' % HASHTAG, tweet['content'], re.IGNORECASE)
+                transfer = re.search('transfer @(\w+)(.*)%s' % HASHTAG, tweet['content'], re.IGNORECASE)
                 redemption = re.match('@(\w+) redeemed(.*)(%s)' % HASHTAG, tweet['content'], re.IGNORECASE)
                 
                 # If not recognised, exit here
@@ -100,7 +103,7 @@ class Parser(Harvester):
                     if tweet['recipient'] == tweet['author']:
                         raise Exception("Issuer and recipient are the same")
                         
-                    # Check Transferability
+                    # Check Transferability (optional)
                     t = re.match('(.*)( NT )(.*)', statement, re.IGNORECASE)
                     
                     if t:
@@ -110,7 +113,7 @@ class Parser(Harvester):
                         tweet['transferable'] = True
 
 
-                    # Check expiry
+                    # Check expiry (optional)
                     ''' 'Expires in' syntax '''
                     
                     e = re.match('(.*) Expires in (\d+) (\w+)(.*)', statement, re.IGNORECASE)
@@ -160,10 +163,9 @@ class Parser(Harvester):
             
                     if promise[0:4] == 'you ':
                         promise = promise[4:]
-                                
+                    
                     tweet['promise'] = promise
                     
-
                     # Processing promise
                     self.createNote(tweet)
                     self.createEvent(tweet['tweet_id'], tweet['tweet_id'], 0, tweet['created'], tweet['author'], tweet['recipient'])
@@ -190,7 +192,7 @@ class Parser(Harvester):
                     
                     # Get author and recipient
                     from_user = tweet['author']
-                    to_user = transfer.group(2).lower()
+                    to_user = transfer.group(1).lower()
                     
                     # Create user
                     self.saveUser(to_user)
@@ -231,7 +233,7 @@ class Parser(Harvester):
                     # Process transfer
                     self.setParsed(tweet['tweet_id'])
                     self.updateNote(note['id'], 'bearer', to_user)
-                    self.createEvent(note['id'], tweet['tweet_id'], 3, note['created'], from_user, to_user)
+                    self.createEvent(note['id'], tweet['tweet_id'], 3, tweet['created'], from_user, to_user)
                     
                     # Log transfer
                     message = '[Transfer] @%s transferred %s to @%s' % (tweet['author'], note['id'], to_user)

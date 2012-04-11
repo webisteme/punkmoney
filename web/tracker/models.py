@@ -16,7 +16,7 @@ class notes(models.Model):
     issuer = models.CharField(max_length=90, blank=True)
     bearer = models.CharField(max_length=90, blank=True)
     promise = models.CharField(max_length=420, blank=True)
-    created = models.DateTimeField()
+    created = models.DateTimeField(null=True, blank=True)
     expiry = models.DateTimeField(null=True, blank=True)
     status = models.IntegerField(null=True, blank=True)
     transferable = models.IntegerField(null=True, blank=True)
@@ -37,7 +37,7 @@ class tweets(models.Model):
     author = models.CharField(max_length=90, blank=True)
     content = models.CharField(max_length=420, blank=True)
     reply_to_id = models.BigIntegerField(null=True, blank=True)
-    parsed = models.CharField(max_length=3, blank=True)
+    parsed = models.CharField(max_length=1, null=True, blank=True) #! fix
     class Meta:
         db_table = u'tracker_tweets'
 

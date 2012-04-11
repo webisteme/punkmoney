@@ -76,7 +76,7 @@
 		
 		{% if note.transferable %}
 		
-        <a href="https://twitter.com/intent/tweet?in_reply_to={{ note.id }}&status=Transfer%20to%20@USERNAME%20 %23punkmoney"><span id="transfer">[Transfer] </span></a> | 
+        <a href="https://twitter.com/intent/tweet?in_reply_to={{ note.id }}&status=@{{note.issuer}}%20transfer%20@USERNAME%20%23punkmoney"><span id="transfer">[Transfer] </span></a> | 
 		
 		{% endif %}  
 		
