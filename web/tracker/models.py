@@ -20,6 +20,7 @@ class notes(models.Model):
     expiry = models.DateTimeField(null=True, blank=True)
     status = models.IntegerField(null=True, blank=True)
     transferable = models.IntegerField(null=True, blank=True)
+    type = models.IntegerField(null=True, blank=True)
     class Meta:
         db_table = u'tracker_notes'
 

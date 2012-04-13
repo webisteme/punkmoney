@@ -51,10 +51,10 @@ class Parser(Harvester):
                 
                 # Determine tweet type
                 promise = re.search('promise', tweet['content'], re.IGNORECASE)
-                transfer = re.search('transfer @(\w+)(.*)%s' % HASHTAG, tweet['content'], re.IGNORECASE)
-                redemption = re.match('@(\w+) redeemed(.*)(%s)' % HASHTAG, tweet['content'], re.IGNORECASE)
-                offer = re.search('offer(.*)(%s)' % HASHTAG, tweet['content'], re.IGNORECASE)
-                need = re.search('need(.*)(%s)' % HASHTAG, tweet['content'], re.IGNORECASE)
+                transfer = re.search('transfer @(\w+)(.*)', tweet['content'], re.IGNORECASE)
+                redemption = re.match('@(\w+) redeemed(.*)', tweet['content'], re.IGNORECASE)
+                offer = re.search('offer (.*)', tweet['content'], re.IGNORECASE)
+                need = re.search('need (.*)', tweet['content'], re.IGNORECASE)
                 
                 # If not recognised, exit here
                 if not promise and not transfer and not redemption and not offer and not need:
@@ -301,6 +301,23 @@ class Parser(Harvester):
                     # Set flag to parsed
                     self.setParsed(tweet['tweet_id'])
                     
+                    # Check if this is a close instruction
+                    c = re.match('(.*)(close) (need|offer)(.*)', tweet['content'])
+                    
+                    # check tweet has a reply_to_id
+                    if c:
+                        if tweet.get('reply_to_id', False) is not False:
+                            original_id = self.findOriginal(tweet['reply_to_id'], tweet['tweet_id'])
+                            note = self.getNote(original_id)
+                            if tweet['author'].lower() != note['issuer']:
+                                raise Exception("Close attempt by non-issuer")
+                            self.updateNote(note['id'], 'status', 1)
+                            self.createEvent(note['id'], tweet['tweet_id'], 6, tweet['created'], tweet['author'], '')
+                            self.logInfo("Closed note %s" % note['id'])
+                            continue
+                        elif tweet.get('reply_to_id', False) is False:
+                            raise Exception("Close failed")
+                    
                     # Strip out hashtag
                     h = re.search('(.*)(%s)(.*)' % HASHTAG, tweet['content'], re.IGNORECASE)
                     if h:
@@ -308,11 +325,10 @@ class Parser(Harvester):
                     else:
                         raise Exception("Hashtag not found")
 
-
                     # Check expiry (optional)
                     ''' 'Expires in' syntax '''
                     
-                    e = re.match('(.*) Expires in (\d+) (\w+)(.*)', statement, re.IGNORECASE)
+                    e = re.search('(.*) Expires in (\d+) (\w+)(.*)', statement, re.IGNORECASE)
                     
                     if e:
                         num = e.group(2)
@@ -321,19 +337,6 @@ class Parser(Harvester):
                         statement = e.group(1) + e.group(4)
                     else:
                         tweet['expiry'] = None
-
-                    ''' 'Exp in' syntax '''
-                    
-                    e = re.match('(.*) Exp in (\d+) (\w+)(.*)', statement, re.IGNORECASE)
-                    
-                    if e:
-                        num = e.group(2)
-                        unit = e.group(3)
-                        tweet['expiry'] = self.getExpiry(tweet['created'], num, unit)
-                        statement = e.group(1) + e.group(4)
-                    else:
-                        tweet['expiry'] = None
-
 
 
                     # Get thing offered/needed
@@ -368,15 +371,14 @@ class Parser(Harvester):
                         typ = 'need'
                         code = 5
                         
-                    self.createOffer(typ, tweet)
-                    self.createEvent(tweet['tweet_id'], tweet['tweet_id'], code, tweet['created'], tweet['author'], '')
+                    self.createOffer(code, tweet)
+                    self.createEvent(tweet['tweet_id'], '0', code, tweet['created'], tweet['author'], '')
                     
                     # Log and tweet promise
                     self.sendTweet('[%s] @%s %s %s http://www.punkmoney.org/note/%s' % (typ[:1].upper(), tweet['author'], typ + 's', item, tweet['tweet_id']))
                     self.logInfo('[%s] @%s %s %s.' % (typ, tweet['author'], typ + 's', tweet['tweet_id']))
                 except Exception, e:
                     self.logWarning("Processing %s failed: %s" % (tweet['tweet_id'], e))
-
                     self.sendTweet('@%s Sorry, your [%s] didn\'t parse. Try again: http://www.punkmoney.org/print/' % (tweet['author'], tweet['tweet_id']))
                     self.setParsed(tweet['tweet_id'], '-')
                     continue
@@ -459,8 +461,8 @@ class Parser(Harvester):
         try:
             query = "SELECT id FROM tracker_notes WHERE id = '%s'" % tweet['tweet_id']        
             if self.getSingleValue(query) is None:            
-                query = "INSERT INTO tracker_notes(id, issuer, bearer, promise, created, expiry, status, transferable) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-                params = (tweet['tweet_id'], tweet['author'].lower(), tweet['recipient'].lower(), tweet['promise'], tweet['created'], tweet['expiry'], 0, tweet['transferable'])
+                query = "INSERT INTO tracker_notes(id, issuer, bearer, promise, created, expiry, status, transferable, type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                params = (tweet['tweet_id'], tweet['author'].lower(), tweet['recipient'].lower(), tweet['promise'], tweet['created'], tweet['expiry'], 0, tweet['transferable'], 0)
                 self.queryDB(query, params)
             else:
                 self.logWarning('Note %s already exists' % tweet['tweet_id'])
@@ -476,8 +478,8 @@ class Parser(Harvester):
         try:
             query = "SELECT id FROM tracker_notes WHERE id = '%s'" % tweet['tweet_id']        
             if self.getSingleValue(query) is None:            
-                query = "INSERT INTO tracker_notes(id, issuer, bearer, promise, created, expiry, status, transferable) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-                params = (tweet['tweet_id'], tweet['author'].lower(), '', tweet['item'].lower(), tweet['created'], tweet['expiry'], 0, 0)
+                query = "INSERT INTO tracker_notes(id, issuer, bearer, promise, created, expiry, status, transferable, type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                params = (tweet['tweet_id'], tweet['author'].lower(), '', tweet['item'].lower(), tweet['created'], tweet['expiry'], 0, 0, code)
                 self.queryDB(query, params)
             else:
                 self.logWarning('Note %s already exists' % tweet['tweet_id'])
@@ -565,11 +567,22 @@ class Parser(Harvester):
     def updateExpired(self):
         try:
             self.logInfo("Checking for expirations")
-            query = "SELECT id, bearer, issuer FROM tracker_notes WHERE expiry < now() AND status = 0"
+            query = "SELECT id, bearer, issuer, type FROM tracker_notes WHERE expiry < now() AND status = 0"
             for note in self.getRows(query):
                 self.logInfo('Note %s expired' % note[0])
                 self.updateNote(note[0], 'status', 2)
-                self.createEvent(note[0], note[0], 2, datetime.now(), note[2], note[1])
+                
+                # If type is promise
+                if note[3] == 0:
+                    code = 2
+                # If type is offer
+                elif note[3] == 4:
+                    code = 8
+                # If type is need
+                elif note[3] == 5:
+                    code = 9
+                
+                self.createEvent(note[0], note[0], code, datetime.now(), note[2], note[1])
         except Exception, e:
             raise Exception("Cleaning database failed: %s" % e)
             

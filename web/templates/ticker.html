@@ -19,6 +19,22 @@
 		<span id="promise"><a href="/note/{{ event.note_id }}">{{ event.promise }}</a></span>. 
 		{% endifequal %}
 
+        {% ifequal event.type 9 %}
+		<span id="Expiration">[ X ]</span> {{ event.timestamp|date:"M d G:i" }}<span><b> <a href="/user/{{ event.from_user }}">{{ event.from_user }}'s</a></b> need for<span id="promise"><a href="/note/{{ event.note_id }}">{{ event.promise }}</a></span></b>. 
+		{% endifequal %}
+
+        {% ifequal event.type 8 %}
+		<span id="Expiration">[ X ]</span> {{ event.timestamp|date:"M d G:i" }}<span><b> <a href="/user/{{ event.from_user }}">{{ event.from_user }}'s</a></b> offer of <span id="promise"><a href="/note/{{ event.note_id }}">{{ event.promise }}</a></span></b> expired. 
+		{% endifequal %}
+		
+        {% ifequal event.type 7 %}
+		<span id="Expiration">[ X ]</span> {{ event.timestamp|date:"M d G:i" }}<span><b> <a href="/user/{{ event.from_user }}">{{ event.from_user }}</a></b> closed need <span id="promise"><a href="/note/{{ event.note_id }}">{{ event.promise }}</a></span></b>. 
+		{% endifequal %}
+		
+        {% ifequal event.type 6 %}
+		<span id="Expiration">[ X ]</span> {{ event.timestamp|date:"M d G:i" }}<span><b> <a href="/user/{{ event.from_user }}">{{ event.from_user }}</a></b> closed offer <span id="promise"><a href="/note/{{ event.note_id }}">{{ event.promise }}</a></span></b>. 
+		{% endifequal %}
+
         {% ifequal event.type 5 %}
 		<span id="need">[ N ]</span> {{ event.timestamp|date:"M d G:i" }}<span><b> <a href="/user/{{ event.from_user }}">{{ event.from_user }}</a></b> needs <span id="promise"><a href="/note/{{ event.note_id }}">{{ event.promise }}</a></span></b>. 
 		{% endifequal %}

@@ -175,7 +175,14 @@ def getnote(request, noteid):
         'id':id,
     }
     
-    return render_to_response('note.html', variables)
+    if note.type == 0:
+        template = 'note.html'
+    elif note.type == 4:
+        template = 'offer.html'
+    elif note.type == 5:
+        template = 'need.html'
+    
+    return render_to_response(template, variables)
     
     
 def printer(request):
