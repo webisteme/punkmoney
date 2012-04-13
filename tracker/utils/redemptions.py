@@ -65,9 +65,6 @@ class Redemptions(Parser):
                         self.updateNote(note_id, 'status', 1)
                         self.createEvent(note_id, 0, 1, datetime.now(), issuer, bearer)
                         
-                        # Add karma
-                        self.addKarma(issuer)
-                        
                         # Log
                         message = '[Redemption] @%s redeemed %s from @%s' % (bearer, note_id, issuer)
                         self.logInfo(message)
