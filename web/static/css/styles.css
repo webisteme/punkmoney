@@ -42,20 +42,30 @@ span#promise {
 }
 
 span#promised {
-	background-color: #e1f5ff;
+	background-color: #dbf5ff;
 }
 
 span#transfer {
-	background-color: #fbffdf;
+	background-color: #fde3a5;
 }
 
 span#redemption {
-	background-color: #ccf3ce;
+	text-shadow: 0px 0px white;
+	background-color: #dff5c4;
 }
 
 span#expiration {
-	background-color: #fff3e3;
+	background-color: #fae8df;
 }
+
+span#offer {
+	background-color: #fff3fe;
+}
+
+span#need {
+	background-color: #fffbcd;
+}
+
 
 div#tweet{
 
