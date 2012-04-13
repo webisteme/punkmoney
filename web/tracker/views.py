@@ -210,7 +210,7 @@ API Methods
 '''
 
 # Return trustnet as JSON
-def trustnet(request):
+def trustnet_old(request):
 
     all_nodes = trustlist.objects.all()
     
@@ -237,6 +237,36 @@ def trustnet(request):
     
     data = simplejson.dumps(graph)
     
+    return HttpResponse(data, mimetype='application/javascript')
+    
+# Return trustnet as JSON
+def trustnet(request):
+
+    all_nodes = events.objects.filter(Q(type=1)).order_by('-timestamp')
+
+    nodes = []
+    checked = []
+    for n in all_nodes:
+        if n.from_user not in checked:
+            nodes.append({"name":n.from_user, "group":1})
+            checked.append(n.from_user)
+        if n.to_user not in checked:
+            nodes.append({"name":n.to_user, "group":1})
+            checked.append(n.to_user)
+
+
+    links = []
+    for n in all_nodes:
+        
+        source = checked.index(n.from_user)
+        target = checked.index(n.to_user)
+    
+        links.append({"source" : source, "target" : target, "value" : 1})
+        
+    graph = {"nodes" : nodes, "links" : links}
+    
+    data = simplejson.dumps(graph)
+
     return HttpResponse(data, mimetype='application/javascript')
 
 

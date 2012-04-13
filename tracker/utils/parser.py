@@ -227,8 +227,8 @@ class Parser(Harvester):
                         raise Exception("Note is non-transferable")
 
                     # Check recipient is trusted
-                    if self.checkTrusted(to_user) is False:
-                        raise Exception("Recipient not in TrustList")
+                    if self.checkTrusted(note['issuer'], to_user) is False:
+                        raise Exception("Transferee not trusted by issuer")
                     
                     # Process transfer
                     self.setParsed(tweet['tweet_id'])
@@ -475,12 +475,13 @@ class Parser(Harvester):
                 
                 
     # checkTrusted
-    # Check if a user is in the TrustList
-    def checkTrusted(self,username):
+    # Check if there is a trust path between two users
+    def checkTrusted(self,from_user, to_user):
         try:
-            query = "SELECT id FROM tracker_trust_list WHERE trusted = '%s'" % username
+            query = "SELECT COUNT(*) FROM tracker_events WHERE type = 1 AND from_user = '%s' AND to_user = '%s'" % (from_user, to_user)
             u = self.getSingleValue(query)
-            if u is not None:
+            print u
+            if u > 0:
                 return True
             else:
                 return False

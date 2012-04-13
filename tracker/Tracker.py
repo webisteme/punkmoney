@@ -30,7 +30,6 @@ class Tracker(Parser):
         except Exception, e:
             self.logError("Updatine expired failed: %s" % e)
         
-        sleep(1)
         
         # If more than 25 hits remaining, harvest new tweets
         if self.TW.rate_limit_status()['remaining_hits'] > 25:
@@ -41,7 +40,6 @@ class Tracker(Parser):
         else:
             self.logWarning("Skipping harvest, rate limit too low.")
             
-        sleep(1)
         
         # Parse new
         try:
