@@ -24,8 +24,6 @@
 
 	<div id="left" class="span-9">
 	
-	    {% ifequal note.type 0 %}
-	
     		{% ifequal note.status 0 %}
     	
     		<h3 style='display:inline'><span id="promised">{{ note.promise }}</span></h3>
@@ -60,8 +58,6 @@
     	
     		<p>Issuer: <b><a href="/user/{{ note.issuer }}">{{ note.issuer }}</a></b> <br>
     		Bearer: <b><a href="/user/{{ note.bearer }}">{{ note.bearer }}</a></b></p>
-    		
-        {% endifequal %}
 		
 		<p>Created: <b>{{ note.created }}</b><br>
 		Expiry: <b>{{ note.expiry }}</b></p>
