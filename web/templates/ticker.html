@@ -19,10 +19,6 @@
 		<span id="promise"><a href="/note/{{ event.note_id }}">{{ event.promise }}</a></span>. 
 		{% endifequal %}
 
-        {% ifequal event.type 10 %}
-		<span id="redemption">[ Tx ]</span> {{ event.timestamp|date:"M d G:i" }}<span><b> <a href="/user/{{ event.to_user }}">{{ event.to_user }}</a></b> thanked <b> <a href="/user/{{ event.from_user }}">{{ event.from_user }}</a></b> for <span id="promise"><a href="/note/{{ event.note_id }}">{{ event.promise }}</a></span></b>. 
-		{% endifequal %}
-
         {% ifequal event.type 9 %}
 		<span id="Expiration">[ X ]</span> {{ event.timestamp|date:"M d G:i" }}<span><b> <a href="/user/{{ event.from_user }}">{{ event.from_user }}'s</a></b> need for<span id="promise"><a href="/note/{{ event.note_id }}">{{ event.promise }}</a></span></b> expired. 
 		{% endifequal %}

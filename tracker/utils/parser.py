@@ -270,12 +270,12 @@ class Parser(Harvester):
                         
                         self.createThanks(tweet)
                         
-                        message = 'for' + tweet['message']
+                        tweet['message'] = 'for' + tweet['message']
                         
                         # Log thanks
-                        message = '[Thanks] @%s thanked @%s %s' % (tweet['recipient'], tweet['author'], tweet['message'])
+                        message = '[Thanks] @%s thanked @%s %s' % (tweet['author'], tweet['recipient'], tweet['message'])
                         self.logInfo(message)
-                        self.sendTweet('[Tx] @%s thanked @%s %s http://www.punkmoney.org/note/%s' % (tweet['recipient'], tweet['author'], tweet['message'], tweet['tweet_id']))
+                        self.sendTweet('[Tx] @%s thanked @%s %s http://www.punkmoney.org/note/%s' % (tweet['author'], tweet['recipient'], tweet['message'], tweet['tweet_id']))
                         continue
 
 
@@ -524,7 +524,7 @@ class Parser(Harvester):
                 params = (tweet['tweet_id'], tweet['author'].lower(), tweet['recipient'].lower(), tweet['message'], tweet['created'], '', 0, 0, 1)
                 self.queryDB(query, params)
                 # Create an event
-                self.createEvent(tweet['tweet_id'],1,1,tweet['created'],tweet['author'].lower(), tweet['recipient'].lower())
+                self.createEvent(tweet['tweet_id'],1,1,tweet['created'],tweet['recipient'].lower(), tweet['author'].lower())
             else:
                 self.logWarning('Note %s already exists' % tweet['tweet_id'])
                 return False
