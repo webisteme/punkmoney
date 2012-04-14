@@ -76,9 +76,9 @@
 		
 		{% ifequal note.status 0 %}
 
-        <a href="https://twitter.com/intent/tweet?in_reply_to={{ note.id }}&status=@{{note.issuer}}%20I%20promise%20{{ note.promise }}%20%23punkmoney"><span id="redemption">[#PunkMoney]</span></a> |
+        <a href="https://twitter.com/intent/tweet?in_reply_to={{ note.id }}&status=@{{note.issuer}}%20I%20promise%20{{ note.promise }}%20%23punkmoney"><span id="promised">[Promise]</span></a> |
         	
-        <a href="https://twitter.com/intent/tweet?in_reply_to={{ note.id }}&status=@{{note.issuer}}%close%20need%20%23punkmoney"><span id="expiration">[Close]</span></a>
+        <a href="https://twitter.com/intent/tweet?in_reply_to={{ note.id }}&status=@{{note.issuer}}%20close%20need%20%23punkmoney"><span id="expiration">[Close]</span></a>
         	
 		{% endifequal %}
 		
