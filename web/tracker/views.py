@@ -35,6 +35,7 @@ def ticker(request, max=50, type=None, username=None, noteid=None):
             Q(type=type),
             Q(from_user=username) | Q(to_user=username)
             ).order_by('-timestamp')[:max]
+            
     elif type is not None and username is None:
         new_events = events.objects.filter(
             Q(type=type)
@@ -181,6 +182,8 @@ def getnote(request, noteid):
         template = 'offer.html'
     elif note.type == 5:
         template = 'need.html'
+    elif note.type == 1:
+        template = 'thanks.html'
     
     return render_to_response(template, variables)
     
