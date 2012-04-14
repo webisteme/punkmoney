@@ -7,10 +7,31 @@
 
 	$('document').ready( function(){
 
-		url = '/ticker/max/10/user/{{ username }}';
-		loadTicker(url);
-
+		loadRecent();
+        
 	})
+	
+	function loadRecent(){
+	
+		url = '/ticker/max/10/user/{{ username }}';
+		loadTicker("#ticker", url);
+	
+	}
+	
+	function load(code){
+	
+	    url = '/ticker/max/10/user/{{ username }}/type/' + code;
+		loadTicker("#ticker", url);
+		
+		/*
+		needs = '/ticker/max/10/user/{{ username }}/type/5';
+		loadTicker("#needs", needs);
+		
+		redemptions = '/ticker/max/10/user/{{ username }}/type/1';
+		loadTicker("#redemptions", redemptions);
+		*/
+	
+	}
 
 
 	</script>
@@ -47,12 +68,20 @@ Trusted by
 
 
 <hr class="Space">
+<hr class="Space">
 
-<span><h4>Recent activity</h4></span>
+
+<a href="javascript:loadRecent()">[ All ]</a>&nbsp;
+<a href="javascript:load(0)"><span id="promised">[ Promises ]</span></a>&nbsp;
+<a href="javascript:load(1)"><span id="redemption">[ Thanks ]</span></a>&nbsp;
+<a href="javascript:load(4)"><span id="offer">[ Offers ]</span></a>&nbsp;
+<a href="javascript:load(5)"><span id="need">[ Needs ]</span></a>&nbsp;
+<hr>
+
 
 <div id="ticker"></div>
 
-<hr class="Space">
+<!--
 
 {% if notes_issued %}
 
@@ -62,7 +91,7 @@ Trusted by
     
     	<p>
     
-    	<span id="promised">[P]</span> {{ note.created|date:"M d G:i" }} promised <b><a href="/user/{{ note.bearer }}">{{ note.bearer }}</a></b>  <a href="/note/{{ note.id }}"> <span id="promise">{{ note.promise }}</span> [&rarr;]</a>
+    	<span id="promised">[ P ]</span> {{ note.created|date:"M d G:i" }} promised <b><a href="/user/{{ note.bearer }}">{{ note.bearer }}</a></b>  <a href="/note/{{ note.id }}"> <span id="promise">{{ note.promise }}</span> [&rarr;]</a>
     	
     	</p>
     	
@@ -81,7 +110,7 @@ Trusted by
 
 	<p>
 
-	<span id="promised">[P]</span> {{ note.created|date:"M d G:i" }} <b> <a href="/user/{{ note.issuer }}">{{ note.issuer }}</a></b> promised <span id="promise">{{ note.promise }}</span><a href="/note/{{ note.id }}"> [&rarr;]</a>
+	<span id="promised">[ P ]</span> {{ note.created|date:"M d G:i" }} <b> <a href="/user/{{ note.issuer }}">{{ note.issuer }}</a></b> promised <span id="promise">{{ note.promise }}</span><a href="/note/{{ note.id }}"> [&rarr;]</a>
 
 	</p>
 
@@ -89,7 +118,7 @@ Trusted by
 
 {% endif %}
 
-
+-->
 
 
 {% endblock %}

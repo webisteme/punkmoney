@@ -48,7 +48,7 @@
 		{% endifequal %}
 		
 		{% ifequal event.type 1 %}
-		<span id="Redemption">[ R ]</span> {{ event.timestamp|date:"M d G:i" }} <span> <b><a href="/user/{{ event.to_user }}">{{ event.to_user }}</a></b> redeemed <span id="promise"><a href="/note/{{ event.note_id }}">{{ event.promise }}</a></span> from <b><a href="/user/{{ event.from_user }}">{{ event.from_user }}</a></b>.
+		<span id="Redemption">[ Tx ]</span> {{ event.timestamp|date:"M d G:i" }} <span> <b><a href="/user/{{ event.to_user }}">{{ event.to_user }}</a></b> thanked <b><a href="/user/{{ event.from_user }}">{{ event.from_user }}</a></b> for <span id="promise"><a href="/note/{{ event.note_id }}">{{ event.promise }}</a></span>.
 		{% endifequal %}
 		
 		{% ifequal event.type 2 %}

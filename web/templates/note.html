@@ -10,7 +10,7 @@
 	
 		url = '/ticker/note/' + id;
 	
-		loadTicker(url);
+		loadTicker("#ticker",url);
 	
 	})
 	
@@ -82,16 +82,18 @@
 		
 		{% ifequal note.status 0 %}
 		
+		
+		
+		<a href="https://twitter.com/intent/tweet?in_reply_to={{ note.id }}&status=@{{note.issuer}}%20thanks%20%23punkmoney"><span id="redemption">[Thank]</span></a> |
+		
+		
 		{% if note.transferable %}
 		
-        <a href="https://twitter.com/intent/tweet?in_reply_to={{ note.id }}&status=@{{note.issuer}}%20transfer%20@USERNAME%20%23punkmoney"><span id="transfer">[Transfer]</span></a> | 
+        <a href="https://twitter.com/intent/tweet?in_reply_to={{ note.id }}&status=@{{note.issuer}}%20transfer%20@USERNAME%20%23punkmoney"><span id="transfer">[Transfer]</span></a>
 		
 		{% endif %}  
 		
-		<a href="https://twitter.com/intent/tweet?in_reply_to={{ note.id }}&status=@{{note.issuer}}%20Redeemed%20%23punkmoney"><span id="redemption">[Redeem]</span></a>
-		
 		{% endifequal %}
-		
 		</p>
 
 	

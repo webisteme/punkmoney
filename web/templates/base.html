@@ -10,14 +10,14 @@
         
 		<script type="text/javascript">   
 		
-		function loadTicker(url){
+		function loadTicker(div, url){
 
 			$.get(url, function(data){
 
-				$("#ticker").html(data);
+				$(div).html(data);
 
 			});
-			
+
 			timer = setTimeout(function() {loadTicker(url);}, 3000);
 
 		}

@@ -51,14 +51,18 @@ def ticker(request, max=50, type=None, username=None, noteid=None):
         new_events = events.objects.all().order_by('-timestamp')[:max]
         
     # get new notes
-    new_notes = notes.objects.all()
-    
+    new_notes = notes.objects.all()    
     result_list = []
     
     for event in new_events:
         note = notes.objects.filter(id=event.note_id)[0]
-        if event.note_id == note.id:
         
+        if int(note.status) != 0 and type is not None:
+            if int(type) == 4 or int(type) == 5:
+                continue
+        
+        if event.note_id == note.id:
+            
             result_list.append({
                 'promise':note.promise,
                 'timestamp':event.timestamp,
@@ -128,9 +132,6 @@ def user(request, username):
     trusters = trustlist.objects.filter(trusted=username)    
     trust_num = len(trusters)
 
-    user = users.objects.get(username=username)
-    karma = user.karma
-
     # Add trusters to list
     trusters_list = []
     for truster in trusters:
@@ -150,8 +151,7 @@ def user(request, username):
         'events':final,
         'trust':trust_num,
         'trusters':trusters_list,
-        'top_trusters':top_trusters,
-        'karma':karma,
+        'top_trusters':top_trusters
     }
     
     # return all
@@ -217,7 +217,7 @@ API Methods
 '''
 
 # Return trustnet as JSON
-def trustnet_old(request):
+def trustnet(request):
 
     all_nodes = trustlist.objects.all()
     
@@ -247,7 +247,7 @@ def trustnet_old(request):
     return HttpResponse(data, mimetype='application/javascript')
     
 # Return trustnet as JSON
-def trustnet(request):
+def trustnet_redemptions(request):
 
     all_nodes = events.objects.filter(Q(type=1)).order_by('-timestamp')
 
