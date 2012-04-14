@@ -270,7 +270,7 @@ class Parser(Harvester):
                         
                         self.createThanks(tweet)
                         
-                        tweet['message'] = 'for' + tweet['message']
+                        tweet['message'] = 'for ' + tweet['message']
                         
                         # Log thanks
                         message = '[Thanks] @%s thanked @%s %s' % (tweet['author'], tweet['recipient'], tweet['message'])
