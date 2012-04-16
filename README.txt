@@ -1,13 +1,13 @@
 '''
 
-PunkMoney 0.2 by Eli Gothill
+PunkMoney 0.22 by Eli Gothill
 www.punkmoney.org
 
 '''
 
 ABOUT
 
-#PunkMoney is a promise currency anyone can print, transfer and redeem on Twitter. PunkMoney 0.2 is the second iteration of the #PunkMoney tracker for finding, interpreting and recording #PunkMoney statements.
+#PunkMoney is a set of natual language protocols which enable a gift economy on Twitter. PunkMoney 0.22 is the second iteration of the #PunkMoney tracker for finding, interpreting and recording #PunkMoney statements.
 
 To find out more about #PunkMoney, visit http://www.punkmoney.org
 
@@ -31,11 +31,9 @@ d3 Javascript Library (already included)
 
 Python dependencies:
 
-Tweepy (https://github.com/tweepy/tweepy)*
+Tweepy (https://github.com/tweepy/tweepy)
 Dateutils (http://labix.org/python-dateutil)
 MySQL for Python (http://sourceforge.net/projects/mysql-python/)
-
-* For the alternate redemption syntax available in /tracker/redemptions.py, i.e., favouriting to redeem, you need to install this forked version of Tweepy – https://github.com/webisteme/tweepy. (As of 07/04/12 -- until they accept a patch.)
 
 
 INSTALLATION
