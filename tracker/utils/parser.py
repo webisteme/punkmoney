@@ -47,18 +47,17 @@ class Parser(Harvester):
                 # Save tweet author to user database
                 self.saveUser(tweet['author'])
                 
-                print tweet['content']
-                
                 # Determine tweet type
                 promise = re.search('promise', tweet['content'], re.IGNORECASE)
                 transfer = re.search('transfer @(\w+)(.*)', tweet['content'], re.IGNORECASE)
                 thanks = re.match('@(\w+) thanks (for)?(.*)', tweet['content'], re.IGNORECASE)
-                offer = re.search('offer (.*)', tweet['content'], re.IGNORECASE)
-                need = re.search('need (.*)', tweet['content'], re.IGNORECASE)
+                offer = re.match('(i )?offer (.*)', tweet['content'], re.IGNORECASE)
+                need = re.match('(i )?need (.*)', tweet['content'], re.IGNORECASE)
+                close = re.match('@(\w+ )?close (.*)', tweet['content'], re.IGNORECASE)
                 
                 # If not recognised, exit here
-                if not promise and not transfer and not thanks and not offer and not need:
-                    self.setParsed(tweet['tweet_id'])
+                if not promise and not transfer and not thanks and not offer and not need and not close:
+                    self.setParsed(tweet['tweet_id'], '-')
                     raise Exception("Tweet was not recognised")
                     
             except Exception, e:
@@ -126,19 +125,6 @@ class Parser(Harvester):
                         statement = e.group(1) + e.group(4)
                     else:
                         tweet['expiry'] = None
-
-                    ''' 'Exp in' syntax '''
-                    
-                    e = re.match('(.*) Exp in (\d+) (\w+)(.*)', statement, re.IGNORECASE)
-                    
-                    if e:
-                        num = e.group(2)
-                        unit = e.group(3)
-                        tweet['expiry'] = self.getExpiry(tweet['created'], num, unit)
-                        statement = e.group(1) + e.group(4)
-                    else:
-                        tweet['expiry'] = None
-
 
 
                     # Get promise
@@ -325,24 +311,6 @@ class Parser(Harvester):
                     # Set flag to parsed
                     self.setParsed(tweet['tweet_id'])
                     
-                    # Check if this is a close instruction
-                    c = re.match('(.*)(close) (need|offer)(.*)', tweet['content'])
-                    
-                    # check tweet has a reply_to_id
-                    if c:
-                        if tweet.get('reply_to_id', False) is not False:
-                            original_id = self.findOriginal(tweet['reply_to_id'], tweet['tweet_id'])
-                            note = self.getNote(original_id)
-                            if tweet['author'].lower() != note['issuer']:
-                                raise Exception("Close attempt by non-issuer")
-                            self.updateNote(note['id'], 'status', 1)
-                            self.createEvent(note['id'], tweet['tweet_id'], 6, tweet['created'], tweet['author'], '')
-                            self.logInfo("Closed note %s" % note['id'])
-                            continue
-                        elif tweet.get('reply_to_id', False) is False:
-                            raise Exception("Close failed")
-                            continue
-                    
                     # Strip out hashtag
                     h = re.search('(.*)(%s)(.*)' % HASHTAG, tweet['content'], re.IGNORECASE)
                     if h:
@@ -362,7 +330,6 @@ class Parser(Harvester):
                         statement = e.group(1) + e.group(4)
                     else:
                         tweet['expiry'] = None
-
 
                     # Get thing offered/needed
                     p = re.match('(.*)(need|offer)(.*)', statement)
@@ -388,11 +355,11 @@ class Parser(Harvester):
                     tweet['item'] = item
                     
                     # Processing promise
-                    if offer: 
+                    if offer:
                         typ = 'offer'
                         code = 4
                     
-                    if need: 
+                    if need:
                         typ = 'need'
                         code = 5
                         
@@ -408,7 +375,40 @@ class Parser(Harvester):
                     self.setParsed(tweet['tweet_id'], '-')
                     continue
 
-                    
+                
+            ''' 
+            Close
+            '''
+            if close:
+                self.setParsed(tweet['tweet_id'])
+                
+                # Check if this is a close instruction
+                c = re.match('(.*)(close)(.*)', tweet['content'])
+                
+                # check tweet has a reply_to_id
+                if c:
+                    if tweet.get('reply_to_id', False) is not False:
+
+                        original_id = self.findOriginal(tweet['reply_to_id'], tweet['tweet_id'])
+                        note = self.getNote(original_id)
+                        
+                        if tweet['author'].lower() != note['issuer']:
+                            raise Exception("Close attempt by non-issuer")
+                        
+                        self.updateNote(note['id'], 'status', 1)
+                        
+                        if note['type'] == 4:
+                            code = 6
+                        elif note['type'] == 5:
+                            code = 7
+                        
+                        self.createEvent(note['id'], tweet['tweet_id'], code, tweet['created'], tweet['author'], '')
+                        self.logInfo("Closed note %s" % note['id'])
+                        continue
+                    elif tweet.get('reply_to_id', False) is False:
+                        self.setParsed(tweet['tweet_id'], '-')
+                        raise Exception("Close failed: original not found")
+                        continue    
                     
                     
                     
@@ -556,9 +556,9 @@ class Parser(Harvester):
     # Return a note given its id    
     def getNote(self, note_id):
         try:
-            query = "SELECT id, issuer, bearer, promise, created, expiry, status, transferable FROM tracker_notes WHERE id = %s" % note_id
+            query = "SELECT id, issuer, bearer, promise, created, expiry, status, transferable, type FROM tracker_notes WHERE id = %s" % note_id
             note = self.getRows(query)[0]
-            note = {'id' : note[0], 'issuer' : note[1], 'bearer' : note[2], 'promise' : note[3], 'created' : note[4], 'expiry' : note[5], 'status' : note[6], 'transferable' : note[7]}
+            note = {'id' : note[0], 'issuer' : note[1], 'bearer' : note[2], 'promise' : note[3], 'created' : note[4], 'expiry' : note[5], 'status' : note[6], 'transferable' : note[7], 'type' : note[8]}
         except Exception, e:
             raise Exception("Original note %s not found" % (note_id, e))
             return False
