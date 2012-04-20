@@ -37,27 +37,25 @@
   
     <div id="chart" class="span-11"></div>
     
-    <div id="user" class="span-5">
+    <div id="user" class="span-6">
     
         <hr class="space">
         
-    <h3>TrustNet</h3>
+    <h3>Karma</h3>
 
-    <p><span id="expiration">This map represents trust relationships between #PunkMoney users.</span></p>
+    <p><span id="promised">This map represents gratitude between #PunkMoney users.</span></p>
 
     <li># <b>Mouse over</b> a user to see their name.</li><hr class="space">
     <li># <b>Click</b> on a user to learn more about them.</li><hr class="space">
-
-    <p> Once you are on the map, you can add users by creating a <b>punkmoney-trusted</b> list. </p>
     
-    <a href="/help"><span id="promise">Find out more.</span></a>
+    <p>To appear on the list you need to <span id ="redemption">thank</span> or <span id="redemption">be thanked</span> by someone.</p>
     
     </div>
 
     
 
     <script type="text/javascript">
-
+    
     var width = 400,
         height = 370;
     
@@ -91,6 +89,7 @@
           .attr("r", 5)
           .style("fill", function(d) { return color(d.group); })
           .call(force.drag)
+        
         
      node.on("click", function(d) { 
 

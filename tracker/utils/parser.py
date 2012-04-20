@@ -250,7 +250,7 @@ class Parser(Harvester):
                         if thanks.group(2).lower() == 'for':
                             tweet['message'] = thanks.group(3)
                             
-                            h = re.search('(.*)(%s)(.*)' % HASHTAG, tweet['message'])
+                            h = re.search('(.*)(%s)(.*)' % HASHTAG, tweet['message'], re.IGNORECASE)
                             if h:
                                 tweet['message'] = h.group(1).strip() + h.group(3).strip()
                         

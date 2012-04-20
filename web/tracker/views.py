@@ -144,6 +144,9 @@ def user(request, username):
     # generate slug
     slug = username
     
+    # karma
+    karma = getKarma(username)
+    
     # combine events
     variables = {
         'username':username,
@@ -152,7 +155,8 @@ def user(request, username):
         'events':final,
         'trust':trust_num,
         'trusters':trusters_list,
-        'top_trusters':top_trusters
+        'top_trusters':top_trusters,
+        'karma':karma,
     }
     
     # return all
@@ -220,7 +224,7 @@ API Methods
 '''
 
 # Return trustnet as JSON
-def trustnet(request):
+def trustnet_old(request):
 
     all_nodes = trustlist.objects.all()
     
@@ -250,7 +254,7 @@ def trustnet(request):
     return HttpResponse(data, mimetype='application/javascript')
     
 # Return trustnet as JSON
-def trustnet_redemptions(request):
+def trustnet(request):
 
     all_nodes = events.objects.filter(Q(type=1)).order_by('-timestamp')
 
@@ -301,17 +305,27 @@ def user_info(request, username):
     for t in trusts:
         trusts_list.append(t.trusted)
     
+    karma = getKarma(username)
+    
     # Return variables
     variables = {
-        'trusted_num':trusted_num,
-        'trusted':trusted_list,
-        'trusts':trusts_list,
-        'trusts_num':trusts_num,
+        'karma':karma,
         'username':username,
     }
     
     return render_to_response('user_info.html', variables)
     
+    
+''' HELPERS '''
+
+# getKarma
+# fethes and returns a user's karma, based on in-bound thanks statements
+
+def getKarma(username):
+
+    events_to = events.objects.filter(to_user=username).filter(type=1)
+    return len(events_to)
+
     
     
 
