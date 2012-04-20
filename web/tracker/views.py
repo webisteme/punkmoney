@@ -323,7 +323,7 @@ def user_info(request, username):
 
 def getKarma(username):
 
-    events_to = events.objects.filter(to_user=username).filter(type=1)
+    events_to = events.objects.filter(from_user=username).filter(type=1)
     return len(events_to)
 
     
