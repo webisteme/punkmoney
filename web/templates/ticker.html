@@ -28,7 +28,7 @@
 		{% endifequal %}
 
         {% ifequal event.type 10 %}
-		<span id="request">[ R ]</span> {{ event.timestamp|date:"M d G:i" }}<span><b> <a href="/user/{{ event.from_user }}">{{ event.from_user }}</a></b> requested <span id="promise"><a href="/note/{{ event.note_id }}">{{ event.promise }}</a></span></b> from <span><b> <a href="/user/{{ event.to_user }}">{{ event.to_user }}</a></b>. 
+		<span id="request">[ R ]</span> {{ event.timestamp|date:"M d G:i" }}<span><b> <a href="/user/{{ event.from_user }}">{{ event.to_user }}</a></b> requested <span id="promise"><a href="/note/{{ event.note_id }}">{{ event.promise }}</a></span></b> from <span><b> <a href="/user/{{ event.to_user }}">{{ event.from_user }}</a></b>. 
 		{% endifequal %}
 
         {% ifequal event.type 9 %}
