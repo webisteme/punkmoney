@@ -24,40 +24,47 @@
 
 	<div id="left" class="span-9">
 	
-	    
-	    {% ifequal note.status 0 %}
+    		{% ifequal note.status 0 %}
     	
-    		<h3 style='display:inline'><span id="offer">{{ note.promise }}</span></h3>
+    		<h3 style='display:inline'><span id="request">{{ note.promise }}</span></h3>
+    		
+    		<p style='display:inline'>[REQUEST]</p>
     		
     		<p style='display:inline'>[OPEN]</p>
         
         {% endifequal %}
 	    
 	    
+	    
 	    {% ifequal note.status 1 %}
 	    	
             <h3 style='display:inline'><span id="promise">{{ note.promise }}</span></h3>
+            
+            <p style='display:inline'>[REQUEST]</p>
         		
             <p style='display:inline'>[CLOSED]</p>
     		
         {% endifequal %}
         
+        
 	    {% ifequal note.status 2 %}
 	    	
             <h3 style='display:inline'><span id="promise">{{ note.promise }}</span></h3>
+            
+            <p style='display:inline'>[REQUEST]</p>
         		
             <p style='display:inline'>[EXPIRED]</p>
     		
         {% endifequal %}
-    
-        <hr class="space">
-    		    	
-<!--     <hr class="space"> -->
+
     	
-    <p>Issuer: <b><a href="/user/{{ note.issuer }}">{{ note.issuer }}</a></b> <br>
-		
+    	       <hr class="space">
+    	
+    		<p>Issuer: <b><a href="/user/{{ note.issuer }}">{{ note.issuer }}</a></b> <br>
+    		Bearer: <b><a href="/user/{{ note.bearer }}">{{ note.bearer }}</a></b></p>
+
 		<p>Created: <b>{{ note.created }}</b><br>
-		Expiry: <b>{{ note.expiry }}</b></p>
+		Expires: <b>{{ note.expiry }}</b><br></p>
 	
 	</div>
 	
@@ -71,28 +78,23 @@
 		
 		<p><a id="noteid" value="{{ note.id }}" href="http://www.twitter.com/{{note.issuer}}/status/{{note.id}}">[{{ note.id }}]</a></p>
 		
-		<p>
 		
 		{% ifequal note.status 0 %}
 
-        <a href="https://twitter.com/intent/tweet?in_reply_to={{ note.id }}&status=@{{note.issuer}}%20request%20{{ note.promise }}%20%23punkmoney"><span id="redemption">[Request]</span></a> &nbsp;
+        <a href="https://twitter.com/intent/tweet?in_reply_to={{ note.id }}&status=@{{note.issuer}}%20I%20promise%20{{ note.promise }}%20%23punkmoney"><span id="promised">[Promise]</span></a> &nbsp;
         	
         <a href="https://twitter.com/intent/tweet?in_reply_to={{ note.id }}&status=@{{note.issuer}}%20close%20%23punkmoney"><span id="expiration">[Close]</span></a>
         	
 		{% endifequal %}
 		
+		<p>
 		</p>
 
 	
 	</div>
 	
 	<div class="span-15">
-	
-		<hr class="space">
-	
-		<h4>History</h4>
-		
-		<div id="ticker"></div>
+
 
 	
 	</div>

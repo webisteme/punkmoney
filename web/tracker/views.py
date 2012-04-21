@@ -19,7 +19,7 @@ def tracker(request):
         'page':'ticker'
     }
 
-    return render_to_response('tracker.html', variables)    
+    return render_to_response('tracker.html', variables)
 
 
 def ticker(request, max=50, type=None, username=None, noteid=None):
@@ -188,6 +188,8 @@ def getnote(request, noteid):
         template = 'need.html'
     elif note.type == 1:
         template = 'thanks.html'
+    elif note.type == 10:
+        template = 'request.html'
     
     return render_to_response(template, variables)
     

@@ -55,7 +55,7 @@ span#redemption {
 }
 
 span#expiration {
-	background-color: #fae8df;
+	background-color: #ffe2d3;
 }
 
 span#offer {
@@ -64,6 +64,10 @@ span#offer {
 
 span#need {
 	background-color: #fffbcd;
+}
+
+span#request {
+	background-color: #f6f0c8;
 }
 
 

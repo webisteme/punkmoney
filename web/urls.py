@@ -14,13 +14,13 @@ urlpatterns = patterns('',
     # max (optional) < user (optional) < type (optional) < note (optional)
     
     url(r'^ticker/$', 'tracker.views.ticker', name='ticker'),
-    url(r'^ticker/max/(?P<max>\d+)/user/(?P<username>\w+)/type/(?P<type>\d{1})/$', 'tracker.views.ticker', name='ticker'),
-    url(r'^ticker/max/(?P<max>\d+)/type/(?P<type>\d{1})/$', 'tracker.views.ticker', name='ticker'),
-    url(r'^ticker/user/(?P<username>\w+)/type/(?P<type>\d{1})/$', 'tracker.views.ticker', name='ticker'),
+    url(r'^ticker/max/(?P<max>\d+)/user/(?P<username>\w+)/type/(?P<type>\d+)/$', 'tracker.views.ticker', name='ticker'),
+    url(r'^ticker/max/(?P<max>\d+)/type/(?P<type>\d+)/$', 'tracker.views.ticker', name='ticker'),
+    url(r'^ticker/user/(?P<username>\w+)/type/(?P<type>\d_)/$', 'tracker.views.ticker', name='ticker'),
     url(r'^ticker/max/(?P<max>\d+)/user/(?P<username>\w+)/$', 'tracker.views.ticker', name='ticker'),
     url(r'^ticker/max/(?P<max>\d+)/$', 'tracker.views.ticker', name='ticker'),
     url(r'^ticker/user/(?P<username>\w+)/$', 'tracker.views.ticker', name='ticker'),
-    url(r'^ticker/type/(?P<type>\d{1})$', 'tracker.views.ticker', name='ticker'),
+    url(r'^ticker/type/(?P<type>\d+)$', 'tracker.views.ticker', name='ticker'),
     url(r'^ticker/note/(?P<noteid>\d+)$', 'tracker.views.ticker', name='ticker'),
     
     # search
