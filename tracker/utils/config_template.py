@@ -12,8 +12,7 @@ Currency hashtag, name of trustlist and seed_user to crawl from (no '@').
 '''
 
 HASHTAG = '#punkmoney'
-LIST_NAME = 'punkmoney-trusted'
-SEED_USER = 'webisteme'
+ALT_HASHTAG = '#pnmy'
 
 
 # TWITTER API CREDENTIALS

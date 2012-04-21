@@ -7,7 +7,7 @@ Main listener class for finding and saving #PunkMoney statements.
 """
 
 from mysql import Connection
-from config import TW_CONSUMER_KEY, TW_CONSUMER_SECRET, TW_ACCESS_KEY, TW_ACCESS_SECRET, HASHTAG
+from config import TW_CONSUMER_KEY, TW_CONSUMER_SECRET, TW_ACCESS_KEY, TW_ACCESS_SECRET, HASHTAG, ALT_HASHTAG
 
 import tweepy
 
@@ -33,21 +33,13 @@ class Harvester(Connection):
             lastID = self.getSingleValue(query)
             
             if lastID is not None:
-                tweets_p = self.TW.search(HASHTAG + ' promise', since_id = lastID)
-                tweets_t = self.TW.search(HASHTAG + ' transfer', since_id = lastID)
-                tweets_r = self.TW.search(HASHTAG + ' thanks', since_id = lastID)
-                tweets_o = self.TW.search(HASHTAG + ' offer', since_id = lastID)
-                tweets_n = self.TW.search(HASHTAG + ' need', since_id = lastID)
-                tweets_c = self.TW.search(HASHTAG + ' close', since_id = lastID)
-                tweets = tweets_p + tweets_t + tweets_r + tweets_o + tweets_n + tweets_c
+                tweets = self.TW.search(HASHTAG, since_id = lastID)
+                tweets_alt = self.TW.search(ALT_HASHTAG, since_id = lastID)
+                tweets = tweets + tweets_alt
             else:
-                tweets_p = self.TW.search(HASHTAG + ' promise')
-                tweets_t = self.TW.search(HASHTAG + ' transfer')
-                tweets_r = self.TW.search(HASHTAG + ' thanks')
-                tweets_o = self.TW.search(HASHTAG + ' offer')
-                tweets_n = self.TW.search(HASHTAG + ' need')
-                tweets_c = self.TW.search(HASHTAG + ' close')
-                tweets = tweets_p + tweets_t + tweets_r + tweets_o + tweets_n + tweets_c
+                tweets = self.TW.search(HASHTAG, since_id = lastID)
+                tweets_alt = self.TW.search(ALT_HASHTAG, since_id = lastID)
+                tweets = tweets + tweets_alt
             
             # Save to DB
             i = 0

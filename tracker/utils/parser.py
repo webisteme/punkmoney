@@ -9,7 +9,7 @@ Main class for interpreting #PunkMoney statements.
 
 from mysql import Connection
 from harvester import Harvester
-from config import HASHTAG, SETTINGS
+from config import HASHTAG, ALT_HASHTAG, SETTINGS
 
 import re
 from datetime import datetime
@@ -78,7 +78,7 @@ class Parser(Harvester):
                     self.setParsed(tweet['tweet_id'])
                     
                     # Strip out hashtag
-                    h = re.search('(.*)(%s)(.*)' % HASHTAG, tweet['content'], re.IGNORECASE)
+                    h = re.search('(.*)(%s|%s)(.*)' % (HASHTAG, ALT_HASHTAG), tweet['content'], re.IGNORECASE)
                     if h:
                         statement = h.group(1) + h.group(3)
                     else:
@@ -250,7 +250,7 @@ class Parser(Harvester):
                         if thanks.group(2).lower() == 'for':
                             tweet['message'] = thanks.group(3)
                             
-                            h = re.search('(.*)(%s)(.*)' % HASHTAG, tweet['message'], re.IGNORECASE)
+                            h = re.search('(.*)(%s|%s)(.*)' % (HASHTAG, ALT_HASHTAG), tweet['message'], re.IGNORECASE)
                             if h:
                                 tweet['message'] = h.group(1).strip() + h.group(3).strip()
                         
@@ -312,7 +312,7 @@ class Parser(Harvester):
                     self.setParsed(tweet['tweet_id'])
                     
                     # Strip out hashtag
-                    h = re.search('(.*)(%s)(.*)' % HASHTAG, tweet['content'], re.IGNORECASE)
+                    h = re.search('(.*)(%s|%s)(.*)' % (HASHTAG, ALT_HASHTAG), tweet['content'], re.IGNORECASE)
                     if h:
                         statement = h.group(1) + h.group(3)
                     else:
