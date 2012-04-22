@@ -31,7 +31,7 @@ class Karma(Connection):
         values = self.getRows(sql)
         
         for v in values:
-            self.DG.add_edges_from([(v[5], v[6])])
+            self.DG.add_edges_from([(v[6], v[5])])
     
     
     # Recalculate
