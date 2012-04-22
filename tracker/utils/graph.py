@@ -31,13 +31,15 @@ class Karma(Connection):
         values = self.getRows(sql)
         
         for v in values:
-            self.DG.add_edges_from([(v[6], v[5])])
+            self.DG.add_edges_from([(v[5], v[6])])
     
     
     # Recalculate
     def recalculate(self):
     
-        authorities = nx.pagerank(self.DG, alpha=0.5)
+        authorities = nx.hits(self.DG)[0]
+        
+        pprint(authorities)
         
         # Normalise to 100
         max_user = max(authorities.iteritems(), key=operator.itemgetter(1))[0]
@@ -50,7 +52,9 @@ class Karma(Connection):
         }
         
         for user,value in authorities.items():
-            authorities_norm[user] = int(value * r)
+            authorities_norm[user] = int(value * int(r))
+            
+        pprint(authorities_norm)
         
         # Clear existing values
         sql = "UPDATE tracker_users set karma = 0"
