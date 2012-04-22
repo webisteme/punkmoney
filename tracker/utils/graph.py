@@ -15,7 +15,6 @@ from mysql import Connection
 from pprint import pprint
 import math
 import operator
-import numpy as np
 
 class Karma(Connection):
 
