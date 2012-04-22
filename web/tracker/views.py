@@ -261,40 +261,35 @@ def trustnet(request):
     all_nodes = events.objects.filter(Q(type=1)).order_by('-timestamp')
     
     # Minimum karma for graph inclusion
-    min_karma = 10
     
     nodes = []
     checked = []
+    min_karma = 10
     
     for n in all_nodes:
     
         if n.from_user not in checked:
         
             karma = getKarma(n.from_user)
-        
-            if karma > min_karma:
-                nodes.append({"name":n.from_user, "group":int(round(karma/10,0)), "karma":karma})
-                
+
+            nodes.append({"name":n.from_user, "group":int(round(karma/10,0)), "karma":karma})
             checked.append(n.from_user)
             
         if n.to_user not in checked:
         
             karma = getKarma(n.to_user)
-        
-            if karma > min_karma:
-                nodes.append({"name":n.to_user, "group":int(round(karma/10,0)), "karma":karma})
-                
+            
+            nodes.append({"name":n.to_user, "group":int(round(karma/10,0)), "karma":karma})
             checked.append(n.to_user)
 
 
     links = []
     for n in all_nodes:
         
-        if getKarma(n.to_user) > min_karma and getKarma(n.from_user) > min_karma:
-            source = checked.index(n.from_user)
-            target = checked.index(n.to_user)
-        
-            links.append({"source" : source, "target" : target, "value" : 1})
+        source = checked.index(n.from_user)
+        target = checked.index(n.to_user)
+
+        links.append({"source" : source, "target" : target, "value" : 1})
     
     
         
