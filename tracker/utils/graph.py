@@ -14,6 +14,7 @@ from networkx.exception import NetworkXError
 from mysql import Connection
 from pprint import pprint
 import math
+import operator
 
 class Karma(Connection):
 
@@ -39,7 +40,7 @@ class Karma(Connection):
         authorities = nx.pagerank(self.DG, alpha=0.5)
         
         # Normalise to 100
-        max_user = max(authorities)
+        max_user = max(authorities.iteritems(), key=operator.itemgetter(1))[0]
         max_val = authorities[max_user]
         
         r = 100/float(max_val)
