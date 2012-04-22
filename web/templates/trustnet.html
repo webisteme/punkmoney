@@ -78,19 +78,20 @@
     
       var link = svg.selectAll("line.link")
           .data(json.links)
-        .enter().append("line")
+          .enter().append("line")
           .attr("class", "link")
           .style("stroke-width", function(d) { return Math.sqrt(d.value); });
     
       var node = svg.selectAll("circle.node")
           .data(json.nodes)
-        .enter().append("circle")
+          .enter().append("circle")
           .attr("class", "node")
-          .attr("r", 5)
-          .style("fill", function(d) { return color(d.group); })
+          .attr("r", function(d) { return karma(d); })
+          .style("fill", '#3366CC')
           .call(force.drag)
-        
-        
+          
+     
+            
      node.on("click", function(d) { 
 
         $.get("/user_info/" + d.name, function(data){
@@ -99,9 +100,7 @@
 
 		});
         
-      }); 
-
-
+      });
     
       node.append("title")
           .text(function(d) { return d.name; });
@@ -127,6 +126,33 @@
 		});
     
     
+    }
+    
+    function karma(d){
+        return d.karma / 10;
+    }
+    
+    function nodeColour(d){
+    
+        if (d.group >= 8){
+            return '#000066'; 
+        }
+        
+        if (8 > d.group >= 6){
+            return '#0033CC'; 
+        }
+        
+        if (6 > d.group >= 4){
+            return '#0066CC'; 
+        }
+        
+        if (4 > d.group >= 2){
+            return '#0099FF'; 
+        }
+        
+        if (2 > d.group >= 0){
+            return '#00CCFF'; 
+        } 
     }
 
     </script>

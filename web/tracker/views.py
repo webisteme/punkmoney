@@ -259,25 +259,44 @@ def trustnet_old(request):
 def trustnet(request):
 
     all_nodes = events.objects.filter(Q(type=1)).order_by('-timestamp')
-
+    
+    # Minimum karma for graph inclusion
+    min_karma = 10
+    
     nodes = []
     checked = []
+    
     for n in all_nodes:
+    
         if n.from_user not in checked:
-            nodes.append({"name":n.from_user, "group":1})
+        
+            karma = getKarma(n.from_user)
+        
+            if karma > min_karma:
+                nodes.append({"name":n.from_user, "group":int(round(karma/10,0)), "karma":karma})
+                
             checked.append(n.from_user)
+            
         if n.to_user not in checked:
-            nodes.append({"name":n.to_user, "group":1})
+        
+            karma = getKarma(n.to_user)
+        
+            if karma > min_karma:
+                nodes.append({"name":n.to_user, "group":int(round(karma/10,0)), "karma":karma})
+                
             checked.append(n.to_user)
 
 
     links = []
     for n in all_nodes:
         
-        source = checked.index(n.from_user)
-        target = checked.index(n.to_user)
+        if getKarma(n.to_user) > min_karma and getKarma(n.from_user) > min_karma:
+            source = checked.index(n.from_user)
+            target = checked.index(n.to_user)
+        
+            links.append({"source" : source, "target" : target, "value" : 1})
     
-        links.append({"source" : source, "target" : target, "value" : 1})
+    
         
     graph = {"nodes" : nodes, "links" : links}
     
@@ -325,8 +344,15 @@ def user_info(request, username):
 
 def getKarma(username):
 
-    events_to = events.objects.filter(from_user=username).filter(type=1)
-    return len(events_to)
+    try:
+        user = users.objects.get(username=username)
+        
+        if user.karma is None:
+            return 1
+        else:
+            return int(user.karma)
+    except:
+        return 1
 
     
     
