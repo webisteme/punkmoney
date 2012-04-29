@@ -38,22 +38,36 @@ class Karma(Connection):
     def recalculate(self):
     
     
-        authorities = nx.pagerank(self.DG)
+        authorities = nx.hits(self.DG)[1]
         
-        # Normalise to 100
-        max_user = max(authorities.iteritems(), key=operator.itemgetter(1))[0]
-        max_val = authorities[max_user]
-        
-        r = 100/float(max_val)
-        
-        authorities_norm = {}
+        # Convert to log scale
+        authorities_log = {}
         
         for user,value in authorities.items():
         
-            authorities_norm[user] = int(value * int(r))
-            
-        authorities_norm[max_user] = 100
+            v = value * 10**30
         
+            if value > 0:
+                v = math.log(v)
+            else:
+                v = 0
+        
+            authorities_log[user] = abs(int(v))
+            
+            
+        # Normalise to 100
+        authorities_norm = {}
+        max_user = max(authorities_log.iteritems(), key=operator.itemgetter(1))[0]
+        max_val = authorities_log[max_user]
+        
+        r = 100/float(max_val)
+        
+        for user,value in authorities_log.items():
+            
+            authorities_norm[user] = int(value*r)
+ 
+        authorities_norm[max_user] = 100
+
         # Clear existing values
         
         sql = "UPDATE tracker_users set karma = 0"
