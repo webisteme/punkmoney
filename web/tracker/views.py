@@ -339,6 +339,9 @@ def user_info(request, username):
 
 def getKarma(username):
 
+    # Disabled for now
+
+    '''
     try:
         user = users.objects.get(username=username)
         
@@ -348,6 +351,9 @@ def getKarma(username):
             return int(user.karma)
     except:
         return 1
+    '''
+    
+    return 50
 
     
     
