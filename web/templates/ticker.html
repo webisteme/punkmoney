@@ -6,16 +6,9 @@
 		<span>
 		
 		{% ifequal event.type 0 %}
-		<span id="promised">[ P ]</span> {{ event.timestamp|date:"M d G:i" }} 
-		
-		<span>
-		
-		<b><a href="/user/{{ event.from_user }}">{{ event.from_user }}</a></b> 
-		
-		promised</span> 
-		
+		<span id="promised">[ P ]</span> {{ event.timestamp|date:"M d G:i" }}<span>
+		<b><a href="/user/{{ event.from_user }}">{{ event.from_user }}</a> </b>promised</span> 
 		<b><a href="/user/{{ event.to_user }}">{{ event.to_user }}</a></b>
-		
 		<span id="promise"><a href="/note/{{ event.note_id }}">{{ event.promise }}</a></span>. 
 		{% endifequal %}
 

@@ -159,7 +159,7 @@ class Parser(Harvester):
                     self.createEvent(tweet['tweet_id'], tweet['tweet_id'], 0, tweet['created'], tweet['author'], tweet['recipient'])
                     
                     # Log and tweet promise
-                    self.sendTweet('[P] @%s promised @%s %s http://www.punkmoney.org/note/%s' % (tweet['author'], tweet['recipient'], promise, tweet['tweet_id']))
+                    self.sendTweet('@%s promised @%s %s http://www.punkmoney.org/note/%s' % (tweet['author'], tweet['recipient'], promise, tweet['tweet_id']))
                     self.logInfo('[Promise] @%s promised @%s %s.' % (tweet['author'], tweet['recipient'], tweet['tweet_id']))
                 except Exception, e:
                     self.logWarning("Processing promise %s failed: %s" % (tweet['tweet_id'], e))
@@ -262,7 +262,7 @@ class Parser(Harvester):
                         # Log thanks
                         message = '[Thanks] @%s thanked @%s %s' % (tweet['author'], tweet['recipient'], tweet['message'])
                         self.logInfo(message)
-                        self.sendTweet('[Tx] @%s thanked @%s %s http://www.punkmoney.org/note/%s' % (tweet['author'], tweet['recipient'], tweet['message'], tweet['tweet_id']))
+                        self.sendTweet('@%s thanked @%s %s http://www.punkmoney.org/note/%s' % (tweet['author'], tweet['recipient'], tweet['message'], tweet['tweet_id']))
                         continue
 
 
@@ -291,12 +291,12 @@ class Parser(Harvester):
                         
                     # Process thanks
                     self.updateNote(note['id'], 'status', 1)
-                    self.createEvent(note['id'], tweet['tweet_id'], 1, note['created'], from_user, to_user)
+                    self.createEvent(note['id'], tweet['tweet_id'], 1, tweet['created'], to_user, from_user)
                     
                     # Log thanks
                     message = '[Thanks] @%s thanked @%s for %s' % (to_user, from_user, message)
                     self.logInfo(message)
-                    self.sendTweet('[Tx] @%s thanked @%s for %s http://www.punkmoney.org/note/%s' % (to_user, from_user, note['promise'], message))
+                    self.sendTweet('@%s thanked @%s for %s http://www.punkmoney.org/note/%s' % (to_user, from_user, note['promise'], message))
                     self.setParsed(tweet['tweet_id'])       
                 except Exception, e:
                     self.logWarning("Processing thanks %s failed: %s" % (tweet['tweet_id'], e))
@@ -517,11 +517,15 @@ class Parser(Harvester):
     def findOriginal(self, reply_to_id, tweet_id):
         tweet = {}
         def getLast(reply_to_id):
-            query = "SELECT timestamp, tweet_id, author, content, reply_to_id FROM tracker_tweets WHERE tweet_id = %s" % reply_to_id
+            query = "SELECT created, id, issuer, promise, type FROM tracker_notes WHERE id = %s" % reply_to_id
             tweet = self.getRows(query)[0]
             return tweet
         try:
-            while getLast(reply_to_id)[4] is not None:
+            note_types = [0, 4, 5]
+            
+            print getLast(reply_to_id)[4]
+            
+            while int(getLast(reply_to_id)[4]) not in note_types:
                 reply_to_id = getLast(reply_to_id)[4]
             else:
                 tweet = getLast(reply_to_id)
