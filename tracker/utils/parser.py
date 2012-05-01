@@ -126,10 +126,20 @@ class Parser(Harvester):
                         statement = e.group(1) + e.group(4)
                     else:
                         tweet['expiry'] = None
+                        
+                    
+                    # Get condition
+                    c = re.match('(.*)( if )(.*)', statement, re.IGNORECASE)
+                    
+                    if c:
+                        statement = c.group(1)
+                        tweet['condition'] = c.group(3)
+                    else:
+                        tweet['condition'] = None
 
 
                     # Get promise
-                    p = re.match('(.*)(promise)(.*)', statement)
+                    p = re.match('(.*)(promise)(.*)', statement, re.IGNORECASE)
                     if p:
                         if p.group(1).strip().lower() == 'i':
                             promise = p.group(3)
@@ -343,6 +353,16 @@ class Parser(Harvester):
                         raise Exception("Item not found")
                         
                     
+                    # Get condition
+                    c = re.match('(.*)( if )(.*)', item, re.IGNORECASE)
+                    
+                    if c:
+                        item = c.group(1)
+                        tweet['condition'] = c.group(3)
+                    else:
+                        tweet['condition'] = None
+                    
+                    
                     # Clean up promise 
                     '''
                     Remove trailing white space, full stop and word 'you' (if found)
@@ -540,8 +560,8 @@ class Parser(Harvester):
         try:
             query = "SELECT id FROM tracker_notes WHERE id = '%s'" % tweet['tweet_id']        
             if self.getSingleValue(query) is None:            
-                query = "INSERT INTO tracker_notes(id, issuer, bearer, promise, created, expiry, status, transferable, type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                params = (tweet['tweet_id'], tweet['author'].lower(), tweet['recipient'].lower(), tweet['promise'], tweet['created'], tweet['expiry'], 0, tweet['transferable'], 0)
+                query = "INSERT INTO tracker_notes(id, issuer, bearer, promise, created, expiry, status, transferable, type, conditional) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                params = (tweet['tweet_id'], tweet['author'].lower(), tweet['recipient'].lower(), tweet['promise'], tweet['created'], tweet['expiry'], 0, tweet['transferable'], 0, tweet['condition'])
                 self.queryDB(query, params)
             else:
                 self.logWarning('Note %s already exists' % tweet['tweet_id'])
@@ -557,8 +577,8 @@ class Parser(Harvester):
         try:
             query = "SELECT id FROM tracker_notes WHERE id = '%s'" % tweet['tweet_id']        
             if self.getSingleValue(query) is None:            
-                query = "INSERT INTO tracker_notes(id, issuer, bearer, promise, created, expiry, status, transferable, type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                params = (tweet['tweet_id'], tweet['author'].lower(), '', tweet['item'].lower(), tweet['created'], tweet['expiry'], 0, 0, code)
+                query = "INSERT INTO tracker_notes(id, issuer, bearer, promise, created, expiry, status, transferable, type, conditional) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                params = (tweet['tweet_id'], tweet['author'].lower(), '', tweet['item'].lower(), tweet['created'], tweet['expiry'], 0, 0, code, tweet['condition'])
                 self.queryDB(query, params)
             else:
                 self.logWarning('Note %s already exists' % tweet['tweet_id'])

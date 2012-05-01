@@ -58,9 +58,21 @@
     	
     		<p>Issuer: <b><a href="/user/{{ note.issuer }}">{{ note.issuer }}</a></b> <br>
     		Bearer: <b><a href="/user/{{ note.bearer }}">{{ note.bearer }}</a></b></p>
+    		
+		<!-- CONDITION -->
 		
+		{% if note.conditional %}
+		
+		  Condition: <b>{{ note.conditional }}</b>
+		
+		{% endif %}
+		
+		<hr class="space">
+    		
 		<p>Created: <b>{{ note.created }}</b><br>
 		Expiry: <b>{{ note.expiry }}</b></p>
+		
+
 	
 	</div>
 	
@@ -80,7 +92,7 @@
 		
 		
 		
-		<a href="https://twitter.com/intent/tweet?in_reply_to={{ note.id }}&status=@{{note.issuer}}%20thanks%20%23punkmoney"><span id="redemption">[Thank]</span></a> &nbsp;
+		<a href="https://twitter.com/intent/tweet?in_reply_to={{ note.id }}&status=@{{note.issuer}}%20thanks%20%23punkmoney"><span id="redemption">[Redeemed]</span></a> &nbsp;
 		
 		
 		{% if note.transferable %}

@@ -56,10 +56,29 @@
     	
     <p>Issuer: <b><a href="/user/{{ note.issuer }}">{{ note.issuer }}</a></b> <br>
 		
+				<!-- CONDITION -->
+		
+		{% if note.conditional %}
+		
+		  Condition: <b>{{ note.conditional }}</b>
+		
+		{% endif %}
+
+		
 		<p>Created: <b>{{ note.created }}</b><br>
 		Expiry: <b>{{ note.expiry }}</b></p>
 	
 	</div>
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
 	
 	<!-- RIGHT COLUMN -->
 	
