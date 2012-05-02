@@ -132,7 +132,6 @@ class Parser(Harvester):
                     c = re.match('(.*)( if )(.*)', statement, re.IGNORECASE)
                     
                     if c:
-                        statement = c.group(1)
                         tweet['condition'] = c.group(3)
                     else:
                         tweet['condition'] = None
@@ -357,7 +356,6 @@ class Parser(Harvester):
                     c = re.match('(.*)( if )(.*)', item, re.IGNORECASE)
                     
                     if c:
-                        item = c.group(1)
                         tweet['condition'] = c.group(3)
                     else:
                         tweet['condition'] = None

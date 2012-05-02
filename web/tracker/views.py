@@ -173,11 +173,21 @@ def getnote(request, noteid):
     
     id = str(note.id)
     
+    promise = note.promise
+    
+    # Replace pronouns with opposites
+    
+    if note.type == 5 or note.type == 10:
+        reply_promise = promise.replace(' my ', ' your ')
+        reply_promise = reply_promise.replace(' me ', ' you ')
+        reply_promise = reply_promise.replace(' i ', ' you ')
+    
     variables = {
         'events':new_events,
         'note':note,
         'content':tweet.content,
-        'id':id,
+        'reply_promise':reply_promise,
+        'id':id
     }
     
     if note.type == 0:
