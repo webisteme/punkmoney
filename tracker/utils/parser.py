@@ -98,7 +98,6 @@ class Parser(Harvester):
                         # (Don't tweet this as an error)
                         tweet_errors = False;
                         raise Exception("Recipient not found")
-                        
                     
                     # Check not to self
                     if tweet['recipient'] == tweet['author']:
@@ -468,6 +467,9 @@ class Parser(Harvester):
                 while tweet['message'][-1] == '.':
                     tweet['message'] = tweet['message'][:-1]
 
+                # Send intro tweet
+                self.sendIntroTweet(tweet['recipient'], tweet['author'])
+
                 # Create a request
                 self.createRequest(tweet)
                 
@@ -686,6 +688,17 @@ class Parser(Harvester):
                 query = "INSERT INTO tracker_users (username) VALUES (%s)"
                 params = (username)
                 self.queryDB(query, params)
+                
+                # Send intro tweet
+                try:
+                    message = '@' + username + ' Hi there. Someone just sent you #PunkMoney. Here\'s how to get started: http://is.gd/bezeyu' 
+                
+                    print message
+                
+                    self.sendTweet(message)
+                except:
+                    pass
+                
                 # Follow user
                 try:
                     if self.TW.exists_friendship('punk_money', username) is False:
@@ -732,8 +745,7 @@ class Parser(Harvester):
             try:
                 self.TW.update_status(message)
             except:
-                self.logError("Tweeting message failed (%s)" % message)
-                
+                self.logError("Tweeting message failed (%s)" % message)      
                 
     # checkTrusted
     # Check if there is a trust path between two users
