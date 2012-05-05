@@ -1,7 +1,7 @@
 from django.db import models
 
 class events(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     note_id = models.BigIntegerField(null=True, blank=True)
     tweet_id = models.BigIntegerField()
     type = models.IntegerField(null=True, blank=True)
@@ -26,14 +26,14 @@ class notes(models.Model):
         db_table = u'tracker_notes'
 
 class trustlist(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     user = models.CharField(max_length=90, blank=True)
     trusted = models.CharField(max_length=90, blank=True)
     class Meta:
         db_table = u'tracker_trust_list'
 
 class tweets(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     timestamp = models.DateTimeField(null=True, blank=True)
     tweet_id = models.BigIntegerField(null=True, blank=True)
     author = models.CharField(max_length=90, blank=True)
@@ -44,7 +44,7 @@ class tweets(models.Model):
         db_table = u'tracker_tweets'
 
 class users(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=90, blank=True)
     karma = models.IntegerField(null=True, blank=True)
     class Meta:
