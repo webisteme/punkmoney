@@ -37,8 +37,8 @@ class Harvester(Connection):
                 tweets_alt = self.TW.search(ALT_HASHTAG, since_id = lastID)
                 tweets = tweets + tweets_alt
             else:
-                tweets = self.TW.search(HASHTAG, since_id = lastID)
-                tweets_alt = self.TW.search(ALT_HASHTAG, since_id = lastID)
+                tweets = self.TW.search(HASHTAG)
+                tweets_alt = self.TW.search(ALT_HASHTAG)
                 tweets = tweets + tweets_alt
             
             # Save to DB

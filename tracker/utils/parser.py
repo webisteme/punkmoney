@@ -91,7 +91,7 @@ class Parser(Harvester):
                     
                     if r:
                         tweet['recipient'] = r.group(2)
-                        self.saveUser(tweet['recipient'])
+                        self.saveUser(tweet['recipient'], intro=True)
                         statement = r.group(1).strip() + r.group(3)
                         
                     else:
@@ -225,6 +225,8 @@ class Parser(Harvester):
                     # Check recipient is trusted
                     if self.checkTrusted(note['issuer'], to_user) is False:
                         raise Exception("Transferee not trusted by issuer")
+                        
+                    self.saveUser(to_user, intro=True)
                     
                     # Process transfer
                     self.setParsed(tweet['tweet_id'])
@@ -266,6 +268,8 @@ class Parser(Harvester):
                         self.createThanks(tweet)
                         
                         tweet['message'] = 'for ' + tweet['message']
+                        
+                        self.saveUser(tweet['recipient'], intro=True)
                         
                         # Log thanks
                         message = '[Thanks] @%s thanked @%s %s' % (tweet['author'], tweet['recipient'], tweet['message'])
@@ -468,7 +472,7 @@ class Parser(Harvester):
                     tweet['message'] = tweet['message'][:-1]
 
                 # Send intro tweet
-                self.sendIntroTweet(tweet['recipient'], tweet['author'])
+                self.saveUser(tweet['recipient'].lower(), intro=True)
 
                 # Create a request
                 self.createRequest(tweet)
@@ -672,10 +676,10 @@ class Parser(Harvester):
 
     # saveUser
     # Check user exists
-    def saveUser(self, username):
+    def saveUser(self, username, intro = False):
         username = username.lower()
         try:
-            query = "SELECT id FROM tracker_users WHERE username = '%s'" % username
+            query = "SELECT id FROM tracker_users WHERE username = '%s'" % username.lower()
             r = self.getSingleValue(query)
         except Exception, e:
             self.logError("Checking user exists failed: %s" % e)
@@ -686,18 +690,16 @@ class Parser(Harvester):
             else:
                 self.logInfo("Saving new user %s" % username)
                 query = "INSERT INTO tracker_users (username) VALUES (%s)"
-                params = (username)
+                params = (username.lower())
                 self.queryDB(query, params)
                 
                 # Send intro tweet
-                try:
-                    message = '@' + username + ' Hi there. Someone just sent you #PunkMoney. Here\'s how to get started: http://is.gd/bezeyu' 
-                
-                    print message
-                
-                    self.sendTweet(message)
-                except:
-                    pass
+                if intro == True:
+                    try:
+                        message = '@' + username + ' Hi there. Someone just sent you #PunkMoney. Here\'s how to get started: http://is.gd/bezeyu' 
+                        self.sendTweet(message)
+                    except:
+                        pass
                 
                 # Follow user
                 try:
