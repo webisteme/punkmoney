@@ -21,7 +21,7 @@ class notes(models.Model):
     status = models.IntegerField(null=True, blank=True)
     transferable = models.IntegerField(null=True, blank=True)
     type = models.IntegerField(null=True, blank=True)
-    conditional = models.CharField(max_length=420, blank=True)
+    conditional = models.CharField(max_length=420, null=True, blank=True)
     class Meta:
         db_table = u'tracker_notes'
 
