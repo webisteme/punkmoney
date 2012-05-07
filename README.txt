@@ -26,8 +26,8 @@ Unix environment (with cron)
 
 Web dependencies:
 
-Blueprint CSS (already included)
-d3 Javascript Library (already included)
+Blueprint CSS (included)
+d3 Javascript Library (included)
 
 Python dependencies:
 
@@ -42,7 +42,7 @@ PunkMoney has two parts: a tracker for finding, interpreting and storing #PunkMo
 
 Web interface (Django):
 
-(1) Create a MySQL database
+(1) Create a MySQL database (UTF-8 charset)
 (2) Create your settings in /web/settings_template.py, then rename to settings.py. Be sure to add a template path (an absolute path to the template directory,) and your MySQL database credentials.
 (3) Run python manage.py syncdb to create the necessary tables
 (4) Run python manage.py runserver to check it's set up correctly.
@@ -60,6 +60,13 @@ Tracker (Python):
     - utils/trustlist.py to run once per hour
     - utils/redemptions.py to run once per hour
 Check the logs and/or database to ensure the cron tasks are running properly
+
+
+NOTES
+
+The #PunkMoney wiki is located at http://wiki.punkmoney.org and contains the development roadmap and details on the project.
+
+For testing purposes, please use your own hasthag rather than #punkmoney or #pmny -- this is to keep test data out of the main tracker at www.punkmoney.org - thanks.
 
 
 SUPPORT
