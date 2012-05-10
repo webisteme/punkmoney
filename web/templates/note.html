@@ -66,6 +66,10 @@
 		  Condition: <b>{{ note.conditional }}</b>
 		
 		{% endif %}
+		
+		{% if url %}
+		  Url: <a href="{{ url }}"><b>{{ display_url }}</b></a>
+		{% endif %}
     		
 		<p>Created: <b>{{ note.created }}</b><br>
 		Expiry: <b>{{ note.expiry }}</b></p>
