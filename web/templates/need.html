@@ -52,17 +52,35 @@
     		
         {% endifequal %}
     		
-    	
-    <p>Issuer: <b><a href="/user/{{ note.issuer }}">{{ note.issuer }}</a></b> <br>
+    	<hr class="space">
+        
 		
 		<p>Created: <b>{{ note.created }}</b><br>
 		Expiry: <b>{{ note.expiry }}</b></p>
-	
+		
+		{% if url %}
+		  Link: <a href="{{ url }}"><b>{{ display_url }}</b></a><br>
+		{% endif %}
+	    
+	   
 	</div>
 	
 	<!-- RIGHT COLUMN -->
 	
 	<div id="right" class="span-7 prepend-1 last">
+	
+	
+	    {% if img_url %}
+	    
+	       {% if url %}
+		   <a href="{{ url }}" target="_blank"><img src="{{ img_url }}" height="100" align="centre"></a>
+		   {% else %}
+		   <a href="{{ img_url }}" target="_blank"><img src="{{ img_url }}" height="100" align="centre"></a>
+		   {% endif %}
+		  
+		  <hr class="space">
+		  
+		{% endif %}
 	
 		<h3><i>"{{ content }}"</i></h3>
 		

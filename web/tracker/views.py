@@ -188,7 +188,10 @@ def getnote(request, noteid):
         'events':new_events,
         'note':note,
         'content':tweet.content,
-        'id':id
+        'url' : tweet.url,
+        'display_url' : tweet.display_url,
+        'id':id,
+        'img_url' : tweet.img_url,
     }
     
     if note.type == 0:

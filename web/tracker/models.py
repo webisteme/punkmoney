@@ -39,7 +39,10 @@ class tweets(models.Model):
     author = models.CharField(max_length=90, blank=True)
     content = models.CharField(max_length=420, blank=True)
     reply_to_id = models.BigIntegerField(null=True, blank=True)
-    parsed = models.CharField(max_length=1, null=True, blank=True) #! fix
+    parsed = models.CharField(max_length=1, null=True, blank=True)
+    url = models.CharField(max_length=420, null=True, blank=True)
+    display_url = models.CharField(max_length=420, null=True, blank=True)
+    img_url = models.CharField(max_length=420, null=True, blank=True)
     class Meta:
         db_table = u'tracker_tweets'
 

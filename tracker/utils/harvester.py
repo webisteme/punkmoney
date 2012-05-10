@@ -10,8 +10,12 @@ from mysql import Connection
 from config import TW_CONSUMER_KEY, TW_CONSUMER_SECRET, TW_ACCESS_KEY, TW_ACCESS_SECRET, HASHTAG, ALT_HASHTAG
 
 import tweepy
-
 from datetime import datetime
+import sys
+import urllib2
+from urllib import urlencode
+import simplejson
+from pprint import pprint
 
 class Harvester(Connection):
     
@@ -44,22 +48,43 @@ class Harvester(Connection):
             # Save to DB
             i = 0
             for tweet in tweets:
-            
+
                 # Double check tweet isn't duplicate
                 query = "SELECT tweet_id FROM tracker_tweets WHERE tweet_id = %s" % tweet.id
                 
                 if self.getSingleValue(query) is None:
                 
-                    # Check for a reply_to_id
-                    t = self.TW.get_status(tweet.id)
-                    reply_to_id = t.in_reply_to_status_id
-                
+                    # Get tweet metadata
+                    t = self.getStatus(tweet.id)
+
+                    #pprint(t)
+                    
+                    # Extract first img_url
+                    img_url = None
+                    for media_entity in t.get('entities', {}).get('media', []):
+                        if media_entity.get('type', None) == 'photo':
+                            img_url = media_entity.get('media_url', None)
+
+                    # Extract first url
+                    url = None; display_url = None
+                    for url_entity in t.get('entities', {}).get('urls', []):
+                        url = url_entity.get('expanded_url', None)
+                        display_url =  url_entity.get('display_url', None)    
+                        
+                    # Extract hashtags
+                    tags = {}; k = 0
+                    for hashtag in t.get('entities', {}).get('hashtags', []):
+                        tags[k] = hashtag.get('text')
+                        k = k + 1
+
+                    reply_to_id = t.get('in_reply_to_status_id', None)
+
                     # Save data
                     self.logInfo("Saving tweet %s to database" % tweet.id)
                     
-                    query = "INSERT INTO tracker_tweets (timestamp, tweet_id, author, content, reply_to_id) VALUES (%s, %s, %s, %s, %s)"
-                    params = (tweet.created_at, tweet.id, tweet.from_user.lower(), tweet.text, reply_to_id)     
-                               
+                    query = "INSERT INTO tracker_tweets (timestamp, tweet_id, author, content, reply_to_id, url, display_url, img_url) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+                    params = (tweet.created_at, tweet.id, tweet.from_user.lower(), tweet.text, reply_to_id, url, display_url, img_url)
+                           
                     self.queryDB(query, params)
                     
                     i = i + 1
@@ -87,4 +112,39 @@ class Harvester(Connection):
             raise Exception("Error connecting to Twitter API: %s" % e)
         else:
             return api
+            
+    # getTweets()
+    # Gets data tweet data directly from the Twitter API
+    def getStatus(self, tweet_id):
+        try:
+            url = 'http://api.twitter.com/1/statuses/show/%s.json' % tweet_id
+
+            # Set params
+            params = {
+                'include_entities' : '1',
+            }
+            
+            query_url = url + '?' + urlencode(params)
+            raw_data = urllib2.urlopen(query_url)
+
+            data = {}
+            for d in raw_data:
+                data = simplejson.loads(d)
+
+        except Exception, e:
+            raise Exception("Error connecting to Twitter API: %s" % e)
+        else:
+            return data
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
             

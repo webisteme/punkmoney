@@ -61,6 +61,11 @@ class Parser(Harvester):
                     self.setParsed(tweet['tweet_id'], '-')
                     raise Exception("Tweet was not recognised")
                     
+                # strip urls from text
+                r = re.search("(.*)(?P<url>https?://[^\s]+)(.*)", tweet['content'], re.IGNORECASE)
+                if r:
+                    tweet['content'] = r.group(1) + ' ' + r.group(3)
+                    
             except Exception, e:
                 self.logWarning("Parsing tweet %s failed: %s" % (tweet['tweet_id'], e))
                 self.setParsed(tweet['tweet_id'], '-')

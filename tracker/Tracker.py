@@ -28,7 +28,7 @@ class Tracker(Parser):
         try:
             self.updateExpired()
         except Exception, e:
-            self.logError("Updatine expired failed: %s" % e)
+            self.logError("Updating expired failed: %s" % e)
         
         
         # If more than 25 hits remaining, harvest new tweets

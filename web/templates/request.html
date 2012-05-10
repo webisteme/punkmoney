@@ -72,6 +72,18 @@
 	
 	<div id="right" class="span-7 prepend-1 last">
 	
+	    {% if img_url %}
+	    
+	       {% if url %}
+		   <a href="{{ url }}" target="_blank"><img src="{{ img_url }}" height="100" align="centre"></a>
+		   {% else %}
+		   <a href="{{ img_url }}" target="_blank"><img src="{{ img_url }}" height="100" align="centre"></a>
+		   {% endif %}
+		  
+		  <hr class="space">
+		  
+		{% endif %}
+	
 		<h3><i>"{{ content }}"</i></h3>
 		
 		<b><a href="/user/{{ note.issuer }}">{{ note.issuer }}</a></b>

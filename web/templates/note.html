@@ -66,8 +66,6 @@
 		  Condition: <b>{{ note.conditional }}</b>
 		
 		{% endif %}
-		
-		<hr class="space">
     		
 		<p>Created: <b>{{ note.created }}</b><br>
 		Expiry: <b>{{ note.expiry }}</b></p>
@@ -80,6 +78,18 @@
 	
 	<div id="right" class="span-7 prepend-1 last">
 	
+	    {% if img_url %}
+	    
+	       {% if url %}
+		   <a href="{{ url }}" target="_blank"><img src="{{ img_url }}" height="100" align="centre"></a>
+		   {% else %}
+		   <a href="{{ img_url }}" target="_blank"><img src="{{ img_url }}" height="100" align="centre"></a>
+		   {% endif %}
+		  
+		  <hr class="space">
+		  
+		{% endif %}
+	
 		<h3><i>"{{ content }}"</i></h3>
 		
 		<b><a href="/user/{{ note.issuer }}">{{ note.issuer }}</a></b>
@@ -90,10 +100,7 @@
 		
 		{% ifequal note.status 0 %}
 		
-		
-		
 		<a href="https://twitter.com/intent/tweet?in_reply_to={{ note.id }}&status=@{{note.issuer}}%20thanks%20%23punkmoney"><span id="redemption">[Redeemed]</span></a> &nbsp;
-		
 		
 		{% if note.transferable %}
 		

@@ -42,7 +42,10 @@ PunkMoney has two parts: a tracker for finding, interpreting and storing #PunkMo
 
 Web interface (Django):
 
-(1) Create a MySQL database (UTF-8 charset)
+(1) Create a MySQL database (UTF-8 charset):
+
+CREATE DATABASE punkmoney CHARACTER SET utf8 COLLATE utf8_general_ci;
+
 (2) Create your settings in /web/settings_template.py, then rename to settings.py. Be sure to add a template path (an absolute path to the template directory,) and your MySQL database credentials.
 (3) Run python manage.py syncdb to create the necessary tables
 (4) Run python manage.py runserver to check it's set up correctly.
