@@ -51,8 +51,8 @@ class Parser(Harvester):
                 promise = re.search('promise', tweet['content'], re.IGNORECASE)
                 transfer = re.search('transfer @(\w+)(.*)', tweet['content'], re.IGNORECASE)
                 thanks = re.match('@(\w+) thanks (for)?(.*)', tweet['content'], re.IGNORECASE)
-                offer = re.match('(i )?offer|offers (.*)', tweet['content'], re.IGNORECASE)
-                need = re.match('(i )?need|needs (.*)', tweet['content'], re.IGNORECASE)
+                offer = re.match('(i )?(offer[s]?) (.*)', tweet['content'], re.IGNORECASE)
+                need = re.match('(i )?(need[s]?) (.*)', tweet['content'], re.IGNORECASE)
                 close = re.match('@(\w+ )?close (.*)', tweet['content'], re.IGNORECASE)
                 request = re.match('@(\w+ )(i )?request(.*)', tweet['content'], re.IGNORECASE)
                 
@@ -365,7 +365,7 @@ class Parser(Harvester):
                 tweet['expiry'] = None
             
             # Get thing offered/needed
-            p = re.match('(.*)(offer)(.*)', statement)
+            p = re.match('(.*)(offer[s]?)(.*)', statement, re.IGNORECASE)
             if p:
                 if p.group(1).strip().lower() == 'i':
                     item = p.group(3)
@@ -432,7 +432,7 @@ class Parser(Harvester):
                 tweet['expiry'] = None
             
             # Get thing offered/needed
-            p = re.match('(.*)(need)(.*)', statement)
+            p = re.match('(.*)(need[s])(.*)', statement, re.IGNORECASE)
             if p:
                 if p.group(1).strip().lower() == 'i':
                     item = p.group(3)
