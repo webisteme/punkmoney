@@ -36,8 +36,6 @@ class Harvester(Connection):
             query = "SELECT max(tweet_id) FROM tracker_tweets"
             lastID = self.getSingleValue(query)
             
-            lastID = 201004598243229696
-            
             if lastID is not None:
                 tweets = self.TW.search(HASHTAG, since_id = lastID)
                 tweets_alt = self.TW.search(ALT_HASHTAG, since_id = lastID)
