@@ -36,6 +36,8 @@ class Harvester(Connection):
             query = "SELECT max(tweet_id) FROM tracker_tweets"
             lastID = self.getSingleValue(query)
             
+            lastID = 201004598243229696
+            
             if lastID is not None:
                 tweets = self.TW.search(HASHTAG, since_id = lastID)
                 tweets_alt = self.TW.search(ALT_HASHTAG, since_id = lastID)
@@ -81,7 +83,7 @@ class Harvester(Connection):
 
                     # Save data
                     self.logInfo("Saving tweet %s to database" % tweet.id)
-                    
+
                     query = "INSERT INTO tracker_tweets (timestamp, tweet_id, author, content, reply_to_id, url, display_url, img_url) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
                     params = (tweet.created_at, tweet.id, tweet.from_user.lower(), tweet.text, reply_to_id, url, display_url, img_url)
                            

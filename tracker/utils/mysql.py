@@ -32,7 +32,9 @@ class Connection(Logging):
                 MYSQL_HOST, 
                 MYSQL_USER, 
                 MYSQL_PASSWORD, 
-                MYSQL_DATABASE, 
+                MYSQL_DATABASE,
+                charset = "utf8", 
+                use_unicode = True,
             )
             self.cursor = self.db.cursor()
         except Exception, e:

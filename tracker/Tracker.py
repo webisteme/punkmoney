@@ -46,6 +46,7 @@ class Tracker(Parser):
             self.parseNew()
         except Exception, e:
             self.logError("Parser failed: %s" % e)
+    
 
 '''
 Run 
