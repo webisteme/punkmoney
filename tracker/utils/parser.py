@@ -281,7 +281,6 @@ class Parser(Harvester):
             
     # parseThanks
     # parse and save thanks
-    
     def parseThanks(self, tweet):
         try:
             self.logInfo("Parsing tweet %s [thanks]" % tweet['tweet_id'])
@@ -329,7 +328,7 @@ class Parser(Harvester):
                     
                 # Process thanks
                 self.updateNote(note['id'], 'status', 1)
-                self.createEvent(note['id'], tweet['tweet_id'], 1, tweet['created'], to_user, from_user)
+                self.createEvent(note['id'], tweet['tweet_id'], 1, tweet['created'], from_user, to_user)
                 
                 # Log thanks
                 message = '[Thanks] @%s thanked @%s for %s' % (to_user, from_user, message)
@@ -679,7 +678,7 @@ class Parser(Harvester):
                 params = (tweet['tweet_id'], tweet['author'].lower(), tweet['recipient'].lower(), tweet['message'], tweet['created'], None, 0, 0, 1)
                 self.queryDB(query, params)
                 # Create an event
-                self.createEvent(tweet['tweet_id'],1,1,tweet['created'],tweet['recipient'].lower(), tweet['author'].lower())
+                self.createEvent(tweet['tweet_id'],1,1,tweet['created'],tweet['author'].lower(), tweet['recipient'].lower())
             else:
                 self.logWarning('Note %s already exists' % tweet['tweet_id'])
                 return False
