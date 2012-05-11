@@ -50,9 +50,11 @@ MYSQL_SOCKET = '/tmp/mysql.sock'
 ''' 
 Set tweet to true to tweet syntax errors via the main Twitter account.
 Set debug to true to log debug messages
+TWIPM tweets a weekly summary of activity in the tracker.
 '''
 
 SETTINGS = {
     'tweet' : False,
     'debug' : False,
+    'twipm' : False,
 }
