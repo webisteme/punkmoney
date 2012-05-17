@@ -334,7 +334,7 @@ class Parser(Harvester):
                 self.logInfo('[T] @%s thanked @%s for %s' % (to_user, from_user, message))
                 
                 # Tweet event
-                self.sendTweet('@%s thanked @%s for %s http://www.punkmoney.org/note/%s' % (to_user, from_user, note['promise'], message))
+                self.sendTweet('@%s thanked @%s for %s http://www.punkmoney.org/note/%s' % (from_user, to_user, note['promise'], note['id']))
                 self.setParsed(tweet['tweet_id'])
                 
         except Exception, e:
