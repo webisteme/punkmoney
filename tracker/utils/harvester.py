@@ -16,8 +16,9 @@ import urllib2
 from urllib import urlencode
 import simplejson
 from pprint import pprint
+from logger import Logging
 
-class Harvester(Connection):
+class Harvester(Logging):
     
     def __init__(self):
         

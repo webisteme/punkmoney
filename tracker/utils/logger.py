@@ -11,12 +11,13 @@ Logging class.
 import os
 import re
 import sys
+from mysql import Connection
 import logging, logging.handlers
 from config import SETTINGS, LOG_PATH
 
 # Logging class
 
-class Logging():
+class Logging(Connection):
 
     # Set up logging
     def setupLogging(self):

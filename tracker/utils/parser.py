@@ -10,6 +10,7 @@ Main class for interpreting #PunkMoney statements.
 from mysql import Connection
 from harvester import Harvester
 from config import HASHTAG, ALT_HASHTAG, SETTINGS
+from objects import Event
 
 import re
 from datetime import datetime
@@ -23,7 +24,6 @@ Parser class
 class Parser(Harvester):
 
     def __init__(self):
-        
         self.setupLogging()
         self.connectDB()
         self.TW = self.connectTwitter()
@@ -55,13 +55,6 @@ class Parser(Harvester):
                 need = re.match('(i )?(need[s]?) (.*)', tweet['content'], re.IGNORECASE)
                 close = re.match('@(\w+ )?close (.*)', tweet['content'], re.IGNORECASE)
                 request = re.match('@(\w+ )(i )?request(.*)', tweet['content'], re.IGNORECASE)
-                
-                # If not recognised, exit here
-                '''
-                if not promise and not transfer and not thanks and not offer and not need and not close and not request:
-                    self.setParsed(tweet['tweet_id'], '-')
-                    raise Exception("Tweet was not recognised")
-                '''
                 
                 # strip urls from text
                 r = re.search("(.*)(?P<url>https?://[^\s]+)(.*)", tweet['content'], re.IGNORECASE)
@@ -204,9 +197,12 @@ class Parser(Harvester):
             # Processing promise
             self.setParsed(tweet['tweet_id'])
             self.createNote(tweet)
-            self.createEvent(tweet['tweet_id'], tweet['tweet_id'], 0, tweet['created'], tweet['author'], tweet['recipient'])
+            
+            E = Event(tweet['tweet_id'], tweet['tweet_id'], 0, tweet['created'], tweet['author'], tweet['recipient'])
+            E.save()
+
             self.sendTweet('@%s promised @%s %s http://www.punkmoney.org/note/%s' % (tweet['author'], tweet['recipient'], promise, tweet['tweet_id']))
-            self.logInfo('[Promise] @%s promised @%s %s.' % (tweet['author'], tweet['recipient'], tweet['tweet_id']))
+            self.logInfo('[P] @%s promised @%s %s.' % (tweet['author'], tweet['recipient'], tweet['tweet_id']))
             
         except Exception, e:
             self.logWarning("Processing promise %s failed: %s" % (tweet['tweet_id'], e))
@@ -268,11 +264,13 @@ class Parser(Harvester):
             # Process transfer
             self.setParsed(tweet['tweet_id'])
             self.updateNote(note['id'], 'bearer', to_user)
-            self.createEvent(note['id'], tweet['tweet_id'], 3, tweet['created'], from_user, to_user)
+            
+            # Create event
+            E = Event(note['id'], tweet['tweet_id'], 3, tweet['created'], from_user, to_user)
+            E.save()
             
             # Log transfer
-            message = '[Transfer] @%s transferred %s to @%s' % (tweet['author'], note['id'], to_user)
-            self.logInfo(message)
+            self.logInfo('[Tr] @%s transferred %s to @%s' % (tweet['author'], note['id'], to_user))
             self.setParsed(tweet['tweet_id'])
         except Exception, e:
             self.setParsed(tweet['tweet_id'], '-')
@@ -328,13 +326,17 @@ class Parser(Harvester):
                     
                 # Process thanks
                 self.updateNote(note['id'], 'status', 1)
-                self.createEvent(note['id'], tweet['tweet_id'], 1, tweet['created'], from_user, to_user)
+                
+                E = Event(note['id'], tweet['tweet_id'], 1, tweet['created'], from_user, to_user)
+                E.save()
                 
                 # Log thanks
-                message = '[Thanks] @%s thanked @%s for %s' % (to_user, from_user, message)
-                self.logInfo(message)
+                self.logInfo('[T] @%s thanked @%s for %s' % (to_user, from_user, message))
+                
+                # Tweet event
                 self.sendTweet('@%s thanked @%s for %s http://www.punkmoney.org/note/%s' % (to_user, from_user, note['promise'], message))
                 self.setParsed(tweet['tweet_id'])
+                
         except Exception, e:
             self.logWarning("Processing thanks %s failed: %s" % (tweet['tweet_id'], e))
             self.setParsed(tweet['tweet_id'], '-')
@@ -396,10 +398,16 @@ class Parser(Harvester):
             tweet['item'] = item
                 
             self.createOffer(4, tweet)
-            self.createEvent(tweet['tweet_id'], '0', 4, tweet['created'], tweet['author'], '')
-            # Log and tweet promise
-            self.sendTweet('[O] @%s offers %s http://www.punkmoney.org/note/%s' % (tweet['author'], item, tweet['tweet_id']))
+            
+            # Create event
+            E = Event(tweet['tweet_id'], '0', 4, tweet['created'], tweet['author'], '')
+            E.save()
+            
+            # Log event
             self.logInfo('[O] @%s offers %s.' % (tweet['author'], tweet['tweet_id']))
+            
+            # Tweet event
+            self.sendTweet('[O] @%s offers %s http://www.punkmoney.org/note/%s' % (tweet['author'], item, tweet['tweet_id']))
             self.setParsed(tweet['tweet_id'])
         except Exception, e:
             self.logWarning("Processing %s failed: %s" % (tweet['tweet_id'], e))
@@ -432,12 +440,12 @@ class Parser(Harvester):
                 tweet['expiry'] = None
             
             # Get thing offered/needed
-            p = re.match('(.*)(need[s])(.*)', statement, re.IGNORECASE)
+            p = re.match('(.*)(need[s]?)(.*)', statement, re.IGNORECASE)
             if p:
                 if p.group(1).strip().lower() == 'i':
                     item = p.group(3)
                 else:
-                    item = p.group(1).strip() + p.group(3)
+                    item = p.group(1).strip() + p.group(3)      
             else:
                 raise Exception("Item not found")
                 
@@ -463,10 +471,16 @@ class Parser(Harvester):
             tweet['item'] = item
 
             self.createOffer(5, tweet)
-            self.createEvent(tweet['tweet_id'], '0', 5, tweet['created'], tweet['author'], '')
-            # Log and tweet promise
-            self.sendTweet('[N] @%s needs %s http://www.punkmoney.org/note/%s' % (tweet['author'], item, tweet['tweet_id']))
+            
+            # Create event
+            E = Event(tweet['tweet_id'], '0', 5, tweet['created'], tweet['author'], '')
+            E.save()
+            
+            # Log event
             self.logInfo('[N] @%s needs %s.' % (tweet['author'], tweet['tweet_id']))
+            
+            # Tweet
+            self.sendTweet('[N] @%s needs %s http://www.punkmoney.org/note/%s' % (tweet['author'], item, tweet['tweet_id']))
             self.setParsed(tweet['tweet_id'])
         except Exception, e:
             self.logWarning("Processing %s failed: %s" % (tweet['tweet_id'], e))
@@ -502,8 +516,12 @@ class Parser(Harvester):
                     elif note['type'] == 10:
                         code = 11
                     
-                    self.createEvent(note['id'], tweet['tweet_id'], code, tweet['created'], tweet['author'], '')
-                    self.logInfo("Closed note %s" % note['id'])
+                    # Create event
+                    E = Event(note['id'], tweet['tweet_id'], code, tweet['created'], tweet['author'], '')
+                    E.save()
+                    
+                    # Log event
+                    self.logInfo("[X] '%s' closed note %s" % (tweet['author'], note['id']))
                     self.setParsed(tweet['tweet_id'])
                 elif tweet.get('reply_to_id', False) is False:
                     self.setParsed(tweet['tweet_id'], '-')
@@ -552,8 +570,7 @@ class Parser(Harvester):
             self.createRequest(tweet)
             
             # Log
-            message = '[Request] @%s requested %s from @%s' % (tweet['author'], tweet['message'], tweet['recipient'])
-            self.logInfo(message)
+            self.logInfo('[R] @%s requested %s from @%s' % (tweet['author'], tweet['message'], tweet['recipient']))
             self.sendTweet('[R] @%s requested %s from @%s http://www.punkmoney.org/note/%s' % (tweet['author'], tweet['message'], tweet['recipient'], tweet['tweet_id']))
             self.setParsed(tweet['tweet_id'])
         except Exception, e:
@@ -677,8 +694,10 @@ class Parser(Harvester):
                 query = "INSERT INTO tracker_notes(id, issuer, bearer, promise, created, expiry, status, transferable, type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 params = (tweet['tweet_id'], tweet['author'].lower(), tweet['recipient'].lower(), tweet['message'], tweet['created'], None, 0, 0, 1)
                 self.queryDB(query, params)
+                
                 # Create an event
-                self.createEvent(tweet['tweet_id'],1,1,tweet['created'],tweet['author'].lower(), tweet['recipient'].lower())
+                E = Event(tweet['tweet_id'],1,1,tweet['created'],tweet['author'], tweet['recipient'])
+                E.save()
             else:
                 self.logWarning('Note %s already exists' % tweet['tweet_id'])
                 return False
@@ -697,31 +716,13 @@ class Parser(Harvester):
                 params = (tweet['tweet_id'], tweet['author'].lower(), tweet['recipient'].lower(), tweet['message'], tweet['created'], tweet['expiry'], 0, 0, 10)
                 self.queryDB(query, params)
                 # Create an event
-                self.createEvent(tweet['tweet_id'],10,10,tweet['created'],tweet['recipient'].lower(), tweet['author'].lower())
+                E = Event(tweet['tweet_id'],10,10,tweet['created'], tweet['author'], tweet['recipient'])
+                E.save()
             else:
                 self.logWarning('Note %s already exists' % tweet['tweet_id'])
                 return False
         except Exception, e:
             raise Exception("Creating thanks note from tweet %s failed: %s" % (tweet['tweet_id'], e))
-        else:
-            return True
-    
-    # createEvent
-    # Create an event
-    def createEvent(self, note_id, tweet_id, typ, timestamp, from_user, to_user):
-        from_user = from_user.lower()
-        to_user = to_user.lower()
-        try:
-            query = "SELECT id FROM tracker_events WHERE tweet_id = '%s' AND note_id = '%s'" % (tweet_id, note_id)
-            if self.getSingleValue(query) is None:                
-                query = "INSERT INTO tracker_events(note_id, tweet_id, type, timestamp, from_user, to_user) VALUES (%s, %s, %s, %s, %s, %s)"
-                params = (note_id, tweet_id, typ, timestamp, from_user, to_user)
-                self.queryDB(query, params)
-            else:
-                self.logWarning("Event %s already exists" % tweet_id)
-                return False
-        except Exception, e:
-            raise Exception("Creating event for tweet %s failed: %s" % (tweet_id, e))
         else:
             return True
     
@@ -810,9 +811,11 @@ class Parser(Harvester):
                 # request
                 elif note[3] == 10:
                     code = 12
-
                 
-                self.createEvent(note[0], note[0], code, datetime.now(), note[2], note[1])
+                # Create event
+                E = Event(note[0], note[0], code, datetime.now(), note[2], note[1])
+                E.save()
+                
         except Exception, e:
             raise Exception("Cleaning database failed: %s" % e)
             

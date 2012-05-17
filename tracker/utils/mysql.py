@@ -13,11 +13,10 @@ import sys
 import MySQLdb
 
 from config import MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE
-from logger import Logging
 
 # Main connection class
 
-class Connection(Logging):
+class Connection():
 
     def __init__(self):
         """Empty constructor; takes no argument"""
@@ -26,19 +25,16 @@ class Connection(Logging):
     # connectDB
     # Creates a database connection
     def connectDB(self):
-        try:
-            self.logInfo("Connecting to the database")
-            self.db = MySQLdb.connect(
-                MYSQL_HOST, 
-                MYSQL_USER, 
-                MYSQL_PASSWORD, 
-                MYSQL_DATABASE,
-                charset = "utf8", 
-                use_unicode = True,
-            )
-            self.cursor = self.db.cursor()
-        except Exception, e:
-            self.logError("Database connection failed: %s" % e)
+        #self.logInfo("Connecting to the database")
+        self.db = MySQLdb.connect(
+            MYSQL_HOST, 
+            MYSQL_USER, 
+            MYSQL_PASSWORD, 
+            MYSQL_DATABASE,
+            charset = "utf8", 
+            use_unicode = True,
+        )
+        self.cursor = self.db.cursor()
         
     # Get single value
     # Fetches and returns a single value   
@@ -47,7 +43,7 @@ class Connection(Logging):
             self.cursor.execute(query)
             value = self.cursor.fetchone()
         except Exception, e:
-            self.logError("Error querying database: %s" % e)
+            raise Exception("Error querying database: %s" % e)
         else:
             if value is not None:
                 return value[0]
@@ -61,7 +57,7 @@ class Connection(Logging):
             self.cursor.execute(query)
             value = self.cursor.fetchall()
         except Exception, e:
-            self.logError("Error querying database: %s" % e)
+            raise Exception("Error querying database: %s" % e)
         else:
             if value is ():
                 return {} 
@@ -75,7 +71,7 @@ class Connection(Logging):
             self.cursor.execute(query, params)
             self.db.commit()
         except Exception, e:
-            self.logError("Error querying database: %s" % e)
+            raise Exception("Error querying database: %s" % e)
         else:
             return True            
             
