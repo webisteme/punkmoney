@@ -18,7 +18,6 @@ import time
 
 """
 Event 
-
 """
 
 class Event(Connection):
@@ -67,4 +66,5 @@ class Event(Connection):
             raise Exception("Creating event for tweet %s failed: %s" % (self.tweet_id, e))
         else:
             return True
+
 

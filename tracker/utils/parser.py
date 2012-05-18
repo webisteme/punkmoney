@@ -50,11 +50,11 @@ class Parser(Harvester):
                 # Determine tweet type
                 promise = re.search('promise', tweet['content'], re.IGNORECASE)
                 transfer = re.search('transfer @(\w+)(.*)', tweet['content'], re.IGNORECASE)
-                thanks = re.match('@(\w+) thanks (for)?(.*)', tweet['content'], re.IGNORECASE)
-                offer = re.match('(i )?(offer[s]?) (.*)', tweet['content'], re.IGNORECASE)
-                need = re.match('(i )?(need[s]?) (.*)', tweet['content'], re.IGNORECASE)
+                thanks = re.search('@(\w+) thanks (for)?(.*)', tweet['content'], re.IGNORECASE)
+                offer = re.search('(i )?(offer[s]?) (.*)', tweet['content'], re.IGNORECASE)
+                need = re.search('(i )?(need[s]?) (.*)', tweet['content'], re.IGNORECASE)
                 close = re.match('@(\w+ )?close (.*)', tweet['content'], re.IGNORECASE)
-                request = re.match('@(\w+ )(i )?request(.*)', tweet['content'], re.IGNORECASE)
+                request = re.search('@(\w+ )(i )?request(.*)', tweet['content'], re.IGNORECASE)
                 
                 # strip urls from text
                 r = re.search("(.*)(?P<url>https?://[^\s]+)(.*)", tweet['content'], re.IGNORECASE)
@@ -588,7 +588,13 @@ class Parser(Harvester):
         try:
             tweets = []
             for tweet in self.getRows("SELECT timestamp, tweet_id, author, content, reply_to_id FROM tracker_tweets WHERE parsed is Null ORDER BY timestamp ASC"):
-                tweet = {'created' : tweet[0], 'tweet_id' : tweet[1], 'author' : tweet[2], 'content' : tweet[3], 'reply_to_id' : tweet[4]}
+                tweet = {
+                    'created' : tweet[0], 
+                    'tweet_id' : tweet[1], 
+                    'author' : tweet[2], 
+                    'content' : tweet[3], 
+                    'reply_to_id' : tweet[4]
+                }
                 tweets.append(tweet)
         except Exception, e:
             raise Exception("Getting tweets from database failed: %s" % e)
@@ -813,7 +819,7 @@ class Parser(Harvester):
                     code = 12
                 
                 # Create event
-                E = Event(note[0], note[0], code, datetime.now(), note[2], note[1])
+                E = Event(note[0], 0, code, datetime.now(), note[2], note[1])
                 E.save()
                 
         except Exception, e:
