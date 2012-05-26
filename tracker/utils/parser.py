@@ -44,20 +44,17 @@ class Parser(Harvester):
                         self.setParsed(tweet['tweet_id'])
                         raise Exception("Tweet is a retweet")
                         
-                if tweet['author'] == 'punk_money':
-                    raise Exception("Tweet by @punk_money")
-                        
                 # Save tweet author to user database
                 self.saveUser(tweet['author'])
                 
                 # Determine tweet type
-                promise = re.search('promise', tweet['content'], re.IGNORECASE)
+                promise = re.search('promise ', tweet['content'], re.IGNORECASE)
                 transfer = re.search('transfer @(\w+)(.*)', tweet['content'], re.IGNORECASE)
                 thanks = re.search('@(\w+) thanks (for)?(.*)', tweet['content'], re.IGNORECASE)
                 offer = re.search('(i )?(offer[s]?) (.*)', tweet['content'], re.IGNORECASE)
                 need = re.search('(i )?(need[s]?) (.*)', tweet['content'], re.IGNORECASE)
                 close = re.match('@(\w+ )?close (.*)', tweet['content'], re.IGNORECASE)
-                request = re.search('@(\w+ )(i )?request(.*)', tweet['content'], re.IGNORECASE)
+                request = re.search('@(\w+ )(i )?request (.*)', tweet['content'], re.IGNORECASE)
                 
                 # strip urls from text
                 r = re.search("(.*)(?P<url>https?://[^\s]+)(.*)", tweet['content'], re.IGNORECASE)
