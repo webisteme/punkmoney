@@ -56,10 +56,21 @@
         
 		
 		<p>Created: <b>{{ note.created }}</b><br>
-		Expiry: <b>{{ note.expiry }}</b></p>
+        {% ifnotequal note.expiry None %}
+		  Expiry: <b>{{ note.expiry }}</b>
+		{% endifnotequal %}
+		</p>
 		
 		{% if url %}
 		  Link: <a href="{{ url }}"><b>{{ display_url }}</b></a><br>
+		{% endif %}
+		
+		Tags:
+        <!-- TAGS -->
+        {% if tags %}
+    		{% for tag in tags %}
+    		      &nbsp;<span id="promise"><a href="/t/{{tag}}">#{{ tag }}</a></span>
+    		{% endfor %}
 		{% endif %}
 	    
 	   

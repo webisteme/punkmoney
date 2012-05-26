@@ -10,6 +10,10 @@ urlpatterns = patterns('',
     
     url(r'^tracker/$', 'tracker.views.tracker', name='tracker'),
     
+    url(r'^t/(?P<tag_1>\w+)/$', 'tracker.views.tracker', name='tracker'),
+    url(r'^t/(?P<tag_1>\w+)/(?P<tag_2>\w+)/$', 'tracker.views.tracker', name='tracker'),
+    url(r'^t/(?P<tag_1>\w+)/(?P<tag_2>\w+)/(?P<tag_3>\w+)/$', 'tracker.views.tracker', name='tracker'),
+    
     # ticker url patterns
     # max (optional) < user (optional) < type (optional) < note (optional)
     
@@ -23,9 +27,21 @@ urlpatterns = patterns('',
     url(r'^ticker/type/(?P<type>\d+)$', 'tracker.views.ticker', name='ticker'),
     url(r'^ticker/note/(?P<noteid>\d+)$', 'tracker.views.ticker', name='ticker'),
     
+    # Tags only
+    
+    url(r'^ticker/tags/(?P<tag_1>\w+)/$', 'tracker.views.ticker', name='ticker'),
+    url(r'^ticker/tags/(?P<tag_1>\w+)/(?P<tag_2>\w+)/$', 'tracker.views.ticker', name='ticker'),
+    url(r'^ticker/tags/(?P<tag_1>\w+)/(?P<tag_2>\w+)/(?P<tag_3>\w+)/$', 'tracker.views.ticker', name='ticker'),
+    
+    # Type with tags
+    
+    url(r'^ticker/type/(?P<type>\d+)/tags/(?P<tag_1>\w+)/$', 'tracker.views.ticker', name='ticker'),
+    url(r'^ticker/type/(?P<type>\d+)/tags/(?P<tag_1>\w+)/(?P<tag_2>\w+)/$', 'tracker.views.ticker', name='ticker'),
+    url(r'^ticker/type/(?P<type>\d+)/tags/(?P<tag_1>\w+)/(?P<tag_2>\w+)/(?P<tag_3>\w+)/$', 'tracker.views.ticker', name='ticker'),
+    
     # search
     
-   url(r'^search/(?P<term>\w+)$', 'tracker.views.search', name='search'),
+    url(r'^search/(?P<term>.*)$', 'tracker.views.search', name='search'),
     
     # other patterns
     

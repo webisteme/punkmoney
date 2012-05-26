@@ -288,7 +288,7 @@ class Parser(Harvester):
             if tweet['reply_to_id'] is None:
                 h = re.search('(.*)(%s|%s)(.*)' % (HASHTAG, ALT_HASHTAG), tweet['message'], re.IGNORECASE)
                 if h:
-                    tweet['message'] = h.group(1).strip() + h.group(3).strip()
+                    tweet['message'] = h.group(1) + h.group(3).strip()
                 
                 self.createThanks(tweet)
                 tweet['message'] = 'for ' + tweet['message']

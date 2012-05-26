@@ -72,19 +72,37 @@ class Harvester(Logging):
                         url = url_entity.get('expanded_url', None)
                         display_url =  url_entity.get('display_url', None)    
                         
-                    # Extract hashtags
-                    tags = {}; k = 0
+                    # Extract hashtags. (Defaults are None)
+                    k = 0
+                    tags = [None, None, None]
                     for hashtag in t.get('entities', {}).get('hashtags', []):
-                        tags[k] = hashtag.get('text')
-                        k = k + 1
+                    
+                        tag = hashtag.get('text').lower()
+                    
+                        if tag != HASHTAG[1:] and tag != ALT_HASHTAG[1:] and k <= 2:
+                            tags[k] = tag
+                            k = k + 1
 
                     reply_to_id = t.get('in_reply_to_status_id', None)
+                    
+                    # Get tag IDs
+                    k = 0
+                    tag_ids = [None, None, None]
+                    for tag in tags:
+                        if tag is not None:
+                            query = "SELECT id FROM tracker_tags WHERE tag = '%s'" % tag
+                            while self.getSingleValue(query) is None:
+                                new_tag = "INSERT INTO tracker_tags (tag) VALUES (%s)"
+                                self.queryDB(new_tag, (tag))
+                            else:
+                                tag_ids[k] = self.getSingleValue(query)
+                            k = k + 1
 
                     # Save data
                     self.logInfo("Saving tweet %s to database" % tweet.id)
 
-                    query = "INSERT INTO tracker_tweets (timestamp, tweet_id, author, content, reply_to_id, url, display_url, img_url) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-                    params = (tweet.created_at, tweet.id, tweet.from_user.lower(), tweet.text, reply_to_id, url, display_url, img_url)
+                    query = "INSERT INTO tracker_tweets (timestamp, tweet_id, author, content, reply_to_id, url, display_url, img_url, tag_1, tag_2, tag_3) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                    params = (tweet.created_at, tweet.id, tweet.from_user.lower(), tweet.text, reply_to_id, url, display_url, img_url, tag_ids[0], tag_ids[1], tag_ids[2])
                            
                     self.queryDB(query, params)
                     

@@ -31,7 +31,13 @@ class trustlist(models.Model):
     trusted = models.CharField(max_length=90, blank=True)
     class Meta:
         db_table = u'tracker_trust_list'
-
+        
+class tags(models.Model):
+    id = models.AutoField(primary_key=True)
+    tag = models.CharField(max_length=30)
+    class Meta:
+        db_table = u'tracker_tags'
+        
 class tweets(models.Model):
     id = models.AutoField(primary_key=True)
     timestamp = models.DateTimeField(null=True, blank=True)
@@ -43,6 +49,9 @@ class tweets(models.Model):
     url = models.CharField(max_length=420, null=True, blank=True)
     display_url = models.CharField(max_length=420, null=True, blank=True)
     img_url = models.CharField(max_length=420, null=True, blank=True)
+    tag_1 = models.IntegerField(null=True, blank=True)
+    tag_2 = models.IntegerField(null=True, blank=True)
+    tag_3 = models.IntegerField(null=True, blank=True)
     class Meta:
         db_table = u'tracker_tweets'
 

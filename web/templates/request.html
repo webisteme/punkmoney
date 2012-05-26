@@ -64,11 +64,22 @@
     		Bearer: <b><a href="/user/{{ note.bearer }}">{{ note.bearer }}</a></b></p>
     		
 		{% if url %}
-		  Url: <a href="{{ url }}"><b>{{ display_url }}</b></a>
+		  Link: <a href="{{ url }}"><b>{{ display_url }}</b></a><br>
 		{% endif %}
 
 		<p>Created: <b>{{ note.created }}</b><br>
-		Expires: <b>{{ note.expiry }}</b><br></p>
+        {% ifnotequal note.expiry None %}
+		  Expiry: <b>{{ note.expiry }}</b>
+		{% endifnotequal %}
+		</p>
+		
+        <!-- TAGS -->
+        {% if tags %}
+        Tags:
+    		{% for tag in tags %}
+    		      &nbsp;<span id="tag"><a href="/t/{{tag}}">#{{ tag }}</a></span>
+    		{% endfor %}
+		{% endif %}
 	
 	</div>
 	

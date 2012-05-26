@@ -6,22 +6,46 @@
 	<script type="text/javascript">
 	
 	$('document').ready( function(){
+
+	   tag_1 = '{{tag_1}}';
+	   tag_2 = '{{tag_2}}';
+	   tag_3 = '{{tag_3}}';
+		   
+	   if (tag_1 != 'None'){
+	       
+	       ticker_url = '/ticker/tags/' + tag_1;
+	       
+	       if (tag_2 != 'None'){
+	           ticker_url += '/' + tag_2; 
+	       }
+	       
+	       if (tag_3 != 'None'){
+	           ticker_url += '/' + tag_3; 
+	       }
+	       
+	   } else {
+	       ticker_url = '/ticker/';
+	   }
+
 	
-	   loadTicker("#ticker",'/ticker/');
-	
+	   loadTicker("#ticker",ticker_url);
+	   
 	})
 	
 	function changeTicker(url, type){
-	
+
 		clearTimeout(timer);
 
 		$.get(url, function(data){
 
 			$("#ticker").html(data);
 			
-			title = 'Latest ' + type;
-			
-			$("h3#title").html(title);
+			if (type != 'activity'){
+                 title = '> ' + type;
+            } else {
+                title = '';
+            }
+            $("span#type_name").html(title);
 
 		});
 		
@@ -37,27 +61,55 @@
 
         <!-- TITLE -->
         
-        <div class="span-10">
+        <div class="span-14">
+    
+            <h4>
+            
+            <b><a href="/tracker">#PunkMoney</a></b>
+            
+            {% if not tag_1 %}
+            
+            <span id="type_name">(Updates once per minute)</span>
+            
+            {% else %} {% if tag_1 %}
+            
+<!--             <span id="type_name"></span> -->
+            
+            {% endif %}
+            
+            {% endif %}
+            
+            {% if tag_1 %} > <a class="tag" href="/t/{{tag_1}}">#{{ tag_1 }}</a> {% endif %}
+            
+            {% if tag_2 %} > <a class="tag" href="/t/{{tag_1}}/{{tag_2}}">#{{ tag_2 }}</a> {% endif %}
+            
+            {% if tag_3 %} > <a class="tag" href="/t/{{tag_1}}/{{tag_2}}//{{tag_3}}">#{{ tag_3 }}</a> {% endif %}
+            
+            
+            
+            {% if tag_1 %}
+            <span class="tag" id="type_name"></span>
+            {% endif %}
+            
+            </h4>
 
-    		<h3 id="title" style='display:inline'> Latest activity </h3>
+    	    <!-- TICKER -->    	    
+    		<div id="ticker">
     		
-    		<i style='display:inline'>(Updates once per minute.)</i> <br />
     		
-    		<div id="welcome">
-    			<span id="expiration">New to #PunkMoney? Find out more <b><a href="/help">here.</a></b></span>
     		</div>
-		
-		  <hr class="space">
 		
 		</div>
 		
 		<!-- CONTROLS -->
 		
-		<span id="controls" class="span-6 prepend-2 last" style:'display:inline'>
+		<div class="span-5 last">
 		
 		<p align="right">
-			<a href="javascript:changeTicker('/ticker/', 'activity')">[ All ]</a>
-			
+		
+		   {% if not tag_slug %}
+		
+            <a href="javascript:changeTicker('/ticker/', 'activity')">[ All ]</a>
 			<a href="javascript:changeTicker('/ticker/type/0', 'promises')"><span id="promised">[ P ]</span></a>
             <a href="javascript:changeTicker('/ticker/type/1', 'thanks')"><span id="redemption">[ T ]</span></a>
 			<a href="javascript:changeTicker('/ticker/type/4', 'offers')"><span id="offer">[ O ]</span></a>
@@ -65,19 +117,62 @@
             <a href="javascript:changeTicker('/ticker/type/10', 'requests')"><span id="request">[ R ]</span></a>
 			<a href="javascript:changeTicker('/ticker/type/2', 'expirations')"><span id="expiration">[ X ]</span></a>
 			
-        </p>
+			{% else %} {% if tag_slug %}
 
-		</span>
-		
-		
-		<br />
-		
-	    <!-- TICKER -->
-	    
-		<div id="ticker" class="span-17">
-		
-		
-		
+            <a href="javascript:changeTicker('/ticker/tags/{{ tag_slug }}', 'activity')">[ All ]</a>
+            
+			<a href="javascript:changeTicker('/ticker/type/0/tags/{{ tag_slug }}', 'promises')"><span id="promised">[ P ]</span></a>
+            <a href="javascript:changeTicker('/ticker/type/1/tags/{{ tag_slug }}', 'thanks')"><span id="redemption">[ T ]</span></a>
+			<a href="javascript:changeTicker('/ticker/type/4/tags/{{ tag_slug }}', 'offers')"><span id="offer">[ O ]</span></a>
+			<a href="javascript:changeTicker('/ticker/type/5/tags/{{ tag_slug }}', 'needs')"><span id="need">[ N ]</span></a>
+            <a href="javascript:changeTicker('/ticker/type/10/tags/{{ tag_slug }}', 'requests')"><span id="request">[ R ]</span></a>
+			<a href="javascript:changeTicker('/ticker/type/2/tags/{{ tag_slug }}', 'expirations')"><span id="expiration">[ X ]</span></a>
+			
+			{% endif %}			
+			{% endif %}
+			
+        </p>
+        
+        {% if related_tags %}
+
+            <p align="right">
+            {% for tag in related_tags %}
+
+                {% ifequal tag_1 None %}
+                
+                    <a class="tag" href="/t/{{ tag.0 }}">#{{ tag.0 }}</a> 
+                
+                {% endifequal %}
+            
+                {% if tag_3 %} 
+                
+                    + <a class="tag" href="/t/{{tag_1}}/{{tag_2}}/{{ tag.0 }}">#{{ tag.0 }}</a> 
+                
+                {% else %}{% if tag_2 %} 
+                
+                    + <a class="tag" href="/t/{{tag_1}}/{{tag_2}}/{{ tag.0 }}">#{{ tag.0 }}</a> 
+                
+                {% else %} {% if tag_1 %} 
+                
+                    + <a class="tag" href="/t/{{tag_1}}/{{ tag.0 }}">#{{ tag.0 }}</a> 
+                
+                {% endif %} {% endif %} {% endif %}
+                
+                ({{tag.1}})
+                
+                <br>
+                
+            {% endfor %}
+            
+            </p>
+        
+        {% endif %}
+
 		</div>
+		
+		
+		
+		
+		
 
 {% endblock %}

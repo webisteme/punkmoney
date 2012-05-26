@@ -32,6 +32,20 @@
     		Bearer: <b><a href="/user/{{ note.bearer }}">{{ note.bearer }}</a></b></p>
 
 		<p>Created: <b>{{ note.created }}</b><br></p>
+		
+		{% if url %}
+		<p>
+		  Link: <a href="{{ url }}"><b>{{ display_url }}</b></a><br>
+        </p>
+		{% endif %}
+		
+        <!-- TAGS -->
+        {% if tags %}
+        Tags:
+    		{% for tag in tags %}
+    		      &nbsp;<span id="tag"><a href="/t/{{tag}}">#{{ tag }}</a></span>
+    		{% endfor %}
+		{% endif %}
 	
 	</div>
 	

@@ -8,7 +8,10 @@ PunkMoney 0.2 :: Configuration File
 
 # COMMUNITY
 '''
-Currency hashtag, name of trustlist and seed_user to crawl from (no '@').
+Currency hashtag, name of trustlist and seed_user to crawl from (no '@'). Must be lowercase!
+
+Please use a different hashtag for testing.
+
 '''
 
 HASHTAG = '#punkmoney'

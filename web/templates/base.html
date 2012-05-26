@@ -27,12 +27,12 @@
 		function search(){
 		
 			term = $('input#searchbox').val();
-		
+		  
 			if (term.charAt(0) == '@'){
 				term = term.substring(1);
 				}
 				
-			url = '/search/' + term;
+			url = '/search/' + escape(term);
 			
 			$.get(url, function(data){
 
@@ -72,7 +72,7 @@
 			
 			<div id="search">
 				<img src="/static/search.png" id="search_icon">
-				<input type="search" id="searchbox" placeholder="Tweet ID or Username" size="25" onchange="javascript:search()">
+				<input type="search" id="searchbox" placeholder="Tag(s) or username" size="25" onchange="javascript:search()">
 			</div>
 
 		</div>
@@ -83,7 +83,7 @@
 	
 	<!-- NAVIGATION -->
 	
-	<div id="nav" class="span-2 prepend-1">
+	<div id="nav" class="span-1 prepend-1">
 	
 		<ui>
 		
@@ -133,7 +133,7 @@
 	
 	<!-- MAIN -->
 
-	<div id="main" class="span-18 prepend-2 last">
+	<div id="main" class="span-19 prepend-2 last">
 	<hr class="space">
         
 		{% block main %}

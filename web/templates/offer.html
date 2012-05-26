@@ -49,24 +49,37 @@
             <p style='display:inline'>[EXPIRED]</p>
     		
         {% endifequal %}
+        
+        <hr class="space">        
+
+        Issuer: <b><a href="/user/{{ note.issuer }}">{{ note.issuer }}</a></b>
     
-        <hr class="space">
-    		    	
-<!--     <hr class="space"> -->
-    	
-    <p>Issuer: <b><a href="/user/{{ note.issuer }}">{{ note.issuer }}</a></b></p>
-		
-				<!-- CONDITION -->
+		<!-- TAGS -->
+
+        <!-- CONDITION -->
 		
 		{% if url %}
-		  Url: <a href="{{ url }}"><b>{{ display_url }}</b></a>
+		  Link: <a href="{{ url }}"><b>{{ display_url }}</b></a>
 		{% endif %}
 		
 		<p>Created: <b>{{ note.created }}</b><br>
-		Expiry: <b>{{ note.expiry }}</b></p>
+		
+		{% ifnotequal note.expiry None %}
+		Expiry: <b>{{ note.expiry }}</b>
+		{% endifnotequal %}
+		
+		</p>
 		
 		{% if note.conditional %}
         <p>Condition: <b>{{ note.conditional }}</b></p>
+		{% endif %}
+
+        <!-- TAGS -->
+        {% if tags %}
+        Tags:
+    		{% for tag in tags %}
+    		      &nbsp;<span id="tag"><a href="/t/{{tag}}">#{{ tag }}</a></span>
+    		{% endfor %}
 		{% endif %}
 	
 	</div>
