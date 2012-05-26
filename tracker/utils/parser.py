@@ -44,6 +44,9 @@ class Parser(Harvester):
                         self.setParsed(tweet['tweet_id'])
                         raise Exception("Tweet is a retweet")
                         
+                if tweet['author'] == 'punk_money':
+                    raise Exception("Tweet by @punk_money")
+                        
                 # Save tweet author to user database
                 self.saveUser(tweet['author'])
                 
