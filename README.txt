@@ -1,13 +1,16 @@
 '''
 
-PunkMoney 0.22 by Eli Gothill
+PunkMoney 0.25 
+by Eli Gothill (@webisteme)
+
 www.punkmoney.org
+www.webisteme.com/blog
 
 '''
 
 ABOUT
 
-#PunkMoney is a set of natual language protocols which enable a gift economy on Twitter. PunkMoney 0.22 is the second iteration of the #PunkMoney tracker for finding, interpreting and recording #PunkMoney statements.
+#PunkMoney is a set of natual language protocols which enable a gift economy on Twitter. PunkMoney 0.25 is the second iteration of the #PunkMoney tracker for finding, interpreting and recording #PunkMoney statements.
 
 To find out more about #PunkMoney, visit http://www.punkmoney.org
 
