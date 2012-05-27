@@ -62,7 +62,6 @@ class Parser(Harvester):
                     tweet['content'] = r.group(1) + ' ' + r.group(3) 
                 
                 # Parse tweet according to type
-                
                 if promise:
                     self.parsePromise(tweet)
                 
@@ -106,104 +105,156 @@ class Parser(Harvester):
     
     # parsePromise
     # parses and saves a new promise
-    def parsePromise(self, tweet):    
-        try:
-            # Tweet flag default true
-            tweet_errors = True
+    def parsePromise(self, tweet):
+        
+        # If this promise is a reply with no content, create promise from note it is a reply to
+        r = re.match('@(\w+) promise %s|%s' % (HASHTAG, ALT_HASHTAG), tweet['content'], re.IGNORECASE)
+        
+        if r and tweet.get('reply_to_id', None) is not None:
+        
+            note = self.getNote(tweet['reply_to_id'])
+            
+            tweet['recipient'] = note['issuer']
 
-            # Strip out hashtag
-            h = re.search('(.*)(%s|%s)(.*)' % (HASHTAG, ALT_HASHTAG), tweet['content'], re.IGNORECASE)
-            if h:
-                statement = h.group(1) + h.group(3)
+            if note['type'] == 10:
+                if note['bearer'].strip() != tweet['author'].strip():
+                    raise Exception('Promise issued by non-bearer')
+                else:
+                    tweet['issuer'] = tweet['author']
             else:
-                raise Exception("Hashtag not found")
+                tweet['issuer'] = tweet['author']
             
-            # Get recipient
-            r = re.search('(.*)@(\w+)(.*)', statement)
-            
-            if r:
-                tweet['recipient'] = r.group(2)
-                statement = r.group(1).strip() + r.group(3)
-                self.saveUser(tweet['recipient'], intro=True)
-                
-            else:
-                # (Don't tweet this as an error)
-                tweet_errors = False;
-                raise Exception("Recipient not found")
-            
-            # Check not to self
-            if tweet['recipient'] == tweet['author']:
-                raise Exception("Issuer and recipient are the same")
-                
             # Check Transferability (optional)
-            t = re.match('(.*)( NT )(.*)', statement, re.IGNORECASE)
-            
+            t = re.match('(.*)( NT )(.*)', tweet['content'], re.IGNORECASE)
             if t:
                 tweet['transferable'] = False
-                statement = t.group(1) + t.group(3)
             else:
                 tweet['transferable'] = True
-        
-        
+                
+            tweet['promise'] = note['promise']
+
             # Check expiry (optional)
             ''' 'Expires in' syntax '''
             
-            e = re.match('(.*) Expires in (\d+) (\w+)(.*)', statement, re.IGNORECASE)
+            e = re.match('(.*) Expires in (\d+) (\w+)(.*)', tweet['content'], re.IGNORECASE)
             
             if e:
                 num = e.group(2)
                 unit = e.group(3)
                 tweet['expiry'] = self.getExpiry(tweet['created'], num, unit)
-                statement = e.group(1) + e.group(4)
             else:
                 tweet['expiry'] = None
                 
+            tweet_errors = False
+            tweet['condition'] = None
             
-            # Get condition
-            c = re.match('(.*)( if )(.*)', statement, re.IGNORECASE)
+            # Close request
+            if note['type'] == 10:
+                self.updateNote(note['id'], 'status', 1)
+                E = Event(note['id'], tweet['tweet_id'], 11, tweet['created'], tweet['author'], tweet['recipient'])
+                E.save()
             
-            if c:
-                tweet['condition'] = c.group(3)
-            else:
-                tweet['condition'] = None
-        
-        
-            # Get promise
-            p = re.match('(.*)(promise)(.*)', statement, re.IGNORECASE)
-            if p:
-                if p.group(1).strip().lower() == 'i':
-                    promise = p.group(3)
+        # If this is an original promise...
+        else:
+            try:
+                # Tweet flag default true
+                tweet_errors = True
+    
+                # Strip out hashtag
+                h = re.search('(.*)(%s|%s)(.*)' % (HASHTAG, ALT_HASHTAG), tweet['content'], re.IGNORECASE)
+                if h:
+                    statement = h.group(1) + h.group(3)
                 else:
-                    promise = p.group(1).strip() + p.group(3)
-            else:
-                raise Exception("Promise not found")
+                    raise Exception("Hashtag not found")
                 
+                # Get recipient
+                r = re.search('(.*)@(\w+)(.*)', statement)
+                
+                if r:
+                    tweet['recipient'] = r.group(2)
+                    statement = r.group(1).strip() + r.group(3)
+                    self.saveUser(tweet['recipient'], intro=True)
+                    
+                else:
+                    # (Don't tweet this as an error)
+                    tweet_errors = False;
+                    raise Exception("Recipient not found")
+                
+                # Check not to self
+                if tweet['recipient'] == tweet['author']:
+                    raise Exception("Issuer and recipient are the same")
+                    
+                # Check Transferability (optional)
+                t = re.match('(.*)( NT )(.*)', statement, re.IGNORECASE)
+                
+                if t:
+                    tweet['transferable'] = False
+                    statement = t.group(1) + t.group(3)
+                else:
+                    tweet['transferable'] = True
             
-            # Clean up promise 
-            '''
-            Remove trailing white space, full stop and word 'you' (if found)
-            '''
             
-            promise = promise.strip()
+                # Check expiry (optional)
+                ''' 'Expires in' syntax '''
+                
+                e = re.match('(.*) Expires in (\d+) (\w+)(.*)', statement, re.IGNORECASE)
+                
+                if e:
+                    num = e.group(2)
+                    unit = e.group(3)
+                    tweet['expiry'] = self.getExpiry(tweet['created'], num, unit)
+                    statement = e.group(1) + e.group(4)
+                else:
+                    tweet['expiry'] = None
+                    
+                
+                # Get condition
+                c = re.match('(.*)( if )(.*)', statement, re.IGNORECASE)
+                
+                if c:
+                    tweet['condition'] = c.group(3)
+                else:
+                    tweet['condition'] = None
             
-            while promise[-1] == '.':
-                promise = promise[:-1]
-        
-            if promise[0:4] == 'you ':
-                promise = promise[4:]
             
-            tweet['promise'] = promise
+                # Get promise
+                p = re.match('(.*)(promise)(.*)', statement, re.IGNORECASE)
+                if p:
+                    if p.group(1).strip().lower() == 'i':
+                        promise = p.group(3)
+                    else:
+                        promise = p.group(1).strip() + p.group(3)
+                else:
+                    raise Exception("Promise not found")
+                    
+                
+                # Clean up promise 
+                '''
+                Remove trailing white space, full stop and word 'you' (if found)
+                '''
+                
+                promise = promise.strip()
+                
+                while promise[-1] == '.':
+                    promise = promise[:-1]
             
-            # Processing promise
+                if promise[0:4] == 'you ':
+                    promise = promise[4:]
+                
+                tweet['promise'] = promise
+            except Exception, e:
+                raise Exception
+              
+        # Processing promise
+        try:
             self.setParsed(tweet['tweet_id'])
             self.createNote(tweet)
             
             E = Event(tweet['tweet_id'], tweet['tweet_id'], 0, tweet['created'], tweet['author'], tweet['recipient'])
             E.save()
 
-            self.sendTweet('@%s promised @%s %s http://www.punkmoney.org/note/%s' % (tweet['author'], tweet['recipient'], promise, tweet['tweet_id']))
+            self.sendTweet('@%s promised @%s %s http://www.punkmoney.org/note/%s' % (tweet['author'], tweet['recipient'], tweet['promise'], tweet['tweet_id']))
             self.logInfo('[P] @%s promised @%s %s.' % (tweet['author'], tweet['recipient'], tweet['tweet_id']))
-            
         except Exception, e:
             self.logWarning("Processing promise %s failed: %s" % (tweet['tweet_id'], e))
             if tweet_errors is not False:
@@ -534,35 +585,74 @@ class Parser(Harvester):
     # parse and process a request statement
     
     def parseRequest(self, tweet):
-        try:
-            h = re.search('(.*)(%s|%s)(.*)' % (HASHTAG, ALT_HASHTAG), tweet['message'], re.IGNORECASE)
-            
-            if h:
-                tweet['message'] = h.group(1).strip() + h.group(3).strip()
+    
+        # If request is a reply, create from note
+        if tweet.get('reply_to_id', None) is not None:  
+            try:
+                note = self.getNote(tweet['reply_to_id'])
                 
-            # Check not to self
-            if tweet['recipient'].lower() == tweet['author'].lower():
-                raise Exception("Issuer and recipient are the same")
+                if note['type'] != 4:
+                    raise Exception("Request not in reply to an offer")
+                
+                tweet['recipient'] = note['issuer']
     
-            # Check expiry (optional)
-            ''' 'Expires in' syntax '''
-            
-            e = re.search('(.*) Expires in (\d+) (\w+)(.*)', tweet['message'], re.IGNORECASE)
-            
-            if e:
-                num = e.group(2)
-                unit = e.group(3)
-                tweet['expiry'] = self.getExpiry(tweet['created'], num, unit)
-                tweet['message'] = e.group(1) + e.group(4)
-            else:
-                tweet['expiry'] = None
-            
-            # Clean up
-            tweet['message'] = tweet['message'].strip()
-            
-            while tweet['message'][-1] == '.':
-                tweet['message'] = tweet['message'][:-1]
+                if note['type'] == 10:
+                    if note['bearer'].strip() != tweet['author'].strip():
+                        raise Exception('Promise issued by non-bearer')
+                    else:
+                        tweet['issuer'] = tweet['author']
+                else:
+                    tweet['issuer'] = tweet['author']
+                
+                tweet['message'] = note['promise']
+                
+                # Check expiry (optional)
+                ''' 'Expires in' syntax '''
+                
+                e = re.match('(.*) Expires in (\d+) (\w+)(.*)', tweet['content'], re.IGNORECASE)
     
+                if e:
+                    num = e.group(2)
+                    unit = e.group(3)
+                    tweet['expiry'] = self.getExpiry(tweet['created'], num, unit)
+                else:
+                    tweet['expiry'] = None
+                    
+                tweet_errors = False
+            except:
+                raise Exception("Processing request as reply failed")
+        else:
+            try:
+                h = re.search('(.*)(%s|%s)(.*)' % (HASHTAG, ALT_HASHTAG), tweet['message'], re.IGNORECASE)
+                
+                if h:
+                    tweet['message'] = h.group(1).strip() + h.group(3).strip()
+                    
+                # Check not to self
+                if tweet['recipient'].lower() == tweet['author'].lower():
+                    raise Exception("Issuer and recipient are the same")
+        
+                # Check expiry (optional)
+                ''' 'Expires in' syntax '''
+                
+                e = re.search('(.*) Expires in (\d+) (\w+)(.*)', tweet['message'], re.IGNORECASE)
+                
+                if e:
+                    num = e.group(2)
+                    unit = e.group(3)
+                    tweet['expiry'] = self.getExpiry(tweet['created'], num, unit)
+                    tweet['message'] = e.group(1) + e.group(4)
+                else:
+                    tweet['expiry'] = None
+                
+                # Clean up
+                tweet['message'] = tweet['message'].strip()
+                
+                while tweet['message'][-1] == '.':
+                    tweet['message'] = tweet['message'][:-1]
+            except:
+                raise Exception("Processing request failed")
+        try:
             # Send intro tweet
             self.saveUser(tweet['recipient'].lower(), intro=True)
     
@@ -605,6 +695,8 @@ class Parser(Harvester):
     # setParsed
     # Set parsed flag to 1 if successful, or '-' if not
     def setParsed(self, tweet_id, val=1):
+        if SETTINGS.get('debug', False) == True:
+            return False
         try:
             query = "UPDATE tracker_tweets SET parsed = %s WHERE tweet_id = %s"
             self.queryDB(query, (val, tweet_id))
