@@ -50,12 +50,13 @@ class Parser(Harvester):
                 # Determine tweet type
                 promise = re.search('promise ', tweet['content'], re.IGNORECASE)
                 transfer = re.search('transfer @(\w+)(.*)', tweet['content'], re.IGNORECASE)
-                thanks = re.search('@(\w+) thanks (for)?(.*)', tweet['content'], re.IGNORECASE)
+                thanks = re.search('@(\w+) redeemed (.*)', tweet['content'], re.IGNORECASE)
+                '''
                 offer = re.search('(i )?(offer[s]?) (.*)', tweet['content'], re.IGNORECASE)
                 need = re.search('(i )?(need[s]?) (.*)', tweet['content'], re.IGNORECASE)
                 close = re.match('@(\w+ )?close (.*)', tweet['content'], re.IGNORECASE)
                 request = re.search('@(\w+ )(i )?request (.*)', tweet['content'], re.IGNORECASE)
-                
+                '''
                 # strip urls from text
                 r = re.search("(.*)(?P<url>https?://[^\s]+)(.*)", tweet['content'], re.IGNORECASE)
                 if r:
