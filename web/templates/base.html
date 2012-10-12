@@ -22,8 +22,6 @@
 
 		}
 		
-		
-		
 		function search(){
 		
 			term = $('input#searchbox').val();
@@ -112,20 +110,16 @@
 		{% endifequal %}
 		
 		<hr class="space">
-
-		{% ifequal page 'trustlist' %}
-	
-		<li><b><a href="/trustnet">Karma</a></b></li>
+		
+		{% ifequal page 'help' %}
+		
+		<li><b><a href="/help">Help</a></b></li>
 		
 		{% else %}
 		
-		<li><a href="/trustnet">Karma</a></li>
+		<li><a href="/help">Help</a></li>
 		
 		{% endifequal %}
-		
-		<hr class="space">
-		
-		<li><a href="http://wiki.punkmoney.org">Wiki</a></li>
 		
 		</ui>
 	

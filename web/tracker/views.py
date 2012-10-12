@@ -467,25 +467,18 @@ def user_info(request, username):
 ''' HELPERS '''
 
 # getKarma
-# fethes and returns a user's karma, based on in-bound thanks statements
+# fethes and returns a user's karma, based on promises redeemed from user by others
 
 def getKarma(username):
 
     # Disabled for now
-
-    '''
     try:
-        user = users.objects.get(username=username)
+        redemptions = notes.objects.filter(status=1).filter(issuer=username)
+        trust = len(redemptions)
         
-        if user.karma is None:
-            return 1
-        else:
-            return int(user.karma)
+        return trust
     except:
-        return 1
-    '''
-    
-    return 50
+        return 0
 
 
 # relatedTags
