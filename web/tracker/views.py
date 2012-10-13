@@ -77,8 +77,6 @@ def ticker(
         tag_3 = tags.objects.get(tag = tag_3)
         filters.append(int(tag_3.id))
     
-    
-    
     new_events = []
     
     # Filter by tags
@@ -295,12 +293,18 @@ def getnote(request, noteid):
         if tag_id != None:
             t = tags.objects.get(id = tag_id)
             tags_final.append(t.tag)
+            
+    # trust
+    issuer_trust = getKarma(note.issuer)
+    bearer_trust = getKarma(note.bearer)
     
     variables = {
         'events' : new_events,
         'note' : note,
         'content' : tweet.content,
         'url' : tweet.url,
+        'issuer_trust' : issuer_trust,
+        'bearer_trust' : bearer_trust,
         'display_url' : tweet.display_url,
         'id' : id,
         'img_url' : tweet.img_url,

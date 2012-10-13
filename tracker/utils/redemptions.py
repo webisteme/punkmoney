@@ -43,7 +43,6 @@ class Redemptions(Parser):
             if self.TW.rate_limit_status()['remaining_hits'] < 30:
                 self.logWarning("Rate limit too low (%s), exiting." % R.TW.rate_limit_status()['remaining_hits'])
                 break
-        
             try:
                 note_id = note[0]
                 bearer = note[1]

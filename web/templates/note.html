@@ -56,8 +56,8 @@
     	
     		<hr class="space">
     	
-    		<p>Issuer: <b><a href="/user/{{ note.issuer }}">{{ note.issuer }}</a></b> <br>
-    		Bearer: <b><a href="/user/{{ note.bearer }}">{{ note.bearer }}</a></b></p>
+    		<p>Issuer: <b><a href="/user/{{ note.issuer }}">{{ note.issuer }}</a></b> ({{issuer_trust}})<br>
+    		Bearer: <b><a href="/user/{{ note.bearer }}">{{ note.bearer }}</a></b> ({{bearer_trust}})</p>
     		
 		<!-- CONDITION -->
 		
@@ -114,7 +114,7 @@
 		
 		{% ifequal note.status 0 %}
 		
-		<a href="https://twitter.com/intent/tweet?in_reply_to={{ note.id }}&status=@{{note.issuer}}%20thanks%20%23pmny"><span id="redemption">[Redeemed]</span></a> &nbsp;
+		<a href="https://twitter.com/intent/tweet?in_reply_to={{ note.id }}&status=@{{note.issuer}}%20redeemed%20%23pmny"><span id="redemption">[Redeemed]</span></a> &nbsp;
 		
 		{% if note.transferable %}
 		
