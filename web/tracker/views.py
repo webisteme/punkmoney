@@ -114,11 +114,24 @@ def ticker(
                 pass
 
     # filter by type and/or username if given
+    #  | Q(to_user=username)
     elif type is not None and username is not None:
-        new_events = events.objects.filter(
-            Q(type=type),
-            Q(from_user=username) | Q(to_user=username)
-            ).order_by('-timestamp')[:max]
+    
+        if type == '0':
+        
+            print 'test'
+    
+            new_events = events.objects.filter(
+                Q(type=type),
+                Q(from_user=username)
+                ).order_by('-timestamp')[:max]
+                
+        elif type == '1':
+        
+            new_events = events.objects.filter(
+                Q(type=type),
+                Q(to_user=username)
+                ).order_by('-timestamp')[:max]
             
     elif type is not None and username is None:
         new_events = events.objects.filter(
