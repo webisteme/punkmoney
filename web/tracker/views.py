@@ -203,17 +203,6 @@ def ticker(
     }
 
     return render_to_response('ticker.html', variables)    
-    
-def shownet(request):
-
-    trust_list = trustlist.objects.all()
-    
-    variables = {
-        'trustlist':trust_list,
-        'page':'trustlist',
-    }
-    
-    return render_to_response('trustnet.html', variables)    
 
 
 def user(request, username):
@@ -373,114 +362,6 @@ def search(request, term=None):
 '''
 API Methods
 '''
-
-# Return trustnet as JSON
-def trustnet_old(request):
-
-    all_nodes = trustlist.objects.all()
-    
-    nodes = []
-    checked = []
-    for n in all_nodes:
-        if n.user not in checked:
-            nodes.append({"name":n.user, "group":1})
-            checked.append(n.user)
-        if n.trusted not in checked:
-            nodes.append({"name":n.trusted, "group":1})
-            checked.append(n.trusted)
-
-
-    links = []
-    for n in all_nodes:
-        
-        source = checked.index(n.user)
-        target = checked.index(n.trusted)
-    
-        links.append({"source" : source, "target" : target, "value" : 1})
-        
-    graph = {"nodes" : nodes, "links" : links}
-    
-    data = simplejson.dumps(graph)
-    
-    return HttpResponse(data, mimetype='application/javascript')
-    
-# Return trustnet as JSON
-def trustnet(request):
-
-    all_nodes = events.objects.filter(Q(type=1)).order_by('-timestamp')
-    
-    # Minimum karma for graph inclusion
-    
-    nodes = []
-    checked = []
-    min_karma = 10
-    
-    for n in all_nodes:
-    
-        if n.from_user not in checked:
-        
-            karma = getKarma(n.from_user)
-
-            nodes.append({"name":n.from_user, "group":int(round(karma/10,0)), "karma":karma})
-            checked.append(n.from_user)
-            
-        if n.to_user not in checked:
-        
-            karma = getKarma(n.to_user)
-            
-            nodes.append({"name":n.to_user, "group":int(round(karma/10,0)), "karma":karma})
-            checked.append(n.to_user)
-
-
-    links = []
-    for n in all_nodes:
-        
-        source = checked.index(n.from_user)
-        target = checked.index(n.to_user)
-
-        links.append({"source" : source, "target" : target, "value" : 1})
-    
-    
-        
-    graph = {"nodes" : nodes, "links" : links}
-    
-    data = simplejson.dumps(graph)
-
-    return HttpResponse(data, mimetype='application/javascript')
-
-
-# Returns user_info for trustnet sidebar   
-def user_info(request, username):
-
-    # Find number of people who trust this user
-    trusted_by = trustlist.objects.filter(trusted=username)    
-    trusted_num = len(trusted_by)
-
-    # Add trusters to list
-    trusted_list = []
-    for t in trusted_by:
-        trusted_list.append(t.user)
-
-    # Find number of people who this user trusts
-    trusts = trustlist.objects.filter(user=username)    
-    trusts_num = len(trusts)
-    
-    # Add people user trusts to list
-    trusts_list = []
-    for t in trusts:
-        trusts_list.append(t.trusted)
-    
-    karma = getKarma(username)
-    
-    # Return variables
-    variables = {
-        'karma':karma,
-        'username':username,
-    }
-    
-    return render_to_response('user_info.html', variables)
-    
-    
 ''' HELPERS '''
 
 # getKarma

@@ -65,7 +65,7 @@
     
             <h4>
             
-            <b><a href="/tracker">#PunkMoney</a></b>
+            <b><a href="/tracker">Latest activity</a></b>
             
             {% if not tag_1 %}
             
@@ -112,7 +112,7 @@
 		
             <a href="javascript:changeTicker('/ticker/', 'activity')">[ All ]</a>
 			<a href="javascript:changeTicker('/ticker/type/0', 'promises')"><span id="promised">[ P ]</span></a>
-            <a href="javascript:changeTicker('/ticker/type/1', 'thanks')"><span id="redemption">[ R ]</span></a>
+            <a href="javascript:changeTicker('/ticker/type/1', 'redemptions')"><span id="redemption">[ R ]</span></a>
             <a href="javascript:changeTicker('/ticker/type/3', 'transfers')"><span id="transfer">[ T ]</span></a>
 		    <a href="javascript:changeTicker('/ticker/type/2', 'expirations')"><span id="expiration">[ X ]</span></a>
 			
@@ -121,7 +121,7 @@
             <a href="javascript:changeTicker('/ticker/tags/{{ tag_slug }}', 'activity')">[ All ]</a>
             
 			<a href="javascript:changeTicker('/ticker/type/0/tags/{{ tag_slug }}', 'promises')"><span id="promised">[ P ]</span></a>
-            <a href="javascript:changeTicker('/ticker/type/1/tags/{{ tag_slug }}', 'thanks')"><span id="redemption">[ R ]</span></a>
+            <a href="javascript:changeTicker('/ticker/type/1/tags/{{ tag_slug }}', 'redemptions')"><span id="redemption">[ R ]</span></a>
             <a href="javascript:changeTicker('/ticker/type/1/tags/{{ tag_slug }}', 'transfers')"><span id="transfer">[ T ]</span></a>
 			<a href="javascript:changeTicker('/ticker/type/2/tags/{{ tag_slug }}', 'expirations')"><span id="expiration">[ X ]</span></a> 
 			
