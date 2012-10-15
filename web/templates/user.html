@@ -7,11 +7,7 @@
 
 	$('document').ready( function(){
 
-        url = '/ticker/max/10/user/{{ username }}/type/0';
-		loadTicker("#promises", url);
-		
-        url = '/ticker/max/10/user/{{ username }}/type/1';
-		loadTicker("#redemptions", url);
+        loadRecent();
         
 	})
 	
@@ -49,21 +45,9 @@
 
 <br>
 
-<hr class="Space">
-<hr class="Space">
-
-<div class="span-18"><h4 style='display:inline;'><b>Promises</b> </h4></div>
-<!-- <div class="span-8 prepend-1 last"><h4 style='display:inline'><span id="redemption">Redemptions</span></h4></div> -->
-<hr class="Space">
-<div id="promises" class="span-18"></div>
-
+<hr class="space">
 <hr class="Space">
 
-<div class="span-18"><h4 style='display:inline;'><b>Redemptions</b> </h4></div>
-<hr class="Space">
-<div id="redemptions" class="span-18"></div>
-
-<!--
 <a href="javascript:loadRecent()">[ All ]</a>&nbsp;
 <a href="javascript:load(0)"><span id="promised">[ Promises ]</span></a>&nbsp;
 <a href="javascript:load(1)"><span id="redemption">[ Redemptions ]</span></a>&nbsp;
@@ -72,7 +56,6 @@
 
 
 <div id="ticker"></div>
--->
 
 
 {% endblock %}
