@@ -62,6 +62,10 @@ def ticker(
     if max > 200:
         max = 200
         
+    # temporary workaround
+    if type == '99':
+        type = '0'
+     
     # Convert tags to ids
     filters = []
     
