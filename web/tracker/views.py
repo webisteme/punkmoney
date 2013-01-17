@@ -123,8 +123,6 @@ def ticker(
     
         if type == '0':
         
-            print 'test'
-    
             new_events = events.objects.filter(
                 Q(type=type),
                 Q(from_user=username)
