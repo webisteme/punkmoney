@@ -6,6 +6,7 @@ body, html {
     background:white;
 }
 
+
 .container {
     position:relative;
     background-color: red;
@@ -13,10 +14,12 @@ body, html {
 }
 
 
+
 div#main {
 	min-height: 450px;
-	
 }
+
+
 
 span#controls {
 	position:relative;
@@ -24,6 +27,8 @@ span#controls {
 	top:-35px;
 	float:right;
 }
+
+
 
 
 div#search {
@@ -39,15 +44,14 @@ img#search_icon{
 }
 
 
-
-
 h3#printer {
 
 	color:grey;
-	/* display:inline; */
 	line-height: 2em;
 
 }
+
+
 
 p#low {
 
@@ -57,15 +61,9 @@ p#low {
 
 }
 
-img.occupy {
-	position:relative;
-	bottom:-5px;
-}
-
 h3#printer2 {
 
 	color:grey;
-	/* display:inline; */
 	font-size:1.2em;
 	line-height: 1em;
 
@@ -79,6 +77,8 @@ div#tweet{
 
 }
 
+
+
 div#tweet2{
 
 	background-color:#ccf3ce;
@@ -86,25 +86,6 @@ div#tweet2{
 	margin:10;
 
 }
-
-.output{
-
-	min-height: 50px;
-
-}
-
-h3#printed {
-
-	color:black;
-	display:inline;
-	line-height: 2em;
-
-}
-
-
-
-
-
 
 li {
 
@@ -123,8 +104,6 @@ p.footer {
 	text-align:right;
 	font-size: 12px;
 }
-
-
 
 
 
@@ -149,16 +128,11 @@ span#expiration {
 }
 
 input {
-
 	font-size:14px;
-
 }
 
 p.search {
-
 	top:26px;
 	right:10px;
 	position:relative;
-
 }
-

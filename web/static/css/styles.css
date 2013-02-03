@@ -16,6 +16,72 @@ div#main {
 
 /* Home page */
 
+div#toolbar {
+    position:relative;
+    top:0px;
+    min-width: 700px;
+    display:block;
+    width:100%;
+    height:35px;
+/*     border-bottom:1px dotted grey; */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+div#toolbar_menu{
+    float:left;
+    width:400px;
+    height:35px;
+    left:5px;
+    position:relative;
+}
+
+div#toolbar_item{
+    float:left;
+    width:50px;
+    height:35px;
+    left:5px;
+    position:relative;
+}
+
+div#toolbar_logo{
+    float:right;
+    height:35px;
+    right:5px;
+    position:relative;
+}
+
+/* Printer */
+
+div#printer {
+    position:relative;
+    top:0px;
+    min-width: 700px;
+    display:block;
+    width:100%;
+    height:125px;
+    background:url('/static/img/pattern.png');
+    border-bottom:1px dotted grey;
+}
+
+span#print {
+    cursor: hand; 
+    cursor: pointer;    
+}
+
+div#printer_form{
+
+    left:10px;
+    float:left;
+    top:40px;
+    width: 600px;
+    position:relative;
+    background-colour:white;
+
+}
+
+/* Footer */
+
+/*
 div#news {
     position:relative;
     top:30px;
@@ -25,6 +91,7 @@ div#footer {
     position:relative;
     top:40px;
 }
+*/
 
 /* CONTROLS */
 
@@ -115,4 +182,70 @@ p.footer {
 	color:gray;
 	text-align:right;
 	font-size: 12px;
+}
+
+/* Dropdown */
+
+div.dropdown {
+    color: #555;
+    width: 160px;
+    position: relative;
+    height: 35px;
+    text-align:left;
+}
+
+div.submenu{
+    background: #fff;
+    position: absolute;
+    top: -5px;
+    z-index: 100;
+    width: 140px;
+    height:100px;
+    display: none;
+    margin-left: 14px;
+    padding: 40px 0 5px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+.dropdown  li a {
+    color: #555555;
+    display: block;
+    font-family: arial;
+    font-weight: bold;
+    padding: 6px 15px;
+    cursor: pointer;
+    text-decoration:none;
+}
+
+.dropdown li a:hover{
+    background:lightgrey;
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+a.account {
+    font-size: 11px;
+    line-height: 16px;
+    color: #555;
+    position: absolute;
+    z-index: 110;
+    display: block;
+    padding: 11px 0 0 20px;
+    height: 35px;
+    width: 135px;
+    margin: -11px 0 0 0px;
+    text-decoration: none;
+    background: url(icons/arrow.png) 116px 17px no-repeat;
+    cursor:pointer;
+}
+
+.root{
+    list-style:none;
+    margin:0px;
+    padding:0px;
+    font-size: 11px;
+    height:35px;
+    padding: 11px 0 0 0px;
+    border-top:1px dotted black;
 }

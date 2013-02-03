@@ -1,34 +1,32 @@
 {% extends 'base.html' %}
 
-
 {% block javascript %}
 
 	<script type="text/javascript">
 	
 	$('document').ready( function(){
 
-	   tag_1 = '{{tag_1}}';
-	   tag_2 = '{{tag_2}}';
-	   tag_3 = '{{tag_3}}';
-		   
-	   if (tag_1 != 'None'){
-	       
-	       ticker_url = '/ticker/tags/' + tag_1;
-	       
-	       if (tag_2 != 'None'){
-	           ticker_url += '/' + tag_2; 
-	       }
-	       
-	       if (tag_3 != 'None'){
-	           ticker_url += '/' + tag_3; 
-	       }
-	       
-	   } else {
-	       ticker_url = '/ticker/';
-	   }
-
-	
-	   loadTicker("#ticker",ticker_url);
+        tag_1 = '{{tag_1}}';
+        tag_2 = '{{tag_2}}';
+        tag_3 = '{{tag_3}}';
+           
+        if (tag_1 != 'None'){
+           
+           ticker_url = '/ticker/tags/' + tag_1;
+           
+           if (tag_2 != 'None'){
+               ticker_url += '/' + tag_2; 
+           }
+           
+           if (tag_3 != 'None'){
+               ticker_url += '/' + tag_3;
+           }
+           
+        } else {
+           ticker_url = '/ticker/';
+        }
+        
+        loadTicker("#ticker", ticker_url);
 	   
 	})
 	
@@ -37,7 +35,7 @@
 		clearTimeout(timer);
 
 		$.get(url, function(data){
-
+		
 			$("#ticker").html(data);
 			
 			if (type != 'activity'){
@@ -73,7 +71,7 @@
             
             {% else %} {% if tag_1 %}
             
-<!--             <span id="type_name"></span> -->
+            <span id="type_name"></span>
             
             {% endif %}
             
@@ -134,6 +132,8 @@
 			
         </p>
         
+        <!--
+
         {% if related_tags %}
 
             <p align="right">
@@ -168,6 +168,8 @@
             </p>
         
         {% endif %}
+-->
+        
 
 		</div>
 		

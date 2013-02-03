@@ -13,12 +13,16 @@ import operator
 # Create your views here.
 
 def home(request):
-    return render_to_response('home.html')
+
+    args = {}
+    
+    variables = RequestContext(request, {})
+
+    return render_to_response('home.html', variables)
 
 def tracker(request, tag_1 = None, tag_2 = None, tag_3 = None):
 
     # convert tags to ids and get related tags
-    
     tag_ids = []
     tag_slug = ''
     for tag in [tag_1, tag_2, tag_3]:
@@ -36,6 +40,14 @@ def tracker(request, tag_1 = None, tag_2 = None, tag_3 = None):
         'tag_3':tag_3,
         'tag_slug' : tag_slug,
     }
+    
+    variables = RequestContext(request, {
+        'page':'ticker',
+        'tag_1':tag_1,
+        'tag_2':tag_2,
+        'tag_3':tag_3,
+        'tag_slug' : tag_slug,
+    })
 
     # Related tags
     related_tags = relatedTags(tag_ids)
@@ -47,14 +59,14 @@ def tracker(request, tag_1 = None, tag_2 = None, tag_3 = None):
 
 
 def ticker(
-        request, 
-        max=50, 
-        type=None, 
-        username=None, 
-        noteid=None, 
-        tag_1=None, 
-        tag_2=None, 
-        tag_3=None,
+    request, 
+    max=50, 
+    type=None, 
+    username=None, 
+    noteid=None, 
+    tag_1=None, 
+    tag_2=None, 
+    tag_3=None,
     ):
 
     # limit max to 200
@@ -76,8 +88,6 @@ def ticker(
     if tag_3 is not None:
         tag_3 = tags.objects.get(tag = tag_3)
         filters.append(int(tag_3.id))
-    
-    
     
     new_events = []
     
@@ -139,7 +149,7 @@ def ticker(
 
         
     # get new notes
-    new_notes = notes.objects.all()    
+    new_notes = notes.objects.all()
     result_list = []
     
     for event in new_events:
@@ -193,14 +203,19 @@ def ticker(
 
     return render_to_response('ticker.html', variables)    
     
+# Send wallet data
+def wallet(user_id):
+    pass
+    
+    
 def shownet(request):
 
     trust_list = trustlist.objects.all()
     
-    variables = {
+    variables = RequestContext(request, {
         'trustlist':trust_list,
         'page':'trustlist',
-    }
+    })
     
     return render_to_response('trustnet.html', variables)    
 
@@ -253,7 +268,7 @@ def user(request, username):
     karma = getKarma(username)
     
     # combine events
-    variables = {
+    variables = RequestContext(request, {
         'username':username,
         'notes_held':notes_bearer,
         'notes_issued':notes_issuer,
@@ -262,7 +277,7 @@ def user(request, username):
         'trusters':trusters_list,
         'top_trusters':top_trusters,
         'karma':karma,
-    }
+    })
     
     # return all
     return render_to_response('user.html', variables)
@@ -296,7 +311,7 @@ def getnote(request, noteid):
             t = tags.objects.get(id = tag_id)
             tags_final.append(t.tag)
     
-    variables = {
+    variables = RequestContext(request, {
         'events' : new_events,
         'note' : note,
         'content' : tweet.content,
@@ -305,7 +320,7 @@ def getnote(request, noteid):
         'id' : id,
         'img_url' : tweet.img_url,
         'tags' : tags_final,
-    }
+    })
     
     if note.type == 0:
         template = 'note.html'
@@ -322,16 +337,16 @@ def getnote(request, noteid):
     
     
 def printer(request):
-    variables = {
+    variables = RequestContext(request, {
         'page':'printer',
-    }
+    })
     return render_to_response('printer.html', variables)
     
 
 def help(request):
-    variables = {
+    variables = RequestContext(request, {
         'page':'help',
-    }
+    })
     return render_to_response('help.html', variables)
 
 # [!] Check if for non-note ids too

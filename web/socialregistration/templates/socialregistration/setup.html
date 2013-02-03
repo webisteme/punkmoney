@@ -1,0 +1,13 @@
+<h1>Setup</h1>
+{% if error %}
+	<p>{{ error }}</p>
+{% else %}
+	<form action="." method="post">
+	    <table>
+	        {{ form }}
+	    </table>
+	    {% csrf_token %}
+	    <input type="submit" value="save" />
+	</form>
+{% endif %}
+

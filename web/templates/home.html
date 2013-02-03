@@ -77,8 +77,14 @@
             
             <hr class="space">
             
+            {% if user.is_authenticated %}
+
+            {% else %}
+            
             {% load twitter %}
             {% twitter_button %}
+            
+            {% endif %}
             
             <h4>Spread the word</h4>
             			

@@ -1,168 +1,131 @@
 <html>
 
 <head>
-        <title>#PunkMoney</title>
-        
-        <link rel="stylesheet" href="/static/css/blueprint/screen.css" type="text/css">
-        <link rel="stylesheet" href="/static/css/styles.css" type="text/css">
-        
-        <script src="/static/js/jquery.js" type="text/javascript"></script>
-        
-		<script type="text/javascript">   
-		
-		function loadTicker(div, url){
 
-			$.get(url, function(data){
-
-				$(div).html(data);
-
-			});
-
-			timer = setTimeout(function() {loadTicker(url);}, 3000);
-
-		}
-		
-		
-		
-		function search(){
-		
-			term = $('input#searchbox').val();
-		  
-			if (term.charAt(0) == '@'){
-				term = term.substring(1);
-				}
-				
-			url = '/search/' + escape(term);
-			
-			$.get(url, function(data){
-
-				window.location = data;
-
-			});
-		}
-		
-	    </script>
-	    
-	    <!-- Google analytics -->
-	    <script src="/static/js/ganalytics.js" type="text/javascript"></script>
-        
-        {% block javascript %}
-        
-        {% endblock %}
-        
+    <title>#PunkMoney</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/static/css/blueprint/screen.css" type="text/css">
+    <link rel="stylesheet" href="/static/css/styles.css" type="text/css">
+    
+    <!-- JavaScript -->
+    <script src="/static/js/jquery.js" type="text/javascript"></script>
+    <script src="/static/js/dropdown.js" type="text/javascript"></script>
+    <script src="/static/js/slidedown.js" type="text/javascript"></script>
+    <script src="/static/js/ticker.js" type="text/javascript"></script>
+    
+    {% block javascript %}
+    {% endblock %}
+    
 </head>
 
 <body>
 
-<div class="container">
-
-    <!-- HEADER -->
-
-	<div id="header" class="span-22 prepend-1">
-	
-		<div id="left" class="span-10">
-	
-			<a href="/"><img src="/static/punkmoneylogo.png" width="250"></a>
-		
-		</div>
-
-		<div id="right" class="span-5 prepend-7 last">
-			
-			<br><br>
-			
-			<div id="search">
-				<img src="/static/search.png" id="search_icon">
-				<input type="search" id="searchbox" placeholder="Tag(s) or username" size="25" onchange="javascript:search()">
-			</div>
-
-		</div>
-		
-		<hr>
-	
-	</div>
-	
-	<!-- NAVIGATION -->
-	
-	<div id="nav" class="span-1 prepend-1">
-	
-		<ui>
-		
-		<hr class="space">
-		
-		{% ifequal page 'ticker' %}
-	
-		<li><b><a href="/tracker">Tracker</a></b></li>
-		
-		{% else %}
-		
-		<li><a href="/tracker">Tracker</a></li>
-		
-		{% endifequal %}
-		
-		<hr class="space">
-		
-		{% ifequal page 'printer' %}
-	
-		<li><b><a href="/print">Printer</a></b></li>
-		
-		{% else %}
-		
-		<li><a href="/print">Printer</a></li>
-		
-		{% endifequal %}
-		
-		<hr class="space">
-
-		{% ifequal page 'trustlist' %}
-	
-		<li><b><a href="/trustnet">Karma</a></b></li>
-		
-		{% else %}
-		
-		<li><a href="/trustnet">Karma</a></li>
-		
-		{% endifequal %}
-		
-		<hr class="space">
-		
-		<li><a href="/help">Help</a></li>
-		
-		</ui>
-	
-	</div>
-	
-	<!-- MAIN -->
-
-	<div id="main" class="span-19 prepend-2 last">
-	<hr class="space">
+    <div id="toolbar">
+    
+        <div id="toolbar_menu">
         
-		{% block main %}
+            &nbsp;
+            
+            <h4 style="display:inline; top:9px; position:relative;"><a href="/">
+                <b>#PunkMoney</b></a>&nbsp; 
+            </h4>
+                
+            <h4 style="display:inline; top:9px; position:relative;">| &nbsp; 
+            </h4>
+            
+            <h4 style="display:inline; top:9px; position:relative;">
+                <span id="print">Printer</a> &nbsp;
+            </h4>
+            
+            <h4 style="display:inline; top:9px; position:relative;">
+                <a href="/tracker">Wallet</a> &nbsp;
+            </h4>
+            
+            <h4 style="display:inline; top:9px; position:relative;">
+                <a href="/trustnet">Network </a> &nbsp;
+            </h4>
 
-		{% endblock %}
-	
-	</div>
-
-    <!-- FOOTER -->
+        </div>
+        
+        <div id="toolbar_logo">
+        
+            {% if user.is_authenticated %}
+            
+            <div class="dropdown">
+        
+                <a class="account">
+                    <h4 style="display:inline; bottom:3px; position:relative;">@{{user}}</h4>
+                    <h4 style="display:inline; bottom:3px; position:relative;">&nbsp;|&nbsp;</h4>
+                    <img width="25px" style="display:inline; top:5px; position:relative;" src="/static/img/profile_images/{{user}}.png"> 
+                    <p style="display:inline; bottom:3px; position:relative;">&#9660;</p>
+                </a>
     
-    <div id="footer" class="span-22 prepend-1">
-    
-        <hr>
-    
-		<p class="footer">#PunkMoney 0.25 by <a href="http://www.webisteme.com">webisteme</a> | 
-		<a href="http://wiki.punkmoney.org">Wiki</a> |
-		<a href="https://github.com/webisteme/punkmoney">GitHub</a> | 
-		<a href="http://www.facebook.com/punkmoney">Facebook</a> | 
-		<a href="http://www.twitter.com/punk_money">Twitter</a>&nbsp; 
-		</p>
+                <div class="submenu" style="display: none; ">
+                    <ul class="root">
+                        <li><a href="/logout">Settings</a></li>
+                        <li><a href="/user/{{user}}">Profile</a></li>
+                        <li><a href="/logout">Logout</a></li>
+                    </ul>
+                </div>
+                
+            </div>
+            
+            {% endif %}
+        
+        </div>
     
     </div>
+    
+    <!-- Printer -->
+    
+    <div id="printer">
+        <div id="printer_form">
+            <h3 style="display:inline">
+                <input id="recipient" style='display:inline' type="text" maxlength="20" size="20" placeholder="@recipient" value="@">
+            </h3>
+            <h3 id="printer" style="display:inline">                
+                I promise 
+                <input id="promise" type="text" maxlength="55" size="50" placeholder="one party hat <;-)" id="promise">
+            </h3>
+        </div>
+    </div>
+    
+    <!-- CONTAINER -->
+    
+    <div class="container">
+    
+        <!-- TRACKER -->
+    
+    	<div id="main" class="span-19 prepend-2 last">
+    	
+            <hr class="space">
 
-
-
-</div>
-
+    		{% block main %}
+    		{% endblock %}
+    		
+        </div>
+    
+        <!-- FOOTER -->
+        
+        <div id="footer">
+        
+            <hr>
+            
+    		<p class="footer">#PunkMoney 0.25 by <a href="http://www.webisteme.com">webisteme</a> | 
+    		<a href="http://wiki.punkmoney.org">Wiki</a> |
+    		<a href="https://github.com/webisteme/punkmoney">GitHub</a> | 
+    		<a href="http://www.facebook.com/punkmoney">Facebook</a> | 
+    		<a href="http://www.twitter.com/punk_money">Twitter</a>&nbsp;
+    		
+    		</p>
+    		
+    		<hr class="space">
+        
+        </div>
+    
+    </div>
+    
 </body>
 
-
-    
 </html>

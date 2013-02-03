@@ -1,10 +1,13 @@
 from django.conf.urls.defaults import patterns, include, url
 
 # Uncomment the next two lines to enable the admin:
-# from django.contrib import admin
-# admin.autodiscover()
+from django.contrib import admin
+admin.autodiscover()
+
+from django.contrib.auth.views import login, logout
 
 urlpatterns = patterns('',
+
     # Examples:
     url(r'^$', 'tracker.views.home', name='home'),
     
@@ -43,22 +46,34 @@ urlpatterns = patterns('',
     
     url(r'^search/(?P<term>.*)$', 'tracker.views.search', name='search'),
     
+    # wallet
+    
+    url(r'^wallet/$', 'tracker.views.wallet', name='wallet'),
+    
     # other patterns
     
     url(r'^trustnet/$', 'tracker.views.shownet', name='trustnet'),
-    
     url(r'^print/$', 'tracker.views.printer', name='showlist'),
-    
     url(r'^user/(?P<username>\w+)$', 'tracker.views.user', name='user'),
-    
     url(r'^note/(?P<noteid>\w+)$', 'tracker.views.getnote', name='note'),
-    
     url(r'^help/$', 'tracker.views.help', name='help'),
+    
+    # registration
+    
+    url(r'^social/', include('web.socialregistration.urls', namespace = 'socialregistration')),
     
     # trust list
 
     url(r'^graph/$', 'tracker.views.trustnet', name='graph'),
-    
     url(r'^user_info/(?P<username>\w+)$', 'tracker.views.user_info', name='user_info'),
     
+    # admin
+    
+    url(r'^admin/', include(admin.site.urls)),
+    
+    # auth URLs...
+    
+    url(r'^login/$',  login),
+    url(r'^logout/$', logout, {'next_page': '/'})
+
 )
