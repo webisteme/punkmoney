@@ -54,7 +54,7 @@ class Parser(Harvester):
         #self.getTweets()
 
         test_tweets = [
-            {'content' : "@webisteme promise this test NT Expires 2013-03-01 http://www.google.com. #testmoney", 
+            {'content' : "@webisteme promise this test NT Expires in 2 months http://www.google.com. #testmoney", 
             'tweet_id' : 32, 
             'author' : 3, 
             'created' : datetime.now()}
@@ -64,11 +64,9 @@ class Parser(Harvester):
         for tweet in test_tweets:
             try:
                 # If tweet contains 'RT' (i.e. is a retweet), skip -- ! use regex
-                retweet = False
-                for w in tweet['content'].split():
-                    if w == 'RT':
-                        self.set_parsed(tweet['tweet_id'], False)
-                        raise Exception("Tweet is a retweet")
+                if re.search('RT @', tweet['content']):
+                    self.set_parsed(tweet['tweet_id'], False)
+                    raise Exception("Tweet is a retweet")
                         
                 # Save tweet author to user database
                 #self.save_user(tweet['author'])
@@ -88,7 +86,7 @@ class Parser(Harvester):
                 is_request = re.search('@(\w+ )(i )?request (.*)', tweet['content'], re.IGNORECASE)
                 '''
             
-                tweet_type = self.get_tweet_type(tweet['content'])
+                tweet_type = self._get_tweet_type(tweet['content'])
                 
                 if tweet_type:
                     return eval('self.parse_' + tweet_type)(tweet)
@@ -108,77 +106,20 @@ class Parser(Harvester):
     # parses and saves a new promise
     def parse_promise(self, tweet):
         try:
-            # Recipient
-            r = re.search('@(\w+)(.*)', tweet['content'])
-
-            if r:
-                recipient = r.group(1)
-                statement = r.group(2)
-                tweet['recipient'] = self.save_user(recipient)
-            else:
-                raise Exception("Recipient not found")
+            # Get recipient
+            tweet['recipient'] = self._get_recipient(tweet['content'])
 
             # Check not to self
             if int(tweet['recipient']) == int(tweet['author']):
                 raise Exception("Issuer and recipient are the same")
 
-            # Transferability (optional)
-            t = re.match('(.* )(NT.|NT)(.*)', statement, re.IGNORECASE)
-            
-            if t:
-                tweet['transferable'] = False
-                statement = t.group(1) + t.group(3)
-            else:
-                tweet['transferable'] = True
+            # Get optional parameters
+            tweet['transferable'] = self._get_transferability(tweet['content'])
+            tweet['expiry'] = self._get_expiry(tweet['created'], tweet['content'])
+            tweet['condition'] = self._get_condition(tweet['content'])
 
-            # Expiry (optional)
-            ''' 'Expires in' an 'Expires' syntaxes '''
-            
-            expires = re.match('(.*) Expires (\d+-\d+-\d+)(.*)', statement, re.IGNORECASE)
-            expires_in = re.match('(.*) Expires in (\d+) (\w+)(.*)', statement, re.IGNORECASE)
-
-            if expires:
-                expiry = expires.group(2)
-                tweet['expiry'] = date_parser.parse(expiry)
-                statement = expires.group(1) + expires.group(3)
-            elif expires_in:
-                num = expires_in.group(2)
-                time_unit = expires_in.group(3)
-                tweet['expiry'] = self.calculate_expiry(tweet['created'], num, time_unit)
-                statement = expires_in.group(1) + expires_in.group(4)
-            else:
-                tweet['expiry'] = None
-
-            # Condition (optional)
-            c = re.match('(.*)( if )(.*)', statement, re.IGNORECASE)
-
-            if c:
-                tweet['condition'] = c.group(3)
-            else:
-                tweet['condition'] = None
-        
-            # Promise
-            p = re.match('(.*)( promise )(.*)', statement, re.IGNORECASE)
-            
-            if p:
-                if p.group(1).strip().lower() == 'i':
-                    promise = p.group(3)
-                else:
-                    promise = p.group(1).strip() + p.group(3)
-            else:
-                raise Exception("Promise not found")
-            
-            # Tidy up promise string 
-            promise = promise.strip()
-            
-            while promise[-1] == '.':
-                promise = promise[:-1]
-
-            if promise[0:4] == 'you ':
-                promise = promise[4:]
-            
-            tweet['promise'] = promise
-
+            # Get thing promised
+            tweet['promise'] = self._get_promise(tweet['content'])
         except Exception, e:
             self.log_info("Promise %s could not be parsed" % tweet['tweet_id'])
             self.set_parsed(tweet['tweet_id'], False)
@@ -630,9 +571,37 @@ class Parser(Harvester):
         else:
             return True
             
+    ''' Parser helper methods '''
+            
     # calculate_expiry
-    # Takes created date time, a number and unit (day, week, month, year,) & returns expiry as datetime
-    def calculate_expiry(self, created, num, unit):
+    # Takes tweet content and created datetime and returns expiry
+    def _get_expiry(self, created, content):
+        try:
+            expires = re.match('(.*) Expires (\d+-\d+-\d+)(.*)', content, re.IGNORECASE)
+            expires_in = re.match('(.*) Expires in (\d+) (\w+)(.*)', content, re.IGNORECASE)
+
+            if expires:
+                expiry = expires.group(2)
+                expiry = date_parser.parse(expiry)
+                statement = expires.group(1) + expires.group(3)
+            elif expires_in:
+                num = expires_in.group(2)
+                unit = expires_in.group(3)
+                expiry = self._calculate_expires_in(created, num, unit)
+                statement = expires_in.group(1) + expires_in.group(4)
+            
+            if not expires and not expires_in:
+                return None
+            else:
+                return expiry
+                    
+        except Exception, e:
+            raise Exception("Calculating expiry date failed: %s" % e)
+        else:
+            return expiry
+            
+    # Calculate expiry from number and time unit (e.g. 3 weeks)
+    def _calculate_expires_in(self, created, num, unit):
         try:
             num = int(num)
             if unit == 'minutes' or unit == 'minute':
@@ -648,9 +617,62 @@ class Parser(Harvester):
             if unit == 'years' or unit == 'year':
                 expiry = created + relativedelta(years=+num)
         except Exception, e:
-            raise Exception("Calculating expiry date failed: %s" % e)
-        else:
+            raise Exception("Expiry could not be calculated")
+        else:            
             return expiry
+            
+    def _get_transferability(self, content):
+        try:
+            if re.match('(.* )(NT.|NT)(.*)', content, re.IGNORECASE):
+                return False
+            else:
+                return True
+        except Exception, e:
+            raise Exception("Transferability not found")
+            
+    def _get_recipient(self, content):
+        try:
+            recipient = re.search('@(\w+)(.*)', content).group(1)
+            if recipient:
+                return self.save_user(recipient)
+            else:
+                raise Exception
+        except Exception, e:
+            raise Exception("Recipient not found")
+            
+    def _get_condition(self, content):
+        try:
+            c = re.match('(.*)( if )(.*)', content, re.IGNORECASE)
+            if c:
+                return c.group(3)
+            else:
+                return None
+        except Exception, e:
+            raise Exception("Condition not found")
+            
+    def _get_promise(self, content):
+        try:
+            # Extract promise
+            is_promise = re.search('( promise )(.*)', content, re.IGNORECASE)
+
+            if is_promise:
+                promise = is_promise.group(2).strip()
+            else:
+                raise Exception
+
+            # Clean up promise string
+            promise = promise.strip()
+            
+            while promise[-1] == '.':
+                promise = promise[:-1]
+
+            if promise[0:4] == 'you ':
+                promise = promise[4:]
+            
+            return promise
+        except Exception, e:
+            raise Exception("Promise not found")
+
     
     # findOriginal
     # Given a reply_to_id, finds the original 
@@ -672,7 +694,7 @@ class Parser(Harvester):
         else:
             return tweet[1]
     
-    # create_note
+    # create_note !-- Can django create this as unique record
     # Create a new note from a parsed tweet
     def create_note(self, tweet, note_type):
         note = Note.objects.filter(id = tweet['tweet_id'])
@@ -714,64 +736,6 @@ class Parser(Harvester):
         else:
             self.log_warning('Event %s already exists' % tweet['tweet_id'])
             
-    # createOffer
-    # Create an offer or need from parsed tweet
-    def createOffer(self, code, tweet):
-        try:
-            query = "SELECT id FROM tracker_notes WHERE id = '%s'" % tweet['tweet_id']        
-            if self.getSingleValue(query) is None:            
-                query = "INSERT INTO tracker_notes(id, issuer, bearer, promise, created, expiry, status, transferable, type, condition) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                params = (tweet['tweet_id'], tweet['author'].lower(), '', tweet['item'].lower(), tweet['created'], tweet['expiry'], 0, 0, code, tweet['condition'])
-                self.queryDB(query, params)
-            else:
-                self.log_warning('Note %s already exists' % tweet['tweet_id'])
-                return False
-        except Exception, e:
-            raise Exception("Creating note from tweet %s failed: %s" % (tweet['tweet_id'], e))
-        else:
-            return True
-            
-    # createThanks
-    # Create a thanks note
-    def createThanks(self, tweet):
-        try:
-            query = "SELECT id FROM tracker_notes WHERE id = '%s'" % tweet['tweet_id']        
-            if self.getSingleValue(query) is None:            
-                query = "INSERT INTO tracker_notes(id, issuer, bearer, promise, created, expiry, status, transferable, type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                params = (tweet['tweet_id'], tweet['author'].lower(), tweet['recipient'].lower(), tweet['message'], tweet['created'], None, 0, 0, 1)
-                self.queryDB(query, params)
-                
-                # Create an event
-                E = Event(tweet['tweet_id'],1,1,tweet['created'],tweet['author'], tweet['recipient'])
-                E.save()
-            else:
-                self.log_warning('Note %s already exists' % tweet['tweet_id'])
-                return False
-        except Exception, e:
-            raise Exception("Creating thanks note from tweet %s failed: %s" % (tweet['tweet_id'], e))
-        else:
-            return True
-            
-    # createRequest
-    # Create a request note
-    def createRequest(self, tweet):
-        try:
-            query = "SELECT id FROM tracker_notes WHERE id = '%s'" % tweet['tweet_id']        
-            if self.getSingleValue(query) is None:            
-                query = "INSERT INTO tracker_notes(id, issuer, bearer, promise, created, expiry, status, transferable, type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                params = (tweet['tweet_id'], tweet['author'].lower(), tweet['recipient'].lower(), tweet['message'], tweet['created'], tweet['expiry'], 0, 0, 10)
-                self.queryDB(query, params)
-                # Create an event
-                E = Event(tweet['tweet_id'],10,10,tweet['created'], tweet['author'], tweet['recipient'])
-                E.save()
-            else:
-                self.log_warning('Note %s already exists' % tweet['tweet_id'])
-                return False
-        except Exception, e:
-            raise Exception("Creating thanks note from tweet %s failed: %s" % (tweet['tweet_id'], e))
-        else:
-            return True
-    
     # getNote
     # Return a note given its id    
     def getNote(self, note_id):
@@ -890,10 +854,10 @@ class Parser(Harvester):
         except Exception, e:
             raise Exception('Checking TrustList for user %s failed: %s' % (username,e))
             
-    # get_tweet_type
+    # _get_tweet_type
     # returns statement type from Tweet content
     
-    def get_tweet_type(self, content):
+    def _get_tweet_type(self, content):
         try:
             tweet_types = ['promise', 'transfer', 'thanks', 'offer', 'need', 'close', 'request']
             for tweet_type in tweet_types:
