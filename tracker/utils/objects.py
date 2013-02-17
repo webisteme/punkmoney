@@ -48,8 +48,8 @@ class Event(Connection):
         self.tweet_id = tweet_id
         self.typ = typ 
         self.timestamp = timestamp
-        self.from_user = from_user.lower()
-        self.to_user = to_user.lower()
+        self.from_user = from_user
+        self.to_user = to_user
     
     # save
     # Validates and saves event to the database

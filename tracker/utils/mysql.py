@@ -25,7 +25,7 @@ class Connection():
     # connectDB
     # Creates a database connection
     def connectDB(self):
-        #self.logInfo("Connecting to the database")
+        #self.log_info("Connecting to the database")
         self.db = MySQLdb.connect(
             MYSQL_HOST, 
             MYSQL_USER, 

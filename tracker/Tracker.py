@@ -28,7 +28,7 @@ class Tracker(Parser):
         try:
             self.updateExpired()
         except Exception, e:
-            self.logError("Updating expired failed: %s" % e)
+            self.log_error("Updating expired failed: %s" % e)
         
         
         # If more than 25 hits remaining, harvest new tweets
@@ -36,16 +36,16 @@ class Tracker(Parser):
             try:        
                 self.harvestNew()
             except Exception, e:
-                self.logError("Harvester failed: %s" % e)
+                self.log_error("Harvester failed: %s" % e)
         else:
-            self.logWarning("Skipping harvest, rate limit too low.")
+            self.log_warning("Skipping harvest, rate limit too low.")
             
         
         # Parse new
         try:
-            self.parseNew()
+            self.parse_new()
         except Exception, e:
-            self.logError("Parser failed: %s" % e)
+            self.log_error("Parser failed: %s" % e)
     
 
 '''
@@ -73,7 +73,7 @@ if __name__ == '__main__':
             T.harvestNew()
             
         if args.parse:
-            T.parseNew()
+            T.parse_new()
             
     else:
         T.run()

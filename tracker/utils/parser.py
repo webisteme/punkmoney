@@ -7,13 +7,30 @@ Main class for interpreting #PunkMoney statements.
 
 """
 
-from mysql import Connection
+''' Import Django models '''
+
+import sys, os
+from datetime import *
+
+os.environ['DJANGO_SETTINGS_MODULE'] ='web.settings'
+
+from django.core.management import setup_environ
+from django.db.models import Q
+import networkx as nx
+
+from web import settings as django_settings
+from web.tracker.models import *
+
+setup_environ(django_settings)
+
+# from mysql import Connection
 from harvester import Harvester
 from config import HASHTAG, ALT_HASHTAG, SETTINGS
-from objects import Event
+# from objects import Event
 
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
+from dateutil import parser as date_parser
 from dateutil.relativedelta import *
 import time
 
@@ -25,255 +42,163 @@ class Parser(Harvester):
 
     def __init__(self):
         self.setupLogging()
-        self.connectDB()
+        # self.connectDB()
         self.TW = self.connectTwitter()
     
     '''
     Parse new tweets
     '''
     
-    def parseNew(self):  
+    def parse_new(self):
+
+        #self.getTweets()
+
+        test_tweets = [
+            {'content' : "@webisteme promise this test NT Expires 2013-03-01 http://www.google.com. #testmoney", 
+            'tweet_id' : 32, 
+            'author' : 3, 
+            'created' : datetime.now()}
+        ]
             
         # Process new tweets
-        for tweet in self.getTweets():
+        for tweet in test_tweets:
             try:
-                # If tweet contains 'RT' (e.g. is a retweet), skip
+                # If tweet contains 'RT' (i.e. is a retweet), skip -- ! use regex
                 retweet = False
                 for w in tweet['content'].split():
                     if w == 'RT':
-                        self.setParsed(tweet['tweet_id'])
+                        self.set_parsed(tweet['tweet_id'], False)
                         raise Exception("Tweet is a retweet")
                         
                 # Save tweet author to user database
-                self.saveUser(tweet['author'])
+                #self.save_user(tweet['author'])
                 
-                # Determine tweet type
-                promise = re.search('promise ', tweet['content'], re.IGNORECASE)
-                transfer = re.search('transfer @(\w+)(.*)', tweet['content'], re.IGNORECASE)
-                thanks = re.search('@(\w+) thanks (for)?(.*)', tweet['content'], re.IGNORECASE)
-                offer = re.search('(i )?(offer[s]?) (.*)', tweet['content'], re.IGNORECASE)
-                need = re.search('(i )?(need[s]?) (.*)', tweet['content'], re.IGNORECASE)
-                close = re.match('@(\w+ )?close (.*)', tweet['content'], re.IGNORECASE)
-                request = re.search('@(\w+ )(i )?request (.*)', tweet['content'], re.IGNORECASE)
+                # Remove hashtag and any URLs from content
+                tweet['content'] = re.sub('(%s|%s)' % (HASHTAG, ALT_HASHTAG), '', tweet['content'])
+                tweet['content'] = re.sub("(?P<url>https?://[^\s]+)", '', tweet['content'])
                 
-                # strip urls from text
-                r = re.search("(.*)(?P<url>https?://[^\s]+)(.*)", tweet['content'], re.IGNORECASE)
-                if r:
-                    tweet['content'] = r.group(1) + ' ' + r.group(3) 
+                # Match tweet content against RegEx to determine statement type
+                '''
+                is_promise = re.search('promise ', tweet['content'], re.IGNORECASE)
+                is_transfer = re.search('transfer @(\w+)(.*)', tweet['content'], re.IGNORECASE)
+                is_thanks = re.search('@(\w+) thanks (for)?(.*)', tweet['content'], re.IGNORECASE)
+                is_offer = re.search('(i )?(offer[s]?) (.*)', tweet['content'], re.IGNORECASE)
+                is_need = re.search('(i )?(need[s]?) (.*)', tweet['content'], re.IGNORECASE)
+                is_close = re.match('@(\w+ )?close (.*)', tweet['content'], re.IGNORECASE)
+                is_request = re.search('@(\w+ )(i )?request (.*)', tweet['content'], re.IGNORECASE)
+                '''
+            
+                tweet_type = self.get_tweet_type(tweet['content'])
                 
-                # Parse tweet according to type
-                if promise:
-                    self.parsePromise(tweet)
-                
-                elif transfer:
-                    tweet['to_user'] = transfer.group(1).lower()
-                    self.parseTransfer(tweet)
-                    
-                elif thanks:
-                    tweet['recipient'] = thanks.group(1)
-                    if thanks.group(2):
-                        if thanks.group(2).lower() == 'for':
-                            tweet['message'] = thanks.group(3)
-                    self.parseThanks(tweet)
-    
-                elif offer:
-                    self.parseOffer(tweet)
-                    
-                elif need:
-                    self.parseNeed(tweet)
-    
-                elif close:
-                    self.parseClose(tweet)
-    
-                elif request:
-                    tweet['recipient'] = request.group(1)
-                    tweet['message'] = request.group(3)
-                    self.parseRequest(tweet)
-                    
+                if tweet_type:
+                    return eval('self.parse_' + tweet_type)(tweet)
                 else:
-                    self.setParsed(tweet['tweet_id'], '-')
-                    raise Exception("Tweet was not recognised")
-               
+                    raise Exception("Type not found")  
+
             except Exception, e:
-                self.logWarning("Parsing tweet %s failed: %s" % (tweet['tweet_id'], e))
-                self.setParsed(tweet['tweet_id'], '-')
+                self.log_warning("Processing tweet %s failed: %s" % (tweet['tweet_id'], e))
+                self.set_parsed(tweet['tweet_id'], False)
                 continue  
                  
     '''
     Parser functions
     '''
     
-    # parsePromise
+    # parse_promise
     # parses and saves a new promise
-    def parsePromise(self, tweet):
-        
-        # If this promise is a reply with no content, create promise from note it is a reply to
-        r = re.match('@(\w+) promise %s|%s' % (HASHTAG, ALT_HASHTAG), tweet['content'], re.IGNORECASE)
-        
-        if r and tweet.get('reply_to_id', None) is not None:
-        
-            note = self.getNote(tweet['reply_to_id'])
-            
-            tweet['recipient'] = note['issuer']
+    def parse_promise(self, tweet):
+        try:
+            # Recipient
+            r = re.search('@(\w+)(.*)', tweet['content'])
 
-            if note['type'] == 10:
-                if note['bearer'].strip() != tweet['author'].strip():
-                    raise Exception('Promise issued by non-bearer')
-                else:
-                    tweet['issuer'] = tweet['author']
+            if r:
+                recipient = r.group(1)
+                statement = r.group(2)
+                tweet['recipient'] = self.save_user(recipient)
             else:
-                tweet['issuer'] = tweet['author']
+                raise Exception("Recipient not found")
+
+            # Check not to self
+            if int(tweet['recipient']) == int(tweet['author']):
+                raise Exception("Issuer and recipient are the same")
+
+            # Transferability (optional)
+            t = re.match('(.* )(NT.|NT)(.*)', statement, re.IGNORECASE)
             
-            # Check Transferability (optional)
-            t = re.match('(.*)( NT )(.*)', tweet['content'], re.IGNORECASE)
             if t:
                 tweet['transferable'] = False
+                statement = t.group(1) + t.group(3)
             else:
                 tweet['transferable'] = True
-                
-            tweet['promise'] = note['promise']
 
-            # Check expiry (optional)
-            ''' 'Expires in' syntax '''
+            # Expiry (optional)
+            ''' 'Expires in' an 'Expires' syntaxes '''
             
-            e = re.match('(.*) Expires in (\d+) (\w+)(.*)', tweet['content'], re.IGNORECASE)
-            
-            if e:
-                num = e.group(2)
-                unit = e.group(3)
-                tweet['expiry'] = self.getExpiry(tweet['created'], num, unit)
+            expires = re.match('(.*) Expires (\d+-\d+-\d+)(.*)', statement, re.IGNORECASE)
+            expires_in = re.match('(.*) Expires in (\d+) (\w+)(.*)', statement, re.IGNORECASE)
+
+            if expires:
+                expiry = expires.group(2)
+                tweet['expiry'] = date_parser.parse(expiry)
+                statement = expires.group(1) + expires.group(3)
+            elif expires_in:
+                num = expires_in.group(2)
+                time_unit = expires_in.group(3)
+                tweet['expiry'] = self.calculate_expiry(tweet['created'], num, time_unit)
+                statement = expires_in.group(1) + expires_in.group(4)
             else:
                 tweet['expiry'] = None
-                
-            tweet_errors = False
-            tweet['condition'] = None
-            
-            # Close request
-            if note['type'] == 10:
-                self.updateNote(note['id'], 'status', 1)
-                E = Event(note['id'], tweet['tweet_id'], 11, tweet['created'], tweet['author'], tweet['recipient'])
-                E.save()
-            
-        # If this is an original promise...
-        else:
-            try:
-                # Tweet flag default true
-                tweet_errors = True
-    
-                # Strip out hashtag
-                h = re.search('(.*)(%s|%s)(.*)' % (HASHTAG, ALT_HASHTAG), tweet['content'], re.IGNORECASE)
-                if h:
-                    statement = h.group(1) + h.group(3)
-                else:
-                    raise Exception("Hashtag not found")
-                
-                # Get recipient
-                r = re.search('(.*)@(\w+)(.*)', statement)
-                
-                if r:
-                    tweet['recipient'] = r.group(2)
-                    statement = r.group(1).strip() + r.group(3)
-                    self.saveUser(tweet['recipient'], intro=True)
-                    
-                else:
-                    # (Don't tweet this as an error)
-                    tweet_errors = False;
-                    raise Exception("Recipient not found")
-                
-                # Check not to self
-                if tweet['recipient'] == tweet['author']:
-                    raise Exception("Issuer and recipient are the same")
-                    
-                # Check Transferability (optional)
-                t = re.match('(.*)( NT )(.*)', statement, re.IGNORECASE)
-                
-                if t:
-                    tweet['transferable'] = False
-                    statement = t.group(1) + t.group(3)
-                else:
-                    tweet['transferable'] = True
-            
-            
-                # Check expiry (optional)
-                ''' 'Expires in' syntax '''
-                
-                e = re.match('(.*) Expires in (\d+) (\w+)(.*)', statement, re.IGNORECASE)
-                
-                if e:
-                    num = e.group(2)
-                    unit = e.group(3)
-                    tweet['expiry'] = self.getExpiry(tweet['created'], num, unit)
-                    statement = e.group(1) + e.group(4)
-                else:
-                    tweet['expiry'] = None
-                    
-                
-                # Get condition
-                c = re.match('(.*)( if )(.*)', statement, re.IGNORECASE)
-                
-                if c:
-                    tweet['condition'] = c.group(3)
-                else:
-                    tweet['condition'] = None
-            
-            
-                # Get promise
-                p = re.match('(.*)(promise)(.*)', statement, re.IGNORECASE)
-                if p:
-                    if p.group(1).strip().lower() == 'i':
-                        promise = p.group(3)
-                    else:
-                        promise = p.group(1).strip() + p.group(3)
-                else:
-                    raise Exception("Promise not found")
-                    
-                
-                # Clean up promise 
-                '''
-                Remove trailing white space, full stop and word 'you' (if found)
-                '''
-                
-                promise = promise.strip()
-                
-                while promise[-1] == '.':
-                    promise = promise[:-1]
-            
-                if promise[0:4] == 'you ':
-                    promise = promise[4:]
-                
-                tweet['promise'] = promise
-            except Exception, e:
-                raise Exception
-              
-        # Processing promise
-        try:
-            self.setParsed(tweet['tweet_id'])
-            self.createNote(tweet)
-            
-            E = Event(tweet['tweet_id'], tweet['tweet_id'], 0, tweet['created'], tweet['author'], tweet['recipient'])
-            E.save()
 
-            self.sendTweet('@%s promised @%s %s http://www.punkmoney.org/note/%s' % (tweet['author'], tweet['recipient'], tweet['promise'], tweet['tweet_id']))
-            self.logInfo('[P] @%s promised @%s %s.' % (tweet['author'], tweet['recipient'], tweet['tweet_id']))
+            # Condition (optional)
+            c = re.match('(.*)( if )(.*)', statement, re.IGNORECASE)
+
+            if c:
+                tweet['condition'] = c.group(3)
+            else:
+                tweet['condition'] = None
+        
+            # Promise
+            p = re.match('(.*)( promise )(.*)', statement, re.IGNORECASE)
+            
+            if p:
+                if p.group(1).strip().lower() == 'i':
+                    promise = p.group(3)
+                else:
+                    promise = p.group(1).strip() + p.group(3)
+            else:
+                raise Exception("Promise not found")
+            
+            # Tidy up promise string 
+            promise = promise.strip()
+            
+            while promise[-1] == '.':
+                promise = promise[:-1]
+
+            if promise[0:4] == 'you ':
+                promise = promise[4:]
+            
+            tweet['promise'] = promise
+
         except Exception, e:
-            self.logWarning("Processing promise %s failed: %s" % (tweet['tweet_id'], e))
-            if tweet_errors is not False:
-                self.sendTweet('@%s Sorry, your promise [%s] didn\'t parse. Try again: http://www.punkmoney.org/print/' % (tweet['author'], tweet['tweet_id']))
-            self.setParsed(tweet['tweet_id'], '-')
+            self.log_info("Promise %s could not be parsed" % tweet['tweet_id'])
+            self.set_parsed(tweet['tweet_id'], False)
+            return False
+        else:
+            return tweet
             
             
     # parseTransfer
     # parse and save a transfer
-    def parseTransfer(self, tweet):
+    def parse_transfer(self, tweet):
         try:
-            self.logInfo("Parsing tweet %s [transfer]" % tweet['tweet_id'])
+            self.log_info("Parsing tweet %s [transfer]" % tweet['tweet_id'])
             
             # Get issuer and recipient
             from_user = tweet['author']
             to_user = tweet['to_user']
             
             # Create user
-            self.saveUser(to_user)
+            self.save_user(to_user)
             
             # If issuer and recipient are the same, skip
             if from_user == to_user:
@@ -310,10 +235,10 @@ class Parser(Harvester):
                 raise Exception("Transferee not trusted by issuer")
             '''
              
-            self.saveUser(to_user, intro=True)
+            self.save_user(to_user, intro=True)
             
             # Process transfer
-            self.setParsed(tweet['tweet_id'])
+            self.set_parsed(tweet['tweet_id'])
             self.updateNote(note['id'], 'bearer', to_user)
             
             # Create event
@@ -321,18 +246,18 @@ class Parser(Harvester):
             E.save()
             
             # Log transfer
-            self.logInfo('[Tr] @%s transferred %s to @%s' % (tweet['author'], note['id'], to_user))
-            self.setParsed(tweet['tweet_id'])
+            self.log_info('[Tr] @%s transferred %s to @%s' % (tweet['author'], note['id'], to_user))
+            self.set_parsed(tweet['tweet_id'])
         except Exception, e:
-            self.setParsed(tweet['tweet_id'], '-')
-            self.logWarning("Processing transfer %s failed: %s" % (tweet['tweet_id'], e))
+            self.set_parsed(tweet['tweet_id'], False)
+            self.log_warning("Processing transfer %s failed: %s" % (tweet['tweet_id'], e))
             
             
     # parseThanks
     # parse and save thanks
     def parseThanks(self, tweet):
         try:
-            self.logInfo("Parsing tweet %s [thanks]" % tweet['tweet_id'])
+            self.log_info("Parsing tweet %s [thanks]" % tweet['tweet_id'])
             from_user = tweet['author']
             
             # If tweet has no reply to id
@@ -343,13 +268,13 @@ class Parser(Harvester):
                 
                 self.createThanks(tweet)
                 tweet['message'] = 'for ' + tweet['message']
-                self.saveUser(tweet['recipient'], intro=True)
+                self.save_user(tweet['recipient'], intro=True)
                 
                 # Log thanks
                 message = '[Thanks] @%s thanked @%s %s' % (tweet['author'], tweet['recipient'], tweet['message'])
-                self.logInfo(message)
+                self.log_info(message)
                 self.sendTweet('@%s thanked @%s %s http://www.punkmoney.org/note/%s' % (tweet['author'], tweet['recipient'], tweet['message'], tweet['tweet_id']))
-                self.setParsed(tweet['tweet_id'])
+                self.set_parsed(tweet['tweet_id'])
 
             # If tweet has a reply_to_id, parse as redemption
             else:
@@ -382,15 +307,15 @@ class Parser(Harvester):
                 E.save()
                 
                 # Log thanks
-                self.logInfo('[T] @%s thanked @%s for %s' % (to_user, from_user, message))
+                self.log_info('[T] @%s thanked @%s for %s' % (to_user, from_user, message))
                 
                 # Tweet event
                 self.sendTweet('@%s thanked @%s for %s http://www.punkmoney.org/note/%s' % (from_user, to_user, note['promise'], note['id']))
-                self.setParsed(tweet['tweet_id'])
+                self.set_parsed(tweet['tweet_id'])
                 
         except Exception, e:
-            self.logWarning("Processing thanks %s failed: %s" % (tweet['tweet_id'], e))
-            self.setParsed(tweet['tweet_id'], '-')
+            self.log_warning("Processing thanks %s failed: %s" % (tweet['tweet_id'], e))
+            self.set_parsed(tweet['tweet_id'], False)
 
     
     # parseOffer
@@ -455,15 +380,15 @@ class Parser(Harvester):
             E.save()
             
             # Log event
-            self.logInfo('[O] @%s offers %s.' % (tweet['author'], tweet['tweet_id']))
+            self.log_info('[O] @%s offers %s.' % (tweet['author'], tweet['tweet_id']))
             
             # Tweet event
             self.sendTweet('[O] @%s offers %s http://www.punkmoney.org/note/%s' % (tweet['author'], item, tweet['tweet_id']))
-            self.setParsed(tweet['tweet_id'])
+            self.set_parsed(tweet['tweet_id'])
         except Exception, e:
-            self.logWarning("Processing %s failed: %s" % (tweet['tweet_id'], e))
+            self.log_warning("Processing %s failed: %s" % (tweet['tweet_id'], e))
             self.sendTweet('@%s Sorry, your offer [%s] didn\'t parse. Try again: http://www.punkmoney.org/print/' % (tweet['author'], tweet['tweet_id']))
-            self.setParsed(tweet['tweet_id'], '-')
+            self.set_parsed(tweet['tweet_id'], False)
 
     
     # parseNeed
@@ -528,15 +453,15 @@ class Parser(Harvester):
             E.save()
             
             # Log event
-            self.logInfo('[N] @%s needs %s.' % (tweet['author'], tweet['tweet_id']))
+            self.log_info('[N] @%s needs %s.' % (tweet['author'], tweet['tweet_id']))
             
             # Tweet
             self.sendTweet('[N] @%s needs %s http://www.punkmoney.org/note/%s' % (tweet['author'], item, tweet['tweet_id']))
-            self.setParsed(tweet['tweet_id'])
+            self.set_parsed(tweet['tweet_id'])
         except Exception, e:
-            self.logWarning("Processing %s failed: %s" % (tweet['tweet_id'], e))
+            self.log_warning("Processing %s failed: %s" % (tweet['tweet_id'], e))
             self.sendTweet('@%s Sorry, your need [%s] didn\'t parse. Try again: http://www.punkmoney.org/print/' % (tweet['author'], tweet['tweet_id']))
-            self.setParsed(tweet['tweet_id'], '-')
+            self.set_parsed(tweet['tweet_id'], False)
 
     # parseClose
     # parse and process a close statement
@@ -572,14 +497,14 @@ class Parser(Harvester):
                     E.save()
                     
                     # Log event
-                    self.logInfo("[X] '%s' closed note %s" % (tweet['author'], note['id']))
-                    self.setParsed(tweet['tweet_id'])
+                    self.log_info("[X] '%s' closed note %s" % (tweet['author'], note['id']))
+                    self.set_parsed(tweet['tweet_id'])
                 elif tweet.get('reply_to_id', False) is False:
-                    self.setParsed(tweet['tweet_id'], '-')
+                    self.set_parsed(tweet['tweet_id'], False)
                     raise Exception("Close failed: original not found")
         except Exception, e:
-            self.logWarning("Processing %s failed: %s" % (tweet['tweet_id'], e))
-            self.setParsed(tweet['tweet_id'], '-')
+            self.log_warning("Processing %s failed: %s" % (tweet['tweet_id'], e))
+            self.set_parsed(tweet['tweet_id'], False)
 
     # parseRequest
     # parse and process a request statement
@@ -617,8 +542,6 @@ class Parser(Harvester):
                     tweet['expiry'] = self.getExpiry(tweet['created'], num, unit)
                 else:
                     tweet['expiry'] = None
-                    
-                tweet_errors = False
             except:
                 raise Exception("Processing request as reply failed")
         else:
@@ -654,18 +577,18 @@ class Parser(Harvester):
                 raise Exception("Processing request failed")
         try:
             # Send intro tweet
-            self.saveUser(tweet['recipient'].lower(), intro=True)
+            self.save_user(tweet['recipient'].lower(), intro=True)
     
             # Create a request
             self.createRequest(tweet)
             
             # Log
-            self.logInfo('[R] @%s requested %s from @%s' % (tweet['author'], tweet['message'], tweet['recipient']))
+            self.log_info('[R] @%s requested %s from @%s' % (tweet['author'], tweet['message'], tweet['recipient']))
             self.sendTweet('[R] @%s requested %s from @%s http://www.punkmoney.org/note/%s' % (tweet['author'], tweet['message'], tweet['recipient'], tweet['tweet_id']))
-            self.setParsed(tweet['tweet_id'])
+            self.set_parsed(tweet['tweet_id'])
         except Exception, e:
-            self.logWarning("Parsing request %s failed: %s" % (tweet['tweet_id'], e))
-            self.setParsed(tweet['tweet_id'], '-')
+            self.log_warning("Parsing request %s failed: %s" % (tweet['tweet_id'], e))
+            self.set_parsed(tweet['tweet_id'], False)
 
 
                     
@@ -692,22 +615,24 @@ class Parser(Harvester):
         else:
             return tweets
     
-    # setParsed
-    # Set parsed flag to 1 if successful, or '-' if not
-    def setParsed(self, tweet_id, val=1):
+    # set_parsed
+    # Set parsed flag to 1 if successful, or False if not
+    def set_parsed(self, tweet_id, val = True):
+
         if SETTINGS.get('debug', False) == True:
             return False
         try:
-            query = "UPDATE tracker_tweets SET parsed = %s WHERE tweet_id = %s"
-            self.queryDB(query, (val, tweet_id))
+            tweet = Tweet.objects.get(tweet_id = tweet_id)
+            tweet.parsed = val
+            tweet.save()
         except Exception, e:
             raise Exception("Setting parsed flag for tweet %s failed: %s" % (tweet_id, e))
         else:
             return True
             
-    # getExpiry
-    # Takes created date time, a number and unit (day, week, month, year,) & returns expiry datetime
-    def getExpiry(self, created, num, unit):
+    # calculate_expiry
+    # Takes created date time, a number and unit (day, week, month, year,) & returns expiry as datetime
+    def calculate_expiry(self, created, num, unit):
         try:
             num = int(num)
             if unit == 'minutes' or unit == 'minute':
@@ -738,8 +663,6 @@ class Parser(Harvester):
         try:
             note_types = [0, 4, 5, 10]
             
-            print getLast(reply_to_id)[4]
-            
             while int(getLast(reply_to_id)[4]) not in note_types:
                 reply_to_id = getLast(reply_to_id)[4]
             else:
@@ -749,22 +672,47 @@ class Parser(Harvester):
         else:
             return tweet[1]
     
-    # createNote
+    # create_note
     # Create a new note from a parsed tweet
-    def createNote(self, tweet):
-        try:
-            query = "SELECT id FROM tracker_notes WHERE id = '%s'" % tweet['tweet_id']        
-            if self.getSingleValue(query) is None:            
-                query = "INSERT INTO tracker_notes(id, issuer, bearer, promise, created, expiry, status, transferable, type, conditional) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                params = (tweet['tweet_id'], tweet['author'].lower(), tweet['recipient'].lower(), tweet['promise'], tweet['created'], tweet['expiry'], 0, tweet['transferable'], 0, tweet['condition'])
-                self.queryDB(query, params)
-            else:
-                self.logWarning('Note %s already exists' % tweet['tweet_id'])
-                return False
-        except Exception, e:
-            raise Exception("Creating note from tweet %s failed: %s" % (tweet['tweet_id'], e))
+    def create_note(self, tweet, note_type):
+        note = Note.objects.filter(id = tweet['tweet_id'])
+        # Create new note if does not exist
+        if len(note) == 0: 
+            self.log_info("Creating new note from %s" % tweet['tweet_id'])
+            note = Note(
+                id = tweet['tweet_id'],
+                issuer = tweet['author'],   
+                bearer = tweet['recipient'],
+                promise = tweet['promise'],
+                created = tweet['created'],       
+                expiry = tweet['expiry'],
+                type = note_type,
+                transferable = tweet['transferable'],
+                status = 0,
+                condition = tweet['condition']
+            )
+            note.save()
         else:
-            return True
+            self.log_warning('Note %s already exists' % tweet['tweet_id'])
+            
+    # create_event
+    # Create a new event from a parsed tweet
+    def create_event(self, tweet, event_type):
+        event = Event.objects.filter(tweet_id = tweet['tweet_id'])
+        # Create new event if does not exist
+        if len(event) == 0:
+            self.log_info("Creating new event from %s" % tweet['tweet_id'])
+            event = Event(
+                note_id = tweet['tweet_id'],
+                tweet_id = tweet['tweet_id'],
+                type = event_type,
+                timestamp = tweet['created'],
+                from_user = tweet['author'],
+                to_user = tweet['recipient']
+            ) 
+            event.save()
+        else:
+            self.log_warning('Event %s already exists' % tweet['tweet_id'])
             
     # createOffer
     # Create an offer or need from parsed tweet
@@ -772,11 +720,11 @@ class Parser(Harvester):
         try:
             query = "SELECT id FROM tracker_notes WHERE id = '%s'" % tweet['tweet_id']        
             if self.getSingleValue(query) is None:            
-                query = "INSERT INTO tracker_notes(id, issuer, bearer, promise, created, expiry, status, transferable, type, conditional) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                query = "INSERT INTO tracker_notes(id, issuer, bearer, promise, created, expiry, status, transferable, type, condition) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 params = (tweet['tweet_id'], tweet['author'].lower(), '', tweet['item'].lower(), tweet['created'], tweet['expiry'], 0, 0, code, tweet['condition'])
                 self.queryDB(query, params)
             else:
-                self.logWarning('Note %s already exists' % tweet['tweet_id'])
+                self.log_warning('Note %s already exists' % tweet['tweet_id'])
                 return False
         except Exception, e:
             raise Exception("Creating note from tweet %s failed: %s" % (tweet['tweet_id'], e))
@@ -797,7 +745,7 @@ class Parser(Harvester):
                 E = Event(tweet['tweet_id'],1,1,tweet['created'],tweet['author'], tweet['recipient'])
                 E.save()
             else:
-                self.logWarning('Note %s already exists' % tweet['tweet_id'])
+                self.log_warning('Note %s already exists' % tweet['tweet_id'])
                 return False
         except Exception, e:
             raise Exception("Creating thanks note from tweet %s failed: %s" % (tweet['tweet_id'], e))
@@ -817,7 +765,7 @@ class Parser(Harvester):
                 E = Event(tweet['tweet_id'],10,10,tweet['created'], tweet['author'], tweet['recipient'])
                 E.save()
             else:
-                self.logWarning('Note %s already exists' % tweet['tweet_id'])
+                self.log_warning('Note %s already exists' % tweet['tweet_id'])
                 return False
         except Exception, e:
             raise Exception("Creating thanks note from tweet %s failed: %s" % (tweet['tweet_id'], e))
@@ -849,39 +797,41 @@ class Parser(Harvester):
         else:
             return True
 
-    # saveUser
+    # save_user
     # Check user exists
-    def saveUser(self, username, intro = False):
-        username = username.lower()
+    def save_user(self, user, intro = False):
         try:
-            query = "SELECT id FROM tracker_users WHERE username = '%s'" % username.lower()
-            r = self.getSingleValue(query)
-        except Exception, e:
-            self.logError("Checking user exists failed: %s" % e)
-            return False
-        try:
-            if r:
-                return True
+
+            if type(user) is str or type(user) is unicode:
+                #twitter_id = self.TW.get_user(user).id
+                twitter_id = 17024753
             else:
-                self.logInfo("Saving new user %s" % username)
-                query = "INSERT INTO tracker_users (username) VALUES (%s)"
-                params = (username.lower())
-                self.queryDB(query, params)
+                twitter_id = user
+
+            # Create new user if doesn't exist already
+            try:
+                user = User.objects.get(twitter_id = twitter_id)
+            except:
+                #username = self.TW.get_user(twitter_id).screen_name
+                username = 'webisteme'
                 
-                # Send intro tweet
-                if intro == True:
-                    try:
-                        message = '@' + username + ' Hi there. Someone just sent you #PunkMoney. Here\'s how to get started: http://is.gd/bezeyu' 
-                        self.sendTweet(message)
-                    except:
-                        pass
+                self.log_info("Creating user %s" % username)
                 
-                # Follow user
+                user = User()
+                user.twitter_id = twitter_id
+                user.username = username
+                user.save()
+                
+                # Try following user
                 try:
                     if self.TW.exists_friendship('punk_money', username) is False:
                         self.TW.create_friendship(username)
                 except:
                     pass
+
+            # Return user id
+            return int(twitter_id)
+
         except Exception, e:
             raise Exception("Creating new user failed: %s" % e)
         else:
@@ -891,10 +841,10 @@ class Parser(Harvester):
     # Update status of any expired notes
     def updateExpired(self):
         try:
-            self.logInfo("Checking for expirations")
+            self.log_info("Checking for expirations")
             query = "SELECT id, bearer, issuer, type FROM tracker_notes WHERE expiry < now() AND status = 0"
             for note in self.getRows(query):
-                self.logInfo('Note %s expired' % note[0])
+                self.log_info('Note %s expired' % note[0])
                 self.updateNote(note[0], 'status', 2)
                 
                 # promise
@@ -924,7 +874,7 @@ class Parser(Harvester):
             try:
                 self.TW.update_status(message)
             except:
-                self.logError("Tweeting message failed (%s)" % message)      
+                self.log_error("Tweeting message failed (%s)" % message)      
                 
     # checkTrusted
     # Check if there is a trust path between two users
@@ -939,3 +889,43 @@ class Parser(Harvester):
                 return False
         except Exception, e:
             raise Exception('Checking TrustList for user %s failed: %s' % (username,e))
+            
+    # get_tweet_type
+    # returns statement type from Tweet content
+    
+    def get_tweet_type(self, content):
+        try:
+            tweet_types = ['promise', 'transfer', 'thanks', 'offer', 'need', 'close', 'request']
+            for tweet_type in tweet_types:
+                vars()['is_' + tweet_type] = re.search(tweet_type + ' ', content, re.IGNORECASE)
+                if eval('is_' + tweet_type):
+                    return tweet_type
+            # if no matches, return False
+            return False
+        except Exception, e:
+            raise Exception("Tweet type could not be determined: %s" % e)
+                    
+            
+    # getTwitterId
+    # Get twitter_id from username tracker users. Add user if not already there
+    
+    def getTwitterId(self, username):
+        try:
+            sql = "SELECT twitter_id FROM tracker_users WHERE username = %s"
+            twitter_id = self.getSingleValue(sql, username)
+            if twitter_id is not None:  
+                return twitter_id
+            else:
+                self.save_user(username)
+                sql = "SELECT twitter_id FROM tracker_users WHERE username = %s"
+                twitter_id = self.getSingleValue(sql, username)
+                if twitter_id is not None:  
+                    return twitter_id
+        except:
+            raise Exception("Twitter ID not found for user")
+    
+    
+    
+    
+    
+    

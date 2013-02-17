@@ -46,15 +46,15 @@ class Logging(Connection):
         self.log = logging.getLogger("log")
         
     # Log warning
-    def logWarning(self, message):
+    def log_warning(self, message):
         self.log.warning(message)
         
     # Log info
-    def logInfo(self, message):
+    def log_info(self, message):
         self.log.info(message)
         
     # Log error
-    def logError(self, message):
+    def log_error(self, message):
         self.log.error(message)
         
     # Log debug

@@ -30,7 +30,7 @@ class Harvester(Logging):
     # Fetches and saves latest tweets from Twitter API
     def harvestNew(self):
         
-        self.logInfo("Harvesting new tweets...")
+        self.log_info("Harvesting new tweets...")
         
         try:
             # Get latest tweets
@@ -58,8 +58,6 @@ class Harvester(Logging):
                     # Get tweet metadata
                     t = self.getStatus(tweet.id)
 
-                    #pprint(t)
-                    
                     # Extract first img_url
                     img_url = None
                     for media_entity in t.get('entities', {}).get('media', []):
@@ -99,22 +97,25 @@ class Harvester(Logging):
                             k = k + 1
 
                     # Save data
-                    self.logInfo("Saving tweet %s to database" % tweet.id)
+                    self.log_info("Saving tweet %s to database" % tweet.id)
+                    
+                    # Save to user table
+                    
 
                     query = "INSERT INTO tracker_tweets (timestamp, tweet_id, author, content, reply_to_id, url, display_url, img_url, tag_1, tag_2, tag_3) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                    params = (tweet.created_at, tweet.id, tweet.from_user.lower(), tweet.text, reply_to_id, url, display_url, img_url, tag_ids[0], tag_ids[1], tag_ids[2])
+                    params = (tweet.created_at, tweet.id, tweet.from_user_id, tweet.text, reply_to_id, url, display_url, img_url, tag_ids[0], tag_ids[1], tag_ids[2])
                            
                     self.queryDB(query, params)
                     
                     i = i + 1
                 
         except Exception, e:
-            self.logError("Twitter harvest failed: %s" % e)
+            self.log_error("Twitter harvest failed: %s" % e)
         else:
             if i > 0:
-                self.logInfo("Saved %s new tweets to the database" % i)
+                self.log_info("Saved %s new tweets to the database" % i)
             else:
-                self.logInfo("No new tweets found")
+                self.log_info("No new tweets found")
                 
     
     '''
