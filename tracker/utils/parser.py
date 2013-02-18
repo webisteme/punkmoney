@@ -54,7 +54,7 @@ class Parser(Harvester):
         #self.getTweets()
 
         test_tweets = [
-            {'content' : "@webisteme promise this test NT Expires in 2 months http://www.google.com. #testmoney", 
+            {'content' : "@webisteme promise this test if you tweet it NT Expires 2012-02-02 http://www.google.com. #testmoney", 
             'tweet_id' : 32, 
             'author' : 3, 
             'created' : datetime.now()}
@@ -116,10 +116,11 @@ class Parser(Harvester):
             # Get optional parameters
             tweet['transferable'] = self._get_transferability(tweet['content'])
             tweet['expiry'] = self._get_expiry(tweet['created'], tweet['content'])
-            tweet['condition'] = self._get_condition(tweet['content'])
-
+            
             # Get thing promised
             tweet['promise'] = self._get_promise(tweet['content'])
+            tweet['condition'] = self._get_condition(tweet['promise'])
+            
         except Exception, e:
             self.log_info("Promise %s could not be parsed" % tweet['tweet_id'])
             self.set_parsed(tweet['tweet_id'], False)
@@ -660,6 +661,12 @@ class Parser(Harvester):
             else:
                 raise Exception
 
+            # Remove params
+            promise = re.sub('Expires in \d+ \w+', '', promise)
+            promise = re.sub('Expires \d+-\d+-\d+', '', promise)
+            promise = re.sub('NT', '', promise)
+            promise = re.sub('@\w+', '', promise)
+
             # Clean up promise string
             promise = promise.strip()
             
@@ -668,7 +675,7 @@ class Parser(Harvester):
 
             if promise[0:4] == 'you ':
                 promise = promise[4:]
-            
+
             return promise
         except Exception, e:
             raise Exception("Promise not found")
