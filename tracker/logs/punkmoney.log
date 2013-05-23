@@ -1,0 +1,141 @@
+INFO 2013-05-23 11:04:01,061 Checking for expirations
+INFO 2013-05-23 11:04:01,145 Note 183344329354522626 expired
+ERROR 2013-05-23 11:04:01,192 Updating expired failed: Cleaning database failed: 'long' object has no attribute 'lower'
+INFO 2013-05-23 11:04:01,533 Harvesting new tweets...
+INFO 2013-05-23 11:04:02,345 No new tweets found
+WARNING 2013-05-23 11:04:02,347 Parsing tweet 299915744815222787 failed: 'long' object has no attribute 'lower'
+WARNING 2013-05-23 11:04:02,349 Parsing tweet 319961568530030592 failed: 'long' object has no attribute 'lower'
+INFO 2013-05-23 11:04:18,964 Checking for expirations
+INFO 2013-05-23 11:04:18,964 Note 185878089455251457 expired
+ERROR 2013-05-23 11:04:18,966 Updating expired failed: Cleaning database failed: 'long' object has no attribute 'lower'
+INFO 2013-05-23 11:04:19,584 Harvesting new tweets...
+INFO 2013-05-23 11:04:20,787 No new tweets found
+INFO 2013-05-23 11:04:26,736 Checking for expirations
+INFO 2013-05-23 11:04:26,737 Note 203143632054784000 expired
+ERROR 2013-05-23 11:04:26,738 Updating expired failed: Cleaning database failed: 'long' object has no attribute 'lower'
+INFO 2013-05-23 11:04:26,995 Harvesting new tweets...
+INFO 2013-05-23 11:04:27,746 No new tweets found
+INFO 2013-05-23 11:04:49,854 Checking for expirations
+INFO 2013-05-23 11:04:49,855 Note 32 expired
+ERROR 2013-05-23 11:04:49,856 Updating expired failed: Cleaning database failed: 'long' object has no attribute 'lower'
+INFO 2013-05-23 11:04:50,120 Harvesting new tweets...
+INFO 2013-05-23 11:04:50,904 No new tweets found
+INFO 2013-05-23 11:05:37,749 Checking for expirations
+INFO 2013-05-23 11:05:38,029 Harvesting new tweets...
+INFO 2013-05-23 11:05:39,176 No new tweets found
+INFO 2013-05-23 11:05:49,583 Checking for expirations
+INFO 2013-05-23 11:05:49,847 Harvesting new tweets...
+INFO 2013-05-23 11:05:50,627 No new tweets found
+INFO 2013-05-23 11:06:05,634 Checking for expirations
+INFO 2013-05-23 11:06:06,253 Harvesting new tweets...
+INFO 2013-05-23 11:06:07,437 No new tweets found
+INFO 2013-05-23 11:07:21,511 Checking for expirations
+INFO 2013-05-23 11:07:21,807 Harvesting new tweets...
+INFO 2013-05-23 11:07:23,520 Saving tweet 337492378468368385 to database
+INFO 2013-05-23 11:07:23,786 Saving tweet 336922771672154113 to database
+INFO 2013-05-23 11:07:24,057 Saving tweet 336922648204414976 to database
+INFO 2013-05-23 11:07:24,320 Saving tweet 336922115330682880 to database
+INFO 2013-05-23 11:07:24,582 Saving tweet 336920372576403456 to database
+INFO 2013-05-23 11:07:24,847 Saving tweet 336920224911749120 to database
+INFO 2013-05-23 11:07:25,099 Saving tweet 336874697109172225 to database
+INFO 2013-05-23 11:07:25,351 Saving tweet 336870686939291648 to database
+INFO 2013-05-23 11:07:25,610 Saving tweet 336846383283843073 to database
+INFO 2013-05-23 11:07:25,873 Saving tweet 336604387977879552 to database
+INFO 2013-05-23 11:07:26,138 Saving tweet 336412151512199169 to database
+INFO 2013-05-23 11:07:26,389 Saving tweet 335799144910303234 to database
+INFO 2013-05-23 11:07:26,667 Saving tweet 335766934698205185 to database
+INFO 2013-05-23 11:15:47,030 Checking for expirations
+INFO 2013-05-23 11:15:47,313 Harvesting new tweets...
+INFO 2013-05-23 11:15:48,143 No new tweets found
+WARNING 2013-05-23 11:15:48,177 Parsing tweet 335766934698205185 failed: 'long' object has no attribute 'lower'
+WARNING 2013-05-23 11:15:48,181 Parsing tweet 335799144910303234 failed: 'long' object has no attribute 'lower'
+WARNING 2013-05-23 11:15:48,184 Parsing tweet 336412151512199169 failed: 'long' object has no attribute 'lower'
+WARNING 2013-05-23 11:15:48,186 Parsing tweet 336604387977879552 failed: 'long' object has no attribute 'lower'
+WARNING 2013-05-23 11:15:48,189 Parsing tweet 336846383283843073 failed: 'long' object has no attribute 'lower'
+WARNING 2013-05-23 11:15:48,193 Parsing tweet 336870686939291648 failed: Tweet is a retweet
+WARNING 2013-05-23 11:15:48,196 Parsing tweet 336874697109172225 failed: 'long' object has no attribute 'lower'
+WARNING 2013-05-23 11:15:48,199 Parsing tweet 336920224911749120 failed: 'long' object has no attribute 'lower'
+WARNING 2013-05-23 11:15:48,204 Parsing tweet 336920372576403456 failed: Tweet is a retweet
+WARNING 2013-05-23 11:15:48,206 Parsing tweet 336922115330682880 failed: 'long' object has no attribute 'lower'
+WARNING 2013-05-23 11:15:48,211 Parsing tweet 336922648204414976 failed: Tweet is a retweet
+WARNING 2013-05-23 11:15:48,216 Parsing tweet 336922771672154113 failed: Tweet is a retweet
+WARNING 2013-05-23 11:15:48,218 Parsing tweet 337492378468368385 failed: 'long' object has no attribute 'lower'
+INFO 2013-05-23 11:15:55,827 Checking for expirations
+INFO 2013-05-23 11:15:56,087 Harvesting new tweets...
+INFO 2013-05-23 11:15:56,881 No new tweets found
+INFO 2013-05-23 11:18:10,905 Checking for expirations
+INFO 2013-05-23 11:18:11,192 Harvesting new tweets...
+INFO 2013-05-23 11:18:12,543 No new tweets found
+INFO 2013-05-23 11:18:51,265 Checking for expirations
+INFO 2013-05-23 11:18:51,877 Harvesting new tweets...
+INFO 2013-05-23 11:18:53,176 Saving tweet 337492378468368385 to database
+INFO 2013-05-23 11:18:53,438 Saving tweet 336922771672154113 to database
+INFO 2013-05-23 11:18:53,713 Saving tweet 336922648204414976 to database
+INFO 2013-05-23 11:18:53,966 Saving tweet 336922115330682880 to database
+INFO 2013-05-23 11:18:54,228 Saving tweet 336920372576403456 to database
+INFO 2013-05-23 11:18:54,478 Saving tweet 336920224911749120 to database
+INFO 2013-05-23 11:18:54,864 Saving tweet 336874697109172225 to database
+INFO 2013-05-23 11:18:55,126 Saving tweet 336870686939291648 to database
+INFO 2013-05-23 11:18:55,427 Saving tweet 336846383283843073 to database
+INFO 2013-05-23 11:18:55,682 Saving tweet 336604387977879552 to database
+INFO 2013-05-23 11:18:55,968 Saving tweet 336412151512199169 to database
+INFO 2013-05-23 11:18:56,227 Saving tweet 335799144910303234 to database
+INFO 2013-05-23 11:18:56,496 Saving tweet 335766934698205185 to database
+INFO 2013-05-23 11:18:56,764 Saving tweet 334983009545641984 to database
+INFO 2013-05-23 11:18:56,765 Saved 14 new tweets to the database
+INFO 2013-05-23 11:18:56,767 Saving new user _yuucravenaenae
+WARNING 2013-05-23 11:18:57,937 Parsing tweet 334983009545641984 failed: Tweet was not recognised
+INFO 2013-05-23 11:18:57,938 Saving new user jackieexoxo__
+WARNING 2013-05-23 11:18:59,059 Parsing tweet 335766934698205185 failed: Tweet was not recognised
+INFO 2013-05-23 11:18:59,060 Saving new user spiffy__reeva
+WARNING 2013-05-23 11:19:00,289 Parsing tweet 335799144910303234 failed: Tweet was not recognised
+INFO 2013-05-23 11:19:00,290 Saving new user liljinxr
+WARNING 2013-05-23 11:19:01,407 Parsing tweet 336412151512199169 failed: Tweet was not recognised
+INFO 2013-05-23 11:19:01,408 Saving new user crazykenbarb
+WARNING 2013-05-23 11:19:02,540 Parsing tweet 336604387977879552 failed: Tweet was not recognised
+INFO 2013-05-23 11:19:02,541 Saving new user kittybradshaw
+WARNING 2013-05-23 11:19:03,667 Parsing tweet 336846383283843073 failed: Tweet was not recognised
+WARNING 2013-05-23 11:19:03,670 Parsing tweet 336870686939291648 failed: Tweet is a retweet
+INFO 2013-05-23 11:19:03,671 Saving new user nickisupporters
+WARNING 2013-05-23 11:19:05,203 Parsing tweet 336874697109172225 failed: Tweet was not recognised
+INFO 2013-05-23 11:19:05,204 Saving new user barbzme_
+WARNING 2013-05-23 11:19:06,246 Parsing tweet 336920224911749120 failed: Tweet was not recognised
+WARNING 2013-05-23 11:19:06,249 Parsing tweet 336920372576403456 failed: Tweet is a retweet
+INFO 2013-05-23 11:19:06,250 Saving new user horneycocaine
+WARNING 2013-05-23 11:19:07,562 Parsing tweet 336922115330682880 failed: Tweet was not recognised
+WARNING 2013-05-23 11:19:07,564 Parsing tweet 336922648204414976 failed: Tweet is a retweet
+WARNING 2013-05-23 11:19:07,566 Parsing tweet 336922771672154113 failed: Tweet is a retweet
+INFO 2013-05-23 11:19:07,567 Saving new user boip
+WARNING 2013-05-23 11:19:08,018 Parsing tweet 337492378468368385 failed: global name 'sys' is not defined
+INFO 2013-05-23 11:21:11,203 Checking for expirations
+INFO 2013-05-23 11:21:11,487 Harvesting new tweets...
+INFO 2013-05-23 11:21:12,322 No new tweets found
+INFO 2013-05-23 11:21:34,298 Checking for expirations
+INFO 2013-05-23 11:21:34,913 Harvesting new tweets...
+INFO 2013-05-23 11:21:35,736 No new tweets found
+INFO 2013-05-23 11:21:56,690 Checking for expirations
+INFO 2013-05-23 11:21:57,307 Harvesting new tweets...
+INFO 2013-05-23 11:21:58,098 No new tweets found
+INFO 2013-05-23 11:22:41,940 Checking for expirations
+INFO 2013-05-23 11:22:42,228 Harvesting new tweets...
+INFO 2013-05-23 11:22:43,363 No new tweets found
+INFO 2013-05-23 11:24:28,483 Checking for expirations
+INFO 2013-05-23 11:24:28,757 Harvesting new tweets...
+INFO 2013-05-23 11:24:29,920 No new tweets found
+WARNING 2013-05-23 11:24:29,925 Parsing tweet 337492378468368385 failed: '_sre.SRE_Match' object does not support item assignment
+INFO 2013-05-23 11:24:54,587 Checking for expirations
+INFO 2013-05-23 11:24:55,208 Harvesting new tweets...
+INFO 2013-05-23 11:24:56,336 No new tweets found
+INFO 2013-05-23 11:25:11,113 Checking for expirations
+INFO 2013-05-23 11:25:11,378 Harvesting new tweets...
+INFO 2013-05-23 11:25:12,166 No new tweets found
+WARNING 2013-05-23 11:25:12,171 Parsing tweet 337492378468368385 failed: '_sre.SRE_Match' object is not subscriptable
+INFO 2013-05-23 11:25:48,079 Checking for expirations
+INFO 2013-05-23 11:25:48,374 Harvesting new tweets...
+INFO 2013-05-23 11:25:49,560 No new tweets found
+INFO 2013-05-23 11:26:04,540 Checking for expirations
+INFO 2013-05-23 11:26:04,791 Harvesting new tweets...
+INFO 2013-05-23 11:26:05,591 No new tweets found
+INFO 2013-05-23 11:26:05,596 Parsing tweet 337492378468368385 [thanks]
+INFO 2013-05-23 11:26:05,601 Saving new user webisteme
+INFO 2013-05-23 11:26:06,044 [Thanks] @boip thanked @webisteme for  the test 

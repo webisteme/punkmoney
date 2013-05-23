@@ -16,6 +16,7 @@ import re
 from datetime import datetime
 from dateutil.relativedelta import *
 import time
+import sys
 
 '''
 Parser class 
@@ -51,6 +52,7 @@ class Parser(Harvester):
                 promise = re.search('promise ', tweet['content'], re.IGNORECASE)
                 transfer = re.search('transfer @(\w+)(.*)', tweet['content'], re.IGNORECASE)
                 thanks = re.search('@(\w+) thanks (for)?(.*)', tweet['content'], re.IGNORECASE)
+                new_thanks = re.search('thanks @(\w+) (for)?(.*)', tweet['content'], re.IGNORECASE)
                 offer = re.search('(i )?(offer[s]?) (.*)', tweet['content'], re.IGNORECASE)
                 need = re.search('(i )?(need[s]?) (.*)', tweet['content'], re.IGNORECASE)
                 close = re.match('@(\w+ )?close (.*)', tweet['content'], re.IGNORECASE)
@@ -69,7 +71,9 @@ class Parser(Harvester):
                     tweet['to_user'] = transfer.group(1).lower()
                     self.parseTransfer(tweet)
                     
-                elif thanks:
+                elif thanks or new_thanks:
+                    if new_thanks:
+                        thanks = new_thanks
                     tweet['recipient'] = thanks.group(1)
                     if thanks.group(2):
                         if thanks.group(2).lower() == 'for':
@@ -894,6 +898,7 @@ class Parser(Harvester):
             self.logInfo("Checking for expirations")
             query = "SELECT id, bearer, issuer, type FROM tracker_notes WHERE expiry < now() AND status = 0"
             for note in self.getRows(query):
+            
                 self.logInfo('Note %s expired' % note[0])
                 self.updateNote(note[0], 'status', 2)
                 
