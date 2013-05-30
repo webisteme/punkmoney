@@ -51,7 +51,7 @@ class Parser(Harvester):
                 # Determine tweet type
                 promise = re.search('promise ', tweet['content'], re.IGNORECASE)
                 transfer = re.search('transfer @(\w+)(.*)', tweet['content'], re.IGNORECASE)
-                thanks = re.search('@(\w+) thanks (for)?(.*)', tweet['content'], re.IGNORECASE)
+                thanks = re.search('@(\w+) thanks|redeemed (for)?(.*)', tweet['content'], re.IGNORECASE)
                 new_thanks = re.search('thanks @(\w+) (for)?(.*)', tweet['content'], re.IGNORECASE)
                 offer = re.search('(i )?(offer[s]?) (.*)', tweet['content'], re.IGNORECASE)
                 need = re.search('(i )?(need[s]?) (.*)', tweet['content'], re.IGNORECASE)
