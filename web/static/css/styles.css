@@ -26,6 +26,10 @@ div#footer {
     top:40px;
 }
 
+#press {
+    font-weight: bold;    
+}
+
 /* CONTROLS */
 
 span#controls {
@@ -59,11 +63,11 @@ span#expiration {
 }
 
 span#offer {
-	background-color: #fff3fe;
+	background-color: #efd3c0;
 }
 
 span#need {
-	background-color: #fffbcd;
+	background-color: #faee9a;
 }
 
 span#request {

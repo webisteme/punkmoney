@@ -202,7 +202,11 @@ def shownet(request):
         'page':'trustlist',
     }
     
-    return render_to_response('trustnet.html', variables)    
+    return render_to_response('trustnet.html', variables)   
+    
+def press(request):
+    
+    return render_to_response('press.html', {})    
 
 
 def user(request, username):

@@ -39,13 +39,17 @@ urlpatterns = patterns('',
     url(r'^ticker/type/(?P<type>\d+)/tags/(?P<tag_1>\w+)/(?P<tag_2>\w+)/$', 'tracker.views.ticker', name='ticker'),
     url(r'^ticker/type/(?P<type>\d+)/tags/(?P<tag_1>\w+)/(?P<tag_2>\w+)/(?P<tag_3>\w+)/$', 'tracker.views.ticker', name='ticker'),
     
+    # Press
+    
+    url(r'^press/$', 'tracker.views.press', name='press'),
+    
     # search
     
     url(r'^search/(?P<term>.*)$', 'tracker.views.search', name='search'),
     
     # other patterns
     
-    url(r'^trustnet/$', 'tracker.views.shownet', name='trustnet'),
+    url(r'^network/$', 'tracker.views.shownet', name='network'),
     
     url(r'^print/$', 'tracker.views.printer', name='showlist'),
     

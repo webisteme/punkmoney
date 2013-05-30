@@ -22,8 +22,6 @@
 
 		}
 		
-		
-		
 		function search(){
 		
 			term = $('input#searchbox').val();
@@ -113,13 +111,13 @@
 		
 		<hr class="space">
 
-		{% ifequal page 'trustlist' %}
+		{% ifequal page 'network' %}
 	
-		<li><b><a href="/trustnet">Karma</a></b></li>
+		<li><b><a href="/network">Network</a></b></li>
 		
 		{% else %}
 		
-		<li><a href="/trustnet">Karma</a></li>
+		<li><a href="/network">Network</a></li>
 		
 		{% endifequal %}
 		
@@ -148,11 +146,12 @@
     
         <hr>
     
-		<p class="footer">#PunkMoney 0.25 by <a href="http://www.webisteme.com">webisteme</a> | 
-		<a href="http://wiki.punkmoney.org">Wiki</a> |
+		<p class="footer">#PunkMoney by <a href="http://www.webisteme.com">webisteme</a> | 
+		<a href="/press">Press</a> |
 		<a href="https://github.com/webisteme/punkmoney">GitHub</a> | 
 		<a href="http://www.facebook.com/punkmoney">Facebook</a> | 
-		<a href="http://www.twitter.com/punk_money">Twitter</a>&nbsp; 
+		<a href="http://www.twitter.com/punk_money">Twitter</a>
+		
 		</p>
     
     </div>
