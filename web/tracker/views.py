@@ -206,7 +206,11 @@ def shownet(request):
     
 def press(request):
     
-    return render_to_response('press.html', {})    
+    return render_to_response('press.html', {})  
+    
+def faq(request):
+    
+    return render_to_response('faq.html', {})    
 
 
 def user(request, username):

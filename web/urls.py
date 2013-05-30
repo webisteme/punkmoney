@@ -43,6 +43,10 @@ urlpatterns = patterns('',
     
     url(r'^press/$', 'tracker.views.press', name='press'),
     
+    # Press
+    
+    url(r'^faq/$', 'tracker.views.faq', name='faq'),
+    
     # search
     
     url(r'^search/(?P<term>.*)$', 'tracker.views.search', name='search'),
