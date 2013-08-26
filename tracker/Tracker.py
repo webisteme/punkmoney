@@ -32,7 +32,7 @@ class Tracker(Parser):
         
         
         # If more than 25 hits remaining, harvest new tweets
-        if self.TW.rate_limit_status()['remaining_hits'] > 25:
+        if self.TW.rate_limit_status('search')['resources']['search']['/search/tweets']['remaining'] > 25:
             try:        
                 self.harvestNew()
             except Exception, e:

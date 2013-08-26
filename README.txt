@@ -34,7 +34,7 @@ d3 Javascript Library (included)
 
 Python dependencies:
 
-Tweepy (https://github.com/tweepy/tweepy)
+Tweepy >= 2.1 (https://github.com/tweepy/tweepy)
 Dateutils (http://labix.org/python-dateutil)
 MySQL for Python (http://sourceforge.net/projects/mysql-python/)
 
