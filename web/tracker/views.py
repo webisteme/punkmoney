@@ -1,5 +1,7 @@
+# Create your views here.
+
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from tracker.models import *
 from django.template import Context, loader, RequestContext
 from datetime import datetime
@@ -12,8 +14,11 @@ import operator
 
 # Create your views here.
 
+
+# Create your views here.
+
 def home(request):
-    return render_to_response('home.html')
+    return render(request, 'home.html')
 
 def tracker(request, tag_1 = None, tag_2 = None, tag_3 = None):
 
@@ -43,7 +48,7 @@ def tracker(request, tag_1 = None, tag_2 = None, tag_3 = None):
     if related_tags is not None:
         variables['related_tags'] = related_tags
 
-    return render_to_response('tracker.html', variables)
+    return render(request, 'tracker.html', variables)
 
 
 def ticker(
@@ -190,8 +195,8 @@ def ticker(
         'events':final,
         'show_arrow':show_arrow
     }
-
-    return render_to_response('ticker.html', variables)    
+    
+    return render(request, 'ticker.html', variables)  
     
 def shownet(request):
 
@@ -202,15 +207,15 @@ def shownet(request):
         'page':'trustlist',
     }
     
-    return render_to_response('trustnet.html', variables)   
+    return render(request, 'trustnet.html', variables)  
     
 def press(request):
     
-    return render_to_response('press.html', {})  
+    return render(request, 'press.html')
     
 def faq(request):
-    
-    return render_to_response('faq.html', {})    
+
+    return render(request, 'faq.html')
 
 
 def user(request, username):
@@ -273,7 +278,8 @@ def user(request, username):
     }
     
     # return all
-    return render_to_response('user.html', variables)
+    
+    return render(request, 'user.html', variables)
     
 
 def getnote(request, noteid):
@@ -326,21 +332,26 @@ def getnote(request, noteid):
     elif note.type == 10:
         template = 'request.html'
     
-    return render_to_response(template, variables)
+    return render(request, template, variables)
     
     
 def printer(request):
+
     variables = {
         'page':'printer',
     }
-    return render_to_response('printer.html', variables)
+    
+    return render(request, 'printer.html', variables)
     
 
 def help(request):
+
     variables = {
         'page':'help',
     }
-    return render_to_response('help.html', variables)
+    
+    return render(request, 'help.html', variables)
+    
 
 # [!] Check if for non-note ids too
 def search(request, term=None):
@@ -469,7 +480,7 @@ def user_info(request, username):
         'username':username,
     }
     
-    return render_to_response('user_info.html', variables)
+    return render(request, 'user_info.html', variables)
     
     
 ''' HELPERS '''
